@@ -5,7 +5,7 @@
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
 #include <cstdlib>  // std::size_t
-#include <iostream> // std::cout
+#include <iostream> // std::cerr
 #include <limits>   // std::numeric_limits
 #include <new>      // std::bad_alloc
 #include <vector>   // std::vector
