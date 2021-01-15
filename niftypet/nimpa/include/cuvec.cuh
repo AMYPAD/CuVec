@@ -4,6 +4,7 @@
  */
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
+#include "cuhelpers.h"
 #include <cstdlib>  // std::size_t
 #include <iostream> // std::cerr
 #include <limits>   // std::numeric_limits
@@ -25,7 +26,7 @@ template <class T> struct CuAlloc {
           throw std::bad_alloc();
 
         T *p;
-        cudaMallocManaged(&p, n * sizeof(T));
+        HANDLE_ERROR(cudaMallocManaged(&p, n * sizeof(T)));
         if (p) {
           report(p, n);
           return p;
@@ -36,7 +37,7 @@ template <class T> struct CuAlloc {
 
   void deallocate(T *p, std::size_t n) noexcept {
     report(p, n, 0);
-    cudaFree(p);
+    HANDLE_ERROR(cudaFree(p));
   }
 
 private:
