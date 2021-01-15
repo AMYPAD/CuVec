@@ -126,6 +126,75 @@ static PyTypeObject PyCuVec_f = {
     (initproc)PyCuVec_init<float>,                   /* tp_init */
 };
 
+/// class PyCuVec_d = PyCuVec<double>
+/// buffer interface
+static int PyCuVec_getbuffer_d(PyObject *obj, Py_buffer *view, int flags) {
+  if (view == NULL) {
+    PyErr_SetString(PyExc_ValueError, "NULL view in getbuffer");
+    return -1;
+  }
+
+  PyCuVec<double> *self = (PyCuVec<double> *)obj;
+  Py_ssize_t *shape = (Py_ssize_t *)malloc(sizeof(Py_ssize_t));
+  shape[0] = self->vec.size();
+  view->buf = (void *)self->vec.data();
+  view->obj = (PyObject *)self;
+  view->len = self->vec.size() * sizeof(double);
+  view->readonly = 0;
+  view->itemsize = sizeof(double);
+  view->format = (char *)"d"; // double
+  view->ndim = 1;
+  view->shape = shape;
+  view->strides = &view->itemsize;
+  view->suboffsets = NULL;
+  view->internal = NULL;
+
+  Py_INCREF(self);
+  return 0;
+}
+static PyBufferProcs PyCuVec_as_buffer_d = {
+    (getbufferproc)PyCuVec_getbuffer_d,
+    (releasebufferproc)PyCuVec_release<double>,
+};
+/// class
+static PyTypeObject PyCuVec_d = {
+    PyVarObject_HEAD_INIT(NULL, 0) "cuvec.Vector_d", /* tp_name */
+    sizeof(PyCuVec<double>),                         /* tp_basicsize */
+    0,                                               /* tp_itemsize */
+    (destructor)PyCuVec_dealloc<double>,             /* tp_dealloc */
+    0,                                               /* tp_print */
+    0,                                               /* tp_getattr */
+    0,                                               /* tp_setattr */
+    0,                                               /* tp_reserved */
+    0,                                               /* tp_repr */
+    0,                                               /* tp_as_number */
+    0,                                               /* tp_as_sequence */
+    0,                                               /* tp_as_mapping */
+    0,                                               /* tp_hash  */
+    0,                                               /* tp_call */
+    (reprfunc)PyCuVec_str<double>,                   /* tp_str */
+    0,                                               /* tp_getattro */
+    0,                                               /* tp_setattro */
+    &PyCuVec_as_buffer_d,                            /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT,                              /* tp_flags */
+    "cuvec.Vector<d> object",                        /* tp_doc */
+    0,                                               /* tp_traverse */
+    0,                                               /* tp_clear */
+    0,                                               /* tp_richcompare */
+    0,                                               /* tp_weaklistoffset */
+    0,                                               /* tp_iter */
+    0,                                               /* tp_iternext */
+    0,                                               /* tp_methods */
+    0,                                               /* tp_members */
+    0,                                               /* tp_getset */
+    0,                                               /* tp_base */
+    0,                                               /* tp_dict */
+    0,                                               /* tp_descr_get */
+    0,                                               /* tp_descr_set */
+    0,                                               /* tp_dictoffset */
+    (initproc)PyCuVec_init<double>,                  /* tp_init */
+};
+
 /** module */
 static struct PyModuleDef cuvec_module = {
     PyModuleDef_HEAD_INIT,
@@ -147,6 +216,12 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
     return NULL;
   Py_INCREF(&PyCuVec_f);
   PyModule_AddObject(m, "Vector_f", (PyObject *)&PyCuVec_f);
+  // class PyCuVec_d
+  PyCuVec_d.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyCuVec_d) < 0)
+    return NULL;
+  Py_INCREF(&PyCuVec_d);
+  PyModule_AddObject(m, "Vector_d", (PyObject *)&PyCuVec_d);
 
   return m;
 }
