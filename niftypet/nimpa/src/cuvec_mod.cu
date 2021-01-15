@@ -48,6 +48,45 @@ template <class T> static PyObject *PyCuVec_str(PyCuVec<T> *self) {
   PyObject *ret = PyUnicode_FromString(c.c_str());
   return ret;
 }
+/// buffer interface
+static int PyCuVec_getbuffer_f(PyObject *obj, Py_buffer *view, int flags) {
+  if (view == NULL) {
+    PyErr_SetString(PyExc_ValueError, "NULL view in getbuffer");
+    return -1;
+  }
+
+  PyCuVec<float> *self = (PyCuVec<float> *)obj;
+  Py_ssize_t *shape = (Py_ssize_t *)malloc(sizeof(Py_ssize_t));
+  shape[0] = self->vec.size();
+  view->buf = (void *)self->vec.data();
+  view->obj = (PyObject *)self;
+  view->len = self->vec.size() * sizeof(float);
+  view->readonly = 0;
+  view->itemsize = sizeof(float);
+  view->format = (char *)"f"; // float
+  view->ndim = 1;
+  view->shape = shape;
+  view->strides = &view->itemsize;
+  view->suboffsets = NULL;
+  view->internal = NULL;
+
+  Py_INCREF(self);
+  return 0;
+}
+template <class T> static void PyCuVec_release(PyObject *obj, Py_buffer *view) {
+  if (view == NULL) {
+    PyErr_SetString(PyExc_ValueError, "NULL view in release");
+    return;
+  }
+  free(view->shape);
+
+  PyCuVec<T> *self = (PyCuVec<T> *)obj;
+  Py_DECREF(self);
+}
+static PyBufferProcs PyCuVec_as_buffer_f = {
+    (getbufferproc)PyCuVec_getbuffer_f,
+    (releasebufferproc)PyCuVec_release<float>,
+};
 /// class
 static PyTypeObject PyCuVec_f = {
     PyVarObject_HEAD_INIT(NULL, 0) "cuvec.Vector_f", /* tp_name */
@@ -67,7 +106,7 @@ static PyTypeObject PyCuVec_f = {
     (reprfunc)PyCuVec_str<float>,                    /* tp_str */
     0,                                               /* tp_getattro */
     0,                                               /* tp_setattro */
-    0,                                               /* tp_as_buffer */
+    &PyCuVec_as_buffer_f,                            /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT,                              /* tp_flags */
     "cuvec.Vector<f> object",                        /* tp_doc */
     0,                                               /* tp_traverse */
