@@ -7,13 +7,11 @@
 #define _PYCUVEC_H_
 
 #include "Python.h"
-#include "cuvec.cuh"  // CuVec
-#include <cstdlib>    // malloc, free
-#include <functional> // std::multiplies
-#include <numeric>    // std::accumulate
-#include <sstream>    // std::stringstream
-#include <typeinfo>   // typeid
-#include <vector>     // std::vector
+#include "cuvec.cuh" // CuVec
+#include <cstdlib>   // malloc, free
+#include <sstream>   // std::stringstream
+#include <typeinfo>  // typeid
+#include <vector>    // std::vector
 
 template <typename T> struct PyType {
   static const char *format() { return typeid(T).name(); }
@@ -74,6 +72,7 @@ template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyO
     return -1;
   }
   Py_ssize_t ndim = PySequence_Size(shape);
+  if (ndim <= 0) return 0;
   self->shape.resize(ndim);
   PyObject *o;
   for (int i = 0; i < ndim; i++) {
@@ -82,10 +81,8 @@ template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyO
     self->shape[i] = PyLong_AsSsize_t(o);
   }
   self->strides.resize(ndim);
-  for (int i = 0; i < ndim; i++) {
-    self->strides[i] = std::accumulate(self->shape.cbegin() + i + 1, self->shape.cend(),
-                                       (Py_ssize_t)sizeof(T), std::multiplies<Py_ssize_t>());
-  }
+  self->strides[ndim - 1] = (Py_ssize_t)sizeof(T);
+  for (int i = ndim - 2; i >= 0; i--) self->strides[i] = self->shape[i + 1] * self->strides[i + 1];
   self->vec.resize(self->shape[0] * self->strides[0]);
   return 0;
 }
