@@ -51,7 +51,13 @@ template <> struct PyType<double> {
 
 /** classes */
 /// class PyCuVec<T>
-template <class T> struct PyCuVec { PyObject_HEAD CuVec<T> vec; };
+template <class T> struct PyCuVec {
+  PyObject_HEAD
+      /* members */
+      CuVec<T>
+          vec;
+  Py_ssize_t shape;
+};
 /// __init__
 template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyObject *kwds) {
   int length = 0;
@@ -61,17 +67,20 @@ template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyO
   if (length < 0)
     length = 0;
   self->vec.resize(length);
+  self->shape = length;
   return 0;
 }
 /// __del__
 template <class T> static void PyCuVec_dealloc(PyCuVec<T> *self) {
   self->vec.clear();
+  self->vec.shrink_to_fit();
+  self->shape = 0;
   Py_TYPE(self)->tp_free((PyObject *)self);
 }
 /// __str__
 template <class T> static PyObject *PyCuVec_str(PyCuVec<T> *self) {
   std::stringstream s;
-  s << "cuvec.Vector<" << PyType<T>::format() << ">[" << self->vec.size() << "]";
+  s << "cuvec.Vector<" << PyType<T>::format() << ">[" << self->shape << "]";
   std::string c = s.str();
   PyObject *ret = PyUnicode_FromString(c.c_str());
   return ret;
@@ -79,37 +88,33 @@ template <class T> static PyObject *PyCuVec_str(PyCuVec<T> *self) {
 /// buffer interface
 template <class T> static int PyCuVec_getbuffer(PyObject *obj, Py_buffer *view, int flags) {
   if (view == NULL) {
-    PyErr_SetString(PyExc_ValueError, "NULL view in getbuffer");
+    PyErr_SetString(PyExc_BufferError, "NULL view in getbuffer");
+    view->obj = NULL;
     return -1;
   }
 
   PyCuVec<T> *self = (PyCuVec<T> *)obj;
-  Py_ssize_t *shape = (Py_ssize_t *)malloc(sizeof(Py_ssize_t));
-  shape[0] = self->vec.size();
   view->buf = (void *)self->vec.data();
-  view->obj = (PyObject *)self;
-  view->len = self->vec.size() * sizeof(T);
+  view->obj = obj;
+  view->len = self->shape * sizeof(T);
   view->readonly = 0;
   view->itemsize = sizeof(T);
   view->format = (char *)PyType<T>::format();
   view->ndim = 1;
-  view->shape = shape;
+  view->shape = &self->shape;
   view->strides = &view->itemsize;
   view->suboffsets = NULL;
   view->internal = NULL;
 
-  Py_INCREF(self);
+  Py_INCREF(view->obj);
   return 0;
 }
-template <class T> static void PyCuVec_release(PyObject *obj, Py_buffer *view) {
+template <class T> static void PyCuVec_releasebuffer(PyObject *obj, Py_buffer *view) {
   if (view == NULL) {
     PyErr_SetString(PyExc_ValueError, "NULL view in release");
     return;
   }
-  free(view->shape);
-
-  PyCuVec<T> *self = (PyCuVec<T> *)obj;
-  Py_DECREF(self);
+  // Py_DECREF(obj) is automatic
 }
 /// class
 template <class T> struct PyCuVec_t {
@@ -118,7 +123,7 @@ template <class T> struct PyCuVec_t {
   PyCuVec_t()
       : as_buffer({
             (getbufferproc)PyCuVec_getbuffer<T>,
-            (releasebufferproc)PyCuVec_release<T>,
+            (releasebufferproc)PyCuVec_releasebuffer<T>,
         }),
         type_obj({
             PyVarObject_HEAD_INIT(NULL, 0) "cuvec.Vector", /* tp_name */
