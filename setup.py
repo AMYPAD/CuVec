@@ -4,7 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-from miutil import cuinfo
 from setuptools import find_packages
 from setuptools_scm import get_version
 from skbuild import setup as sksetup
@@ -19,6 +18,7 @@ setup_kwargs = {"use_scm_version": True, "packages": find_packages(exclude=["tes
 cmake_args = [f"-DCUVEC_BUILD_VERSION={build_ver}", f"-DPython3_ROOT_DIR={sys.prefix}"]
 
 try:
+    from miutil import cuinfo
     nvcc_arches = {"%d%d" % cuinfo.compute_capability(i) for i in range(cuinfo.num_devices())}
 except Exception as exc:
     log.warning("could not detect CUDA architectures:\n%s", exc)

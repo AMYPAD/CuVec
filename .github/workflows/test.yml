@@ -41,20 +41,23 @@ jobs:
   test:
     if: github.event_name != 'pull_request' || github.head_ref != 'devel'
     runs-on: [self-hosted, cuda, python]
-    name: Test
+    strategy:
+      matrix:
+        python: [3.6, 3.9]
+    name: Test py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
     - name: Run setup-python
-      run: setup-python -p3.7
+      run: setup-python -p${{ matrix.python }}
     - run: pip install -U -e .[dev]
     - run: pytest
     - run: codecov
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     - name: Post Run setup-python
-      run: setup-python -p3.7 -Dr
+      run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
   deploy:
     needs: [check, test]
