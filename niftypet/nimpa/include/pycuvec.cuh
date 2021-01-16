@@ -84,7 +84,7 @@ template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyO
   self->strides.resize(ndim);
   for (int i = 0; i < ndim; i++) {
     self->strides[i] = std::accumulate(self->shape.cbegin() + i + 1, self->shape.cend(),
-                                       (Py_ssize_t)1, std::multiplies<Py_ssize_t>());
+                                       (Py_ssize_t)sizeof(T), std::multiplies<Py_ssize_t>());
   }
   self->vec.resize(self->shape[0] * self->strides[0]);
   return 0;
