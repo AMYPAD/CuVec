@@ -5,12 +5,12 @@
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
 
-#include "cuhelpers.h"
-#include <cstdlib>  // std::size_t
-#include <iostream> // std::cerr
-#include <limits>   // std::numeric_limits
-#include <new>      // std::bad_alloc
-#include <vector>   // std::vector
+#include "cuhelpers.h" // HANDLE_ERROR
+#include <cstdio>      // fprintf
+#include <cstdlib>     // std::size_t
+#include <limits>      // std::numeric_limits
+#include <new>         // std::bad_alloc
+#include <vector>      // std::vector
 
 template <class T> struct CuAlloc {
   typedef T value_type;
@@ -42,8 +42,8 @@ template <class T> struct CuAlloc {
 
 private:
   void report(T *p, std::size_t n, bool alloc = true) const {
-    std::cerr << (alloc ? "Alloc: " : "Dealloc: ") << sizeof(T) * n << " bytes at " << std::hex
-              << std::showbase << reinterpret_cast<void *>(p) << std::dec << std::endl;
+    fprintf(stderr, "d> %s: %zd B at 0x%zx\n", alloc ? "Alloc" : "Free", sizeof(T) * n,
+            (size_t)(void *)p);
   }
 };
 
