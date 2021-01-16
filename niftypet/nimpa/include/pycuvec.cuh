@@ -62,10 +62,8 @@ template <class T> struct PyCuVec {
 template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyObject *kwds) {
   int length = 0;
   static char *kwlist[2] = {(char *)"length", NULL};
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &length))
-    return -1;
-  if (length < 0)
-    length = 0;
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &length)) return -1;
+  if (length < 0) length = 0;
   self->vec.resize(length);
   self->shape = length;
   return 0;

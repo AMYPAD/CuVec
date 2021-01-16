@@ -22,8 +22,7 @@ template <class T> struct CuAlloc {
 #endif
       T *
       allocate(std::size_t n) {
-        if (n > std::numeric_limits<std::size_t>::max() / sizeof(T))
-          throw std::bad_alloc();
+        if (n > std::numeric_limits<std::size_t>::max() / sizeof(T)) throw std::bad_alloc();
 
         T *p;
         HANDLE_ERROR(cudaMallocManaged(&p, n * sizeof(T))); // p = (T *)malloc(n * sizeof(T));
