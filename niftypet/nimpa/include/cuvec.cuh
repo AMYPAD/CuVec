@@ -1,9 +1,10 @@
 /**
- * Provides CuVec (anaologous to std::vector but using CUDA unified memory)
- * Requires C++11 or greater
+ * Pure CUDA/C++11 template header providing `CuVec`
+ * (anaologous to `std::vector` but using CUDA unified memory).
  */
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
+
 #include "cuhelpers.h"
 #include <cstdlib>  // std::size_t
 #include <iostream> // std::cerr

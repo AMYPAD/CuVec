@@ -1,3 +1,8 @@
+/**
+ * Python template header wrapping `CuVec<T>`. Provides:
+ * - `PyCuVec<T> : PyObject`
+ * - `PyCuVec_tp<T>:tp_obj : PyTypeObject`
+ */
 #ifndef _PYCUVEC_H_
 #define _PYCUVEC_H_
 
@@ -52,10 +57,8 @@ template <> struct PyType<double> {
 /** classes */
 /// class PyCuVec<T>
 template <class T> struct PyCuVec {
-  PyObject_HEAD
-      /* members */
-      CuVec<T>
-          vec;
+  PyObject_HEAD;
+  CuVec<T> vec;
   Py_ssize_t shape;
 };
 /// __init__
@@ -115,22 +118,22 @@ template <class T> static int PyCuVec_getbuffer(PyObject *obj, Py_buffer *view, 
 }
 template <class T> static void PyCuVec_releasebuffer(PyObject *obj, Py_buffer *view) {
   if (view == NULL) {
-    PyErr_SetString(PyExc_ValueError, "NULL view in release");
+    PyErr_SetString(PyExc_BufferError, "NULL view in release");
     return;
   }
   // Py_DECREF(obj) is automatic
 }
 /// class
-template <class T> struct PyCuVec_t {
+template <class T> struct PyCuVec_tp {
   const std::string name;
   PyBufferProcs as_buffer;
-  PyTypeObject type_obj;
-  PyCuVec_t()
+  PyTypeObject tp_obj;
+  PyCuVec_tp()
       : name(PyCuVec_t_str<T>()), as_buffer({
                                       (getbufferproc)PyCuVec_getbuffer<T>,
                                       (releasebufferproc)PyCuVec_releasebuffer<T>,
                                   }),
-        type_obj({
+        tp_obj({
             PyVarObject_HEAD_INIT(NULL, 0) name.c_str(), /* tp_name */
             sizeof(PyCuVec<T>),                          /* tp_basicsize */
             0,                                           /* tp_itemsize */
@@ -167,7 +170,7 @@ template <class T> struct PyCuVec_t {
             0,                                           /* tp_dictoffset */
             (initproc)PyCuVec_init<T>,                   /* tp_init */
         }) {
-    type_obj.tp_new = PyType_GenericNew;
+    tp_obj.tp_new = PyType_GenericNew;
   }
 };
 
