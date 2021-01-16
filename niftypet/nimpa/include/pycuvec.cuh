@@ -77,10 +77,16 @@ template <class T> static void PyCuVec_dealloc(PyCuVec<T> *self) {
   self->shape = 0;
   Py_TYPE(self)->tp_free((PyObject *)self);
 }
+// __name__
+template <class T> const std::string PyCuVec_t_str() {
+  std::stringstream s;
+  s << "Vector_" << PyType<T>::format();
+  return s.str();
+}
 /// __str__
 template <class T> static PyObject *PyCuVec_str(PyCuVec<T> *self) {
   std::stringstream s;
-  s << "cuvec.Vector<" << PyType<T>::format() << ">[" << self->shape << "]";
+  s << PyCuVec_t_str<T>() << "(" << self->shape << ")";
   std::string c = s.str();
   PyObject *ret = PyUnicode_FromString(c.c_str());
   return ret;
@@ -118,49 +124,50 @@ template <class T> static void PyCuVec_releasebuffer(PyObject *obj, Py_buffer *v
 }
 /// class
 template <class T> struct PyCuVec_t {
+  std::string name;
   PyBufferProcs as_buffer;
   PyTypeObject type_obj;
   PyCuVec_t()
-      : as_buffer({
-            (getbufferproc)PyCuVec_getbuffer<T>,
-            (releasebufferproc)PyCuVec_releasebuffer<T>,
-        }),
+      : name(PyCuVec_t_str<T>()), as_buffer({
+                                      (getbufferproc)PyCuVec_getbuffer<T>,
+                                      (releasebufferproc)PyCuVec_releasebuffer<T>,
+                                  }),
         type_obj({
-            PyVarObject_HEAD_INIT(NULL, 0) "cuvec.Vector", /* tp_name */
-            sizeof(PyCuVec<T>),                            /* tp_basicsize */
-            0,                                             /* tp_itemsize */
-            (destructor)PyCuVec_dealloc<T>,                /* tp_dealloc */
-            0,                                             /* tp_print */
-            0,                                             /* tp_getattr */
-            0,                                             /* tp_setattr */
-            0,                                             /* tp_reserved */
-            0,                                             /* tp_repr */
-            0,                                             /* tp_as_number */
-            0,                                             /* tp_as_sequence */
-            0,                                             /* tp_as_mapping */
-            0,                                             /* tp_hash  */
-            0,                                             /* tp_call */
-            (reprfunc)PyCuVec_str<T>,                      /* tp_str */
-            0,                                             /* tp_getattro */
-            0,                                             /* tp_setattro */
-            &as_buffer,                                    /* tp_as_buffer */
-            Py_TPFLAGS_DEFAULT,                            /* tp_flags */
-            "cuvec.Vector object",                         /* tp_doc */
-            0,                                             /* tp_traverse */
-            0,                                             /* tp_clear */
-            0,                                             /* tp_richcompare */
-            0,                                             /* tp_weaklistoffset */
-            0,                                             /* tp_iter */
-            0,                                             /* tp_iternext */
-            0,                                             /* tp_methods */
-            0,                                             /* tp_members */
-            0,                                             /* tp_getset */
-            0,                                             /* tp_base */
-            0,                                             /* tp_dict */
-            0,                                             /* tp_descr_get */
-            0,                                             /* tp_descr_set */
-            0,                                             /* tp_dictoffset */
-            (initproc)PyCuVec_init<T>,                     /* tp_init */
+            PyVarObject_HEAD_INIT(NULL, 0) name.c_str(), /* tp_name */
+            sizeof(PyCuVec<T>),                          /* tp_basicsize */
+            0,                                           /* tp_itemsize */
+            (destructor)PyCuVec_dealloc<T>,              /* tp_dealloc */
+            0,                                           /* tp_print */
+            0,                                           /* tp_getattr */
+            0,                                           /* tp_setattr */
+            0,                                           /* tp_reserved */
+            0,                                           /* tp_repr */
+            0,                                           /* tp_as_number */
+            0,                                           /* tp_as_sequence */
+            0,                                           /* tp_as_mapping */
+            0,                                           /* tp_hash  */
+            0,                                           /* tp_call */
+            (reprfunc)PyCuVec_str<T>,                    /* tp_str */
+            0,                                           /* tp_getattro */
+            0,                                           /* tp_setattro */
+            &as_buffer,                                  /* tp_as_buffer */
+            Py_TPFLAGS_DEFAULT,                          /* tp_flags */
+            0,                                           /* tp_doc */
+            0,                                           /* tp_traverse */
+            0,                                           /* tp_clear */
+            0,                                           /* tp_richcompare */
+            0,                                           /* tp_weaklistoffset */
+            0,                                           /* tp_iter */
+            0,                                           /* tp_iternext */
+            0,                                           /* tp_methods */
+            0,                                           /* tp_members */
+            0,                                           /* tp_getset */
+            0,                                           /* tp_base */
+            0,                                           /* tp_dict */
+            0,                                           /* tp_descr_get */
+            0,                                           /* tp_descr_set */
+            0,                                           /* tp_dictoffset */
+            (initproc)PyCuVec_init<T>,                   /* tp_init */
         }) {
     type_obj.tp_new = PyType_GenericNew;
   }
