@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+set(_supported_components improc)
+
+foreach(_comp ${AMYPAD@CMAKE_PROJECT_NAME@_FIND_COMPONENTS})
+  if (NOT _comp IN_LIST _supported_components)
+    set(AMYPAD@CMAKE_PROJECT_NAME@_FOUND False)
+    set(AMYPAD@CMAKE_PROJECT_NAME@_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+    message(STATUS "Unsupported component: ${_comp}")
+  endif()
+  include("${CMAKE_CURRENT_LIST_DIR}/AMYPAD${_comp}Targets.cmake")
+endforeach()

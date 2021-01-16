@@ -1,9 +1,12 @@
 /**
- * CUDA/C++11 extension vector for Python
+ * Unifying Python/C++/CUDA memory.
+ *
+ * Python buffered array -> C++11 `std::vector` -> CUDA managed memory.
+ *
+ * Copyright (2021) Casper da Costa-Luis
  */
 #include "Python.h"
-#include "pycuvec.cuh"
-
+#include "pycuvec.cuh" // PyCuVec, PyCuVec_tp
 /** functions */
 /// required before accessing on host
 static PyObject *dev_sync(PyObject *self, PyObject *args) {

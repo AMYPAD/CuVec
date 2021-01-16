@@ -1,0 +1,95 @@
+name: Test
+on: [push, pull_request]
+jobs:
+  check:
+    if: github.event_name != 'push' || github.ref != 'refs/heads/devel'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.6, 3.9]
+    name: Check py${{ matrix.python }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: set PYSHA
+      run: echo "PYSHA=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit|${{ env.PYSHA }}|${{ hashFiles('.pre-commit-config.yaml') }}
+    - name: dependencies
+      run: |
+        pip install -U pre-commit
+        sudo apt-get install -yqq clang-format
+    - uses: reviewdog/action-setup@v1
+    - if: github.event_name != 'schedule'
+      name: comment
+      run: |
+        if [[ $EVENT == pull_request ]]; then
+          REPORTER=github-pr-review
+        else
+          REPORTER=github-check
+        fi
+        pre-commit run -a todo | reviewdog -efm="%f:%l: %m" -name=TODO -tee -reporter=$REPORTER -filter-mode nofilter
+        pre-commit run -a flake8 | reviewdog -f=pep8 -name=flake8 -tee -reporter=$REPORTER -filter-mode nofilter
+      env:
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        EVENT: ${{ github.event_name }}
+    - run: pre-commit run -a --show-diff-on-failure
+  test:
+    if: github.event_name != 'pull_request' || github.head_ref != 'devel'
+    runs-on: [self-hosted, cuda, python]
+    name: Test
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Run setup-python
+      run: setup-python -p3.7
+    - run: pip install -U -e .[dev]
+    - run: pytest
+    - run: codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Post Run setup-python
+      run: setup-python -p3.7 -Dr
+      if: ${{ always() }}
+  deploy:
+    needs: [check, test]
+    name: PyPI Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+    - id: dist
+      uses: casperdcl/deploy-pypi@v2
+      with:
+        requirements: twine setuptools wheel setuptools_scm[toml] scikit-build
+        build: sdist
+        password: ${{ secrets.PYPI_TOKEN }}
+        upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
+    - name: Changelog
+      run: git log --pretty='format:%d%n- %s%n%b---' $(git tag --sort=v:refname | tail -n2 | head -n1)..HEAD > _CHANGES.md
+    - if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: cuvec ${{ github.ref }} beta
+        body_path: _CHANGES.md
+        draft: true
+    - if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/${{ steps.dist.outputs.targz }}
+        asset_name: ${{ steps.dist.outputs.targz }}
+        asset_content_type: application/gzip

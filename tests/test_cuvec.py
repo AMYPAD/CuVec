@@ -1,8 +1,7 @@
 import numpy as np
-from pytest import importorskip, mark
+from pytest import mark
 
-cuvec = importorskip("niftypet.nimpa.cuvec")
-improc = importorskip("niftypet.nimpa.prc.improc")
+from cuvec import cuvec
 
 
 @mark.parametrize("vtype", list("bBhHiIqQfd"))

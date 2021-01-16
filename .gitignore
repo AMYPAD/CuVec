@@ -1,0 +1,17 @@
+*.py[co]
+__pycache__/
+
+# build
+MANIFEST
+*.so
+/cuvec/cmake/
+/cuvec/_dist_ver.py
+/build/
+/dist/
+/_skbuild/
+/_cmake_test_compile/
+/*.egg*/
+/.eggs/
+
+/.coverage*
+/coverage.xml
