@@ -18,6 +18,21 @@ static PyMethodDef cuvec_methods[] = {
     {NULL, NULL, 0, NULL} // Sentinel
 };
 
+/** classes */
+static PyCuVec_t<char> Vector_c;
+static PyCuVec_t<signed char> Vector_b;
+static PyCuVec_t<unsigned char> Vector_B;
+// #ifdef _Bool
+// #endif
+static PyCuVec_t<short> Vector_h;
+static PyCuVec_t<unsigned short> Vector_H;
+static PyCuVec_t<int> Vector_i;
+static PyCuVec_t<unsigned int> Vector_I;
+static PyCuVec_t<long long> Vector_q;
+static PyCuVec_t<unsigned long long> Vector_Q;
+static PyCuVec_t<float> Vector_f;
+static PyCuVec_t<double> Vector_d;
+
 /** module */
 static struct PyModuleDef cuvec_module = {
     PyModuleDef_HEAD_INIT,
@@ -33,19 +48,16 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   if (m == NULL)
     return NULL;
 
-  static PyCuVec_t<char> Vector_c;
   if (PyType_Ready(&Vector_c.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_c.type_obj);
   PyModule_AddObject(m, "Vector_c", (PyObject *)&Vector_c.type_obj);
 
-  static PyCuVec_t<signed char> Vector_b;
   if (PyType_Ready(&Vector_b.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_b.type_obj);
   PyModule_AddObject(m, "Vector_b", (PyObject *)&Vector_b.type_obj);
 
-  static PyCuVec_t<unsigned char> Vector_B;
   if (PyType_Ready(&Vector_B.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_B.type_obj);
@@ -54,49 +66,41 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   // #ifdef _Bool
   // #endif
 
-  static PyCuVec_t<short> Vector_h;
   if (PyType_Ready(&Vector_h.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_h.type_obj);
   PyModule_AddObject(m, "Vector_h", (PyObject *)&Vector_h.type_obj);
 
-  static PyCuVec_t<unsigned short> Vector_H;
   if (PyType_Ready(&Vector_H.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_H.type_obj);
   PyModule_AddObject(m, "Vector_H", (PyObject *)&Vector_H.type_obj);
 
-  static PyCuVec_t<int> Vector_i;
   if (PyType_Ready(&Vector_i.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_i.type_obj);
   PyModule_AddObject(m, "Vector_i", (PyObject *)&Vector_i.type_obj);
 
-  static PyCuVec_t<unsigned int> Vector_I;
   if (PyType_Ready(&Vector_I.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_I.type_obj);
   PyModule_AddObject(m, "Vector_I", (PyObject *)&Vector_I.type_obj);
 
-  static PyCuVec_t<long long> Vector_q;
   if (PyType_Ready(&Vector_q.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_q.type_obj);
   PyModule_AddObject(m, "Vector_q", (PyObject *)&Vector_q.type_obj);
 
-  static PyCuVec_t<unsigned long long> Vector_Q;
   if (PyType_Ready(&Vector_Q.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_Q.type_obj);
   PyModule_AddObject(m, "Vector_Q", (PyObject *)&Vector_Q.type_obj);
 
-  static PyCuVec_t<float> Vector_f;
   if (PyType_Ready(&Vector_f.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_f.type_obj);
   PyModule_AddObject(m, "Vector_f", (PyObject *)&Vector_f.type_obj);
 
-  static PyCuVec_t<double> Vector_d;
   if (PyType_Ready(&Vector_d.type_obj) < 0)
     return NULL;
   Py_INCREF(&Vector_d.type_obj);

@@ -26,7 +26,7 @@ template <class T> struct CuAlloc {
           throw std::bad_alloc();
 
         T *p;
-        HANDLE_ERROR(cudaMallocManaged(&p, n * sizeof(T)));
+        HANDLE_ERROR(cudaMallocManaged(&p, n * sizeof(T))); // p = (T *)malloc(n * sizeof(T));
         if (p) {
           report(p, n);
           return p;
@@ -37,7 +37,7 @@ template <class T> struct CuAlloc {
 
   void deallocate(T *p, std::size_t n) noexcept {
     report(p, n, 0);
-    HANDLE_ERROR(cudaFree(p));
+    HANDLE_ERROR(cudaFree(p)); // free(p);
   }
 
 private:
