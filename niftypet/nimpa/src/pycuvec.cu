@@ -106,5 +106,12 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   Py_INCREF(&Vector_d.type_obj);
   PyModule_AddObject(m, Vector_d.name.c_str(), (PyObject *)&Vector_d.type_obj);
 
+  PyObject *all = Py_BuildValue("[s, s, s, s, s, s, s, s, s, s, s, s]", "dev_sync", "Vector_c",
+                                "Vector_b", "Vector_B", "Vector_h", "Vector_H", "Vector_i",
+                                "Vector_I", "Vector_q", "Vector_Q", "Vector_f", "Vector_d");
+  if (all == NULL)
+    return NULL;
+  PyModule_AddObject(m, "__all__", all);
+
   return m;
 }

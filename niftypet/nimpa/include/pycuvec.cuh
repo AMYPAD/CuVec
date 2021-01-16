@@ -124,7 +124,7 @@ template <class T> static void PyCuVec_releasebuffer(PyObject *obj, Py_buffer *v
 }
 /// class
 template <class T> struct PyCuVec_t {
-  std::string name;
+  const std::string name;
   PyBufferProcs as_buffer;
   PyTypeObject type_obj;
   PyCuVec_t()
