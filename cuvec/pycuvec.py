@@ -1,4 +1,5 @@
 """Thin wrappers around `cuvec` C++/CUDA module"""
+import array
 from collections.abc import Sequence
 
 import numpy as np
@@ -17,6 +18,7 @@ from .cuvec import (
     Vector_Q,
 )
 
+typecodes = [i for i in array.typecodes if i not in "ulL"]
 vec_types = {
     np.dtype('int8'): Vector_b,
     np.dtype('uint8'): Vector_B,

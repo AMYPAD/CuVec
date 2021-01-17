@@ -4,8 +4,9 @@ from pytest import mark
 import cuvec
 
 
-@mark.parametrize("vtype", list("bBhHiIqQfd"))
+@mark.parametrize("vtype", list(cuvec.typecodes))
 def test_Vector_asarray(vtype):
+    """vtype(char): any of bBhHiIqQfd"""
     v = getattr(cuvec.cuvec, f"Vector_{vtype}")((1, 2, 3))
     assert str(v) == f"Vector_{vtype}((1, 2, 3))"
     a = np.asarray(v)

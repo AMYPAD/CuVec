@@ -20,8 +20,8 @@ __all__ = [
     'cmake_prefix', 'include_path',
     # functions
     'dev_sync', 'vector',
-    # classes
-] # yapf: disable
+    # data
+    'typecodes'] # yapf: disable
 
 from pathlib import Path
 
@@ -29,7 +29,7 @@ from pkg_resources import resource_filename
 
 try:
     from .cuvec import dev_sync
-    from .pycuvec import vector
+    from .pycuvec import typecodes, vector
 except ImportError as err:
     from warnings import warn
     warn(str(err), UserWarning)
