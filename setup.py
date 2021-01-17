@@ -18,7 +18,8 @@ setup_kwargs = {"use_scm_version": True, "packages": find_packages(exclude=["tes
 try:
     from miutil import cuinfo
     from skbuild import setup as sksetup
-    nvcc_arches = {"%d%d" % cuinfo.compute_capability(i) for i in range(cuinfo.num_devices())}
+    nvcc_arches = map(cuinfo.compute_capability, range(cuinfo.num_devices()))
+    nvcc_arches = {"%d%d" % i for i in nvcc_arches if i >= (3, 5)}
 except Exception as exc:
     log.warning("could not detect CUDA architectures:\n%s", exc)
     setup(**setup_kwargs)
