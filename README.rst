@@ -1,7 +1,7 @@
 cuvec
 =====
 
-Unifying Python/C++/CUDA memory: Python buffered array -> C++11 ``std::vector`` -> CUDA managed memory.
+Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 ``std::vector`` <-> CUDA managed memory.
 
 |Version| |Downloads| |Py-Versions| |Licence| |Tests| |Coverage|
 
