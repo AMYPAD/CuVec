@@ -54,8 +54,6 @@ jobs:
     - run: pip install -U -e .[dev]
     - run: pytest
     - run: codecov
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
