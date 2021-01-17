@@ -82,7 +82,7 @@ template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyO
   self->strides.resize(ndim);
   self->strides[ndim - 1] = (Py_ssize_t)sizeof(T);
   for (int i = ndim - 2; i >= 0; i--) self->strides[i] = self->shape[i + 1] * self->strides[i + 1];
-  self->vec.resize(self->shape[0] * self->strides[0]);
+  self->vec.resize(self->shape[0] * (self->strides[0] / sizeof(T)));
   return 0;
 }
 /// __del__
