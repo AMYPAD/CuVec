@@ -1,12 +1,12 @@
 import numpy as np
 from pytest import mark
 
-from cuvec import cuvec
+import cuvec
 
 
 @mark.parametrize("vtype", list("bBhHiIqQfd"))
 def test_Vector_asarray(vtype):
-    v = getattr(cuvec, f"Vector_{vtype}")((1, 2, 3))
+    v = getattr(cuvec.cuvec, f"Vector_{vtype}")((1, 2, 3))
     assert str(v) == f"Vector_{vtype}((1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
@@ -20,7 +20,16 @@ def test_Vector_asarray(vtype):
 
 def test_Vector_strides():
     shape = 127, 344, 344
-    v = cuvec.Vector_f(shape)
+    v = cuvec.cuvec.Vector_f(shape)
     a = np.asarray(v)
     assert a.shape == shape
     assert a.strides == (473344, 1376, 4)
+
+
+def test_vector():
+    shape = 127, 344, 344
+    a = np.asarray(cuvec.vector(shape, "i"))
+    assert a.dtype == np.int32
+
+    a = np.asarray(cuvec.vector(shape, "d"))
+    assert a.dtype == np.float64
