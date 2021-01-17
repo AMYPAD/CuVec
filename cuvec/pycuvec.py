@@ -1,6 +1,5 @@
 """Thin wrappers around `cuvec` C++/CUDA module"""
 import array
-from collections.abc import Sequence
 
 import numpy as np
 
@@ -31,7 +30,3 @@ vec_types = {
     np.dtype('uint64'): Vector_Q,
     np.dtype('float32'): Vector_f,
     np.dtype('float64'): Vector_d}
-
-
-def vector(shape, dtype=np.float32):
-    return vec_types[np.dtype(dtype)](shape if isinstance(shape, Sequence) else (shape,))

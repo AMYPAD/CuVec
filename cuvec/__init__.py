@@ -19,9 +19,9 @@ __all__ = [
     # config
     'cmake_prefix', 'include_path',
     # functions
-    'dev_sync', 'vector',
+    'dev_sync', 'from_numpy', 'zeros',
     # data
-    'typecodes'] # yapf: disable
+    'typecodes', 'vec_types'] # yapf: disable
 
 from pathlib import Path
 
@@ -29,11 +29,12 @@ from pkg_resources import resource_filename
 
 try:
     from .cuvec import dev_sync
-    from .pycuvec import typecodes, vector
 except ImportError as err:
     from warnings import warn
     warn(str(err), UserWarning)
-    dev_sync = vector = None
+else:
+    from .helpers import from_numpy, zeros
+    from .pycuvec import typecodes, vec_types
 
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`
 cmake_prefix = Path(resource_filename(__name__, "cmake")).resolve()
