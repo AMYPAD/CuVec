@@ -1,0 +1,7 @@
+{
+  "title": "cuvec: Unifying Python/C++/CUDA memory",
+  "keywords": ["Python", "C", "buffer", "vector", "array", "CUDA"],
+  "creators": [
+    {"name": "da Costa-Luis, Casper O.", "orcid": "0000-0002-7211-1557",
+     "affiliation": "University College London, King's College London"}]
+}

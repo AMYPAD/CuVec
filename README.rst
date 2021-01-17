@@ -3,7 +3,7 @@ cuvec
 
 Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 ``std::vector`` <-> CUDA managed memory.
 
-|Version| |Downloads| |Py-Versions| |Licence| |Tests| |Coverage|
+|Version| |Downloads| |Py-Versions| |DOI| |Licence| |Tests| |Coverage|
 
 Why
 ~~~
@@ -112,13 +112,15 @@ At this point any external project may include ``cuvec`` as follows
 Licence
 ~~~~~~~
 
-|Licence|
+|Licence| |DOI|
 
 Copyright 2021
 
 - `Casper O. da Costa-Luis <https://github.com/casperdcl>`__ @ University College London/King's College London
 - `Contributors <https://github.com/AMYPAD/cuvec/graphs/contributors>`__
 
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg
+   :target: https://doi.org/10.5281/zenodo.4446211
 .. |Licence| image:: https://img.shields.io/pypi/l/cuvec.svg?label=licence
    :target: https://github.com/AMYPAD/cuvec/blob/master/LICENCE
 .. |Tests| image:: https://img.shields.io/github/workflow/status/AMYPAD/cuvec/Test?logo=GitHub
