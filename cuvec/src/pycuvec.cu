@@ -96,16 +96,6 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   Py_INCREF(&Vector_d.tp_obj);
   PyModule_AddObject(m, Vector_d.name.c_str(), (PyObject *)&Vector_d.tp_obj);
 
-  /*
-  PyObject *all = Py_BuildValue(
-      "[s, s, s, s, s, s, s, s, s, s, s, s]", "dev_sync", Vector_c.name.c_str(),
-      Vector_b.name.c_str(), Vector_B.name.c_str(), Vector_h.name.c_str(), Vector_H.name.c_str(),
-      Vector_i.name.c_str(), Vector_I.name.c_str(), Vector_q.name.c_str(), Vector_Q.name.c_str(),
-      Vector_f.name.c_str(), Vector_d.name.c_str());
-  if (all == NULL) return NULL;
-  PyModule_AddObject(m, "__all__", all);
-  */
-
   PyObject *author = Py_BuildValue("s", "Casper da Costa-Luis (https://github.com/casperdcl)");
   if (author == NULL) return NULL;
   PyModule_AddObject(m, "__author__", author);

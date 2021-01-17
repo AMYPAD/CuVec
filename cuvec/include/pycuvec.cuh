@@ -58,8 +58,7 @@ template <> struct PyType<double> {
 /** classes */
 /// class PyCuVec<T>
 template <class T> struct PyCuVec {
-  PyObject_HEAD;
-  CuVec<T> vec;
+  PyObject_HEAD CuVec<T> vec; // PyObject_HEAD has an implicit `;` after it
   std::vector<Py_ssize_t> shape;
   std::vector<Py_ssize_t> strides;
 };
