@@ -27,8 +27,13 @@ from pathlib import Path
 
 from pkg_resources import resource_filename
 
-from .cuvec import dev_sync
-from .pycuvec import vector
+try:
+    from .cuvec import dev_sync
+    from .pycuvec import vector
+except ImportError as err:
+    from warnings import warn
+    warn(str(err), UserWarning)
+    dev_sync = vector = None
 
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`
 cmake_prefix = Path(resource_filename(__name__, "cmake")).resolve()
