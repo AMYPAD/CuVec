@@ -1,7 +1,10 @@
 /**
  * Python template header wrapping `CuVec<T>`. Provides:
- * - `PyCuVec<T> : PyObject`
- * - `PyCuVec_tp<T>:tp_obj : PyTypeObject`
+ *     struct PyCuVec<T> : PyObject;
+ *     PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape);
+ *     PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
+ *     PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
+ *     PyTypeObject PyCuVec_tp<T>.tp_obj;
  */
 #ifndef _PYCUVEC_H_
 #define _PYCUVEC_H_
@@ -192,7 +195,39 @@ template <class T> struct PyCuVec_tp {
             (initproc)PyCuVec_init<T>,                   /* tp_init */
         }) {
     tp_obj.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&tp_obj) < 0) fprintf(stderr, "error: count not finalise\n");
   }
 };
+
+/// Helper functions for creating `PyCuVec<T> *`s in C++ for casting to CPython API `PyObject *`s
+template <class T> PyCuVec<T> *PyCuVec_new() {
+  static PyCuVec_tp<T> Vector_T;
+  if (PyType_Ready(&Vector_T.tp_obj) < 0) return NULL;
+  return (PyCuVec<T> *)Vector_T.tp_obj.tp_alloc(&Vector_T.tp_obj, 0);
+}
+template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
+  PyCuVec<T> *self = PyCuVec_new<T>();
+  size_t ndim = shape.size();
+  self->shape = shape;
+  self->strides.resize(ndim);
+  self->strides[ndim - 1] = (Py_ssize_t)sizeof(T);
+  for (int i = ndim - 2; i >= 0; i--) self->strides[i] = self->shape[i + 1] * self->strides[i + 1];
+  self->vec.resize(self->shape[0] * (self->strides[0] / sizeof(T)));
+  return self;
+}
+template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
+  PyCuVec<T> *self = PyCuVec_new<T>();
+  self->vec.resize(other->vec.size());
+  self->shape = other->shape;
+  self->strides = other->strides;
+  return self;
+}
+template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
+  PyCuVec<T> *self = PyCuVec_new<T>();
+  self->vec = other->vec;
+  self->shape = other->shape;
+  self->strides = other->strides;
+  return self;
+}
 
 #endif // _PYCUVEC_H_
