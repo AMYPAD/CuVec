@@ -78,6 +78,7 @@ template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyO
     o = PySequence_ITEM(shape, i);
     if (!o) return -1;
     self->shape[i] = PyLong_AsSsize_t(o);
+    Py_DECREF(o);
   }
   self->strides.resize(ndim);
   self->strides[ndim - 1] = (Py_ssize_t)sizeof(T);
