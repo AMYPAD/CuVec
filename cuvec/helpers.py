@@ -1,24 +1,55 @@
 """Useful helper functions."""
-from collections.abc import Sequence
+import logging
+from textwrap import dedent
 
 import numpy as np
 
-from .pycuvec import vec_types
+from .pycuvec import cu_copy, cu_zeros, vec_types
+
+log = logging.getLogger(__name__)
+
+
+class CuVec(np.ndarray):
+    """
+    A `numpy.ndarray` compatible view with a `cuvec` member containing the
+    underlying `cuvec.Vector_*` object (for use in CPython API function calls).
+    """
+    _Vector_types = tuple(vec_types.values())
+
+    def __new__(cls, arr, cuvec=None):
+        """arr: `cuvec.CuVec`, raw `cuvec.Vector_*`, or `numpy.ndarray`"""
+        if isinstance(arr, CuVec._Vector_types):
+            log.debug("wrap raw %s", type(arr))
+            obj = np.asarray(arr).view(cls)
+            obj.cuvec = arr
+            return obj
+        if isinstance(arr, CuVec):
+            log.debug("new view")
+            obj = np.asarray(arr).view(cls)
+            obj.cuvec = arr.cuvec
+            return obj
+        if isinstance(arr, np.ndarray):
+            log.debug("copy")
+            return copy(arr)
+        raise NotImplementedError(
+            dedent("""\
+            Not intended for explicit construction
+            (do not do `cuvec.CuVec((42, 1337))`;
+            instead use `cuvec.zeros((42, 137))`"""))
 
 
 def zeros(shape, dtype="float32"):
     """
-    Returns a new `Vector_*` of the specified shape and data type
-    (`cuvec` equivalent of `numpy.zeros`).
+    Returns a `cuvec.CuVec` view of a new `numpy.ndarray`
+    of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
     """
-    return vec_types[np.dtype(dtype)](shape if isinstance(shape, Sequence) else (shape,))
+    return CuVec(cu_zeros(shape, dtype))
 
 
-def from_numpy(arr):
+def copy(arr):
     """
-    Returns a new `Vector_*` of the specified shape and data type
+    Returns a `cuvec.CuVec` view of a new `numpy.ndarray`
+    with data copied from the specified `arr`
     (`cuvec` equivalent of `numpy.copy`).
     """
-    res = zeros(arr.shape, arr.dtype)
-    np.asarray(res)[:] = arr[:]
-    return res
+    return CuVec(cu_copy(arr))

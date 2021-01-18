@@ -18,8 +18,10 @@ except ImportError: # pragma: nocover
 __all__ = [
     # config
     'cmake_prefix', 'include_path',
+    # classes
+    'CuVec',
     # functions
-    'dev_sync', 'from_numpy', 'zeros',
+    'dev_sync', 'copy', 'zeros', 'cu_copy', 'cu_zeros',
     # data
     'typecodes', 'vec_types'] # yapf: disable
 
@@ -29,12 +31,12 @@ from pkg_resources import resource_filename
 
 try:
     from .cuvec import dev_sync
-except ImportError as err:
+except ImportError as err: # pragma: no cover
     from warnings import warn
     warn(str(err), UserWarning)
 else:
-    from .helpers import from_numpy, zeros
-    from .pycuvec import typecodes, vec_types
+    from .helpers import CuVec, copy, zeros
+    from .pycuvec import cu_copy, cu_zeros, typecodes, vec_types
 
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`
 cmake_prefix = Path(resource_filename(__name__, "cmake")).resolve()

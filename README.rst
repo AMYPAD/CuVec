@@ -8,12 +8,23 @@ Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 ``std::vector``
 Why
 ~~~
 
-Other libraries which expose functionality to convert/pass data formats between these different language spaces tend to be bloated, unnecessarily complex, and relatively unmaintainable. By comparison, ``cuvec`` uses the latest functionality of Python, C++, and CUDA to keep its code (and yours) as succinct as possible. "Native" containers are exposed so your code follows the conventions of your language. Want something which works like a ``numpy.ndarray``? Not a problem. Want to convert it to a ``std::vector``? Or perhaps a raw ``float *`` to use in a CUDA kernel? Trivial.
+Data should be manipulated using the existing functionality and design paradigms of each programming language. Python code should be Pythonic. CUDA code should be... CUDActic? C code should be... er, Clean.
+
+However, in practice converting between data formats across languages can be a pain.
+
+Other libraries which expose functionality to convert/pass data formats between these different language spaces tend to be bloated, unnecessarily complex, and relatively unmaintainable. By comparison, ``cuvec`` uses the latest functionality of Python, C/C++11, and CUDA to keep its code (and yours) as succinct as possible. "Native" containers are exposed so your code follows the conventions of your language. Want something which works like a ``numpy.ndarray``? Not a problem. Want to convert it to a ``std::vector``? Or perhaps a raw ``float *`` to use in a CUDA kernel? Trivial.
 
 Non objectives
 --------------
 
-Anything to do with mathematical functionality. Even something as simple as setting element values is left to the user and/or pre-existing features - simply use ``numpy.ndarray.fill()`` (Python/Numpy), ``std::fill()`` (C++), or ``memset()`` (C/CUDA).
+Anything to do with mathematical functionality. The aim is to expose functionality, not create it.
+
+Even something as simple as setting element values is left to the user and/or pre-existing features - for example:
+
+- Python: ``arr[:] = value``
+- Numpy: ``arr.fill(value)``
+- C++: ``std::fill(vec.begin(), vec.end(), value)``
+- C/CUDA: ``memset(vec.data(), value, sizeof(T) * vec.size())``
 
 Install
 ~~~~~~~
@@ -38,7 +49,10 @@ Creating
 .. code:: python
 
     import cuvec
-    vec = cuvec.vector((1337, 42), "float32")
+    arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
+    # print(sum(arr))
+    # some_numpy_func(arr)
+    # some_cpython_api_func(arr.cuvec)
 
 **CPython API**
 
@@ -66,6 +80,14 @@ Converting
 
 The following involve no memory copies.
 
+**Python** to **CPython API**
+
+.. code:: python
+
+    # import cuvec, my_custom_lib
+    # arr = cuvec.zeros((1337, 42), "float32")
+    my_custom_lib.some_cpython_api_func(arr.cuvec)
+
 **CPython API** to **C++**
 
 .. code:: cpp
@@ -81,7 +103,7 @@ The following involve no memory copies.
 
     /// input: `CuVec<type> vec`
     /// output: `type *arr`
-    float *arr = vec->data(); // pointer to `cudaMallocManaged()` data
+    float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
 
 External CMake Projects
 ~~~~~~~~~~~~~~~~~~~~~~~
