@@ -105,8 +105,20 @@ The following involve no memory copies.
     /// output: `type *arr`
     float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
 
+External C++/CUDA Projects
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``cuvec`` is a header-only library so simply ``#include "pycuvec.cuh"``
+(or ``#include "cuvec.cuh"``). You can find the location of the headers using:
+
+.. code:: python
+
+    python -c "import cuvec; print(cuvec.include_path)"
+
 External CMake Projects
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+This is likely unnecessary (see above).
 
 The raw C++/CUDA libraries may be included in external projects using ``cmake``.
 Simply build the project and use ``find_package(AMYPADcuvec)``.
