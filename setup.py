@@ -24,7 +24,7 @@ try:
     if nvcc_arches:
         cmake_args.append("-DCMAKE_CUDA_ARCHITECTURES=" + " ".join(sorted(nvcc_arches)))
 except Exception as exc:
-    log.warning("could not detect CUDA architectures:\n%s", exc)
+    log.warning("Import or CUDA device detection error:\n%s", exc)
     setup(**setup_kwargs)
 else:
     for i in (Path(__file__).resolve().parent / "_skbuild").rglob("CMakeCache.txt"):
