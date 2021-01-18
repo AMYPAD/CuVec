@@ -1,13 +1,13 @@
 import numpy as np
 from pytest import mark
 
-import cuvec
+import cuvec as cu
 
 
-@mark.parametrize("tp", list(cuvec.typecodes))
+@mark.parametrize("tp", list(cu.typecodes))
 def test_Vector_asarray(tp):
     """tp(char): any of bBhHiIqQfd"""
-    v = getattr(cuvec.cuvec, f"Vector_{tp}")((1, 2, 3))
+    v = getattr(cu.cuvec, f"Vector_{tp}")((1, 2, 3))
     assert str(v) == f"Vector_{tp}((1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
@@ -21,7 +21,7 @@ def test_Vector_asarray(tp):
 
 def test_Vector_strides():
     shape = 127, 344, 344
-    v = cuvec.cuvec.Vector_f(shape)
+    v = cu.cuvec.Vector_f(shape)
     a = np.asarray(v)
     assert a.shape == shape
     assert a.strides == (473344, 1376, 4)
