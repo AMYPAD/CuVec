@@ -108,7 +108,7 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   if (date == NULL) return NULL;
   PyModule_AddObject(m, "__date__", date);
 
-  PyObject *version = Py_BuildValue("s", "0.1.0");
+  PyObject *version = Py_BuildValue("s", "0.2.0");
   if (version == NULL) return NULL;
   PyModule_AddObject(m, "__version__", version);
 
