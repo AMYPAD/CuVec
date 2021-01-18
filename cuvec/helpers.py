@@ -16,9 +16,9 @@ class CuVec(np.ndarray):
     """
     _Vector_types = tuple(vec_types.values())
 
-    def __new__(cls, arr, cuvec=None):
+    def __new__(cls, arr, raw=None):
         """arr: `cuvec.CuVec`, raw `cuvec.Vector_*`, or `numpy.ndarray`"""
-        if isinstance(arr, CuVec._Vector_types):
+        if isinstance(arr, CuVec._Vector_types) or raw:
             log.debug("wrap raw %s", type(arr))
             obj = np.asarray(arr).view(cls)
             obj.cuvec = arr
@@ -53,3 +53,15 @@ def copy(arr):
     (`cuvec` equivalent of `numpy.copy`).
     """
     return CuVec(cu_copy(arr))
+
+
+def asarray(cuvec):
+    """
+    Returns `CuVec(cuvec, raw=True)`.
+
+    Intended to wrap CPython API functions returning `PyCuVec<T> *` PyObjects.
+    This is needed since `CuVec(cuvec, False)` won't work if
+    `isinstance(cuvec, CuVec) == False` due to external libraries
+    `#include "pycuvec.cuh"` making a distinct type object.
+    """
+    return CuVec(cuvec, raw=True)

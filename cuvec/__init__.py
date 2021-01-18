@@ -21,7 +21,7 @@ __all__ = [
     # classes
     'CuVec',
     # functions
-    'dev_sync', 'copy', 'zeros', 'cu_copy', 'cu_zeros',
+    'dev_sync', 'copy', 'zeros', 'asarray', 'cu_copy', 'cu_zeros',
     # data
     'typecodes', 'vec_types'] # yapf: disable
 
@@ -35,7 +35,7 @@ except ImportError as err: # pragma: no cover
     from warnings import warn
     warn(str(err), UserWarning)
 else:
-    from .helpers import CuVec, copy, zeros
+    from .helpers import CuVec, asarray, copy, zeros
     from .pycuvec import cu_copy, cu_zeros, typecodes, vec_types
 
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`

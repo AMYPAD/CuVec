@@ -49,6 +49,7 @@ def test_CuVec_creation(caplog):
     assert not caplog.record_tuples
     w = cuvec.CuVec(v)
     assert [i[1:] for i in caplog.record_tuples] == [(10, "new view")]
+    assert cuvec.asarray(w.cuvec).cuvec == w.cuvec
 
     caplog.clear()
     assert w[0, 0, 0] == 1
