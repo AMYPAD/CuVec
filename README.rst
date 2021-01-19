@@ -150,6 +150,28 @@ At this point any external project may include ``cuvec`` as follows
     add_executable(myexe ...)
     target_link_libraries(myexe PRIVATE AMYPAD::cuvec)
 
+Contributing
+~~~~~~~~~~~~
+
+Install in "development/editable" mode including dev/test dependencies:
+
+.. code:: sh
+
+    git clone https://github.com/AMYPAD/cuvec && cd cuvec
+    pip install -e .[dev]
+
+Alternatively, if ``cmake`` and a generator (such as ``make`` or ``ninja``) are available, then ``setup.py build`` and ``develop`` can be explicitly called; optionally with extra ``cmake`` and generator arguments:
+
+.. code:: sh
+
+    python setup.py build develop easy_install cuvec[dev] -- -DCUVEC_DEBUG:BOOL=ON -- -j8
+
+Once installed in development/editable mode, tests may be run using:
+
+.. code:: sh
+
+    pytest
+
 Licence
 ~~~~~~~
 
