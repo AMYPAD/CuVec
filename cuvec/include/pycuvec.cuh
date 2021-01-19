@@ -66,9 +66,10 @@ template <class T> struct PyCuVec {
   std::vector<Py_ssize_t> strides;
 };
 /// __init__
-template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyObject *kwds) {
+template <class T> static int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyObject *kwargs) {
   PyObject *shape;
-  if (!PyArg_ParseTuple(args, "O", &shape)) return -1;
+  static const char *kwds[] = {"shape", NULL};
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|i", (char **)kwds, &shape)) return -1;
   if (!PySequence_Check(shape)) {
     PyErr_SetString(PyExc_ValueError, "First argument must be shape (sequence)");
     return -1;

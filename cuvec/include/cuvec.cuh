@@ -42,8 +42,10 @@ template <class T> struct CuAlloc {
 
 private:
   void report(T *p, std::size_t n, bool alloc = true) const {
+#ifdef CUVEC_DEBUG
     fprintf(stderr, "d> %s: %zd B at 0x%zx\n", alloc ? "Alloc" : "Free", sizeof(T) * n,
             (size_t)(void *)p);
+#endif
   }
 };
 

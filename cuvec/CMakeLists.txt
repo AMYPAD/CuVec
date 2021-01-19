@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 if("${CUVEC_BUILD_VERSION}" STREQUAL "")
-set(CUVEC_BUILD_VERSION 1 CACHE STRING "version" FORCE)
+  set(CUVEC_BUILD_VERSION 1 CACHE STRING "version" FORCE)
 endif()
 project(cuvec LANGUAGES C CXX CUDA VERSION "${CUVEC_BUILD_VERSION}")
 
@@ -10,18 +10,23 @@ cmake_policy(SET CMP0104 NEW)  # CMAKE_CUDA_ARCHITECTURES
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED) # NumPy
 find_package(CUDAToolkit REQUIRED)
 if(SKBUILD)
-find_package(PythonExtensions REQUIRED)
-set(LIB_TYPE "MODULE")
+  find_package(PythonExtensions REQUIRED)
+  set(LIB_TYPE "MODULE")
 else()
-set(LIB_TYPE "SHARED")
+  set(LIB_TYPE "SHARED")
 endif()
 cmake_policy(POP)
 
 message(STATUS "CUDA architectures: ${CMAKE_CUDA_ARCHITECTURES}")
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
-set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+option(CUVEC_DEBUG "Print out CUDA malloc & free operations" OFF)
+if(CUVEC_DEBUG)
+  add_definitions(-DCUVEC_DEBUG)
+endif(CUVEC_DEBUG)
+message(STATUS "cuvec debugging: ${CUVEC_DEBUG}")
 
 set(${CMAKE_PROJECT_NAME}_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include/")  # / suffix important
 install(DIRECTORY "${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}" DESTINATION ${CMAKE_PROJECT_NAME}/include)
@@ -41,7 +46,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} ${CUDA_LIBRARIES})
 
 if(SKBUILD)
-python_extension_module(${PROJECT_NAME})
+  python_extension_module(${PROJECT_NAME})
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
