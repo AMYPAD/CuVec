@@ -208,6 +208,7 @@ template <class T> PyCuVec<T> *PyCuVec_new() {
 }
 template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
   PyCuVec<T> *self = PyCuVec_new<T>();
+  if (!self) return NULL;
   size_t ndim = shape.size();
   self->shape = shape;
   self->strides.resize(ndim);
@@ -218,6 +219,7 @@ template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
 }
 template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
+  if (!self) return NULL;
   self->vec.resize(other->vec.size());
   self->shape = other->shape;
   self->strides = other->strides;
@@ -225,6 +227,7 @@ template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
 }
 template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
+  if (!self) return NULL;
   self->vec = other->vec;
   self->shape = other->shape;
   self->strides = other->strides;
