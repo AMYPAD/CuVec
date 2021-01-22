@@ -67,4 +67,9 @@ def copy(arr):
     return CuVec(cu_copy(arr))
 
 
-asarray = CuVec
+def asarray(arr, dtype=None, order=None):
+    """
+    Returns a `cuvec.CuVec` view of `arr`, avoiding memory copies if possible.
+    (`cuvec` equivalent of `numpy.asarray`).
+    """
+    return CuVec(np.asanyarray(arr, dtype=dtype, order=order))
