@@ -10,11 +10,12 @@
 #define _PYCUVEC_H_
 
 #include "Python.h"
-#include "cuvec.cuh" // CuVec
-#include <cstdlib>   // malloc, free
-#include <sstream>   // std::stringstream
-#include <typeinfo>  // typeid
-#include <vector>    // std::vector
+#include "cuda_fp16.h" // __half
+#include "cuvec.cuh"   // CuVec
+#include <cstdlib>     // malloc, free
+#include <sstream>     // std::stringstream
+#include <typeinfo>    // typeid
+#include <vector>      // std::vector
 
 template <typename T> struct PyType {
   static const char *format() { return typeid(T).name(); }
@@ -50,6 +51,9 @@ template <> struct PyType<long long> {
 };
 template <> struct PyType<unsigned long long> {
   static const char *format() { return "Q"; }
+};
+template <> struct PyType<__half> {
+  static const char *format() { return "e"; }
 };
 template <> struct PyType<float> {
   static const char *format() { return "f"; }
