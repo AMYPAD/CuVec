@@ -28,7 +28,7 @@ class CuVec(np.ndarray):
     A `numpy.ndarray` compatible view with a `cuvec` member containing the
     underlying `cuvec.Vector_*` object (for use in CPython API function calls).
     """
-    def __new__(cls, arr, raw=None):
+    def __new__(cls, arr):
         """arr: `cuvec.CuVec`, raw `cuvec.Vector_*`, or `numpy.ndarray`"""
         if is_raw_cuvec(arr):
             log.debug("wrap raw %s", type(arr))

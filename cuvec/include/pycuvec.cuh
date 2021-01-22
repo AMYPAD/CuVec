@@ -100,7 +100,7 @@ template <class T> static void PyCuVec_dealloc(PyCuVec<T> *self) {
   self->strides.shrink_to_fit();
   Py_TYPE(self)->tp_free((PyObject *)self);
 }
-// __name__
+/// __name__
 template <class T> const std::string PyCuVec_t_str() {
   std::stringstream s;
   s << "Vector_" << PyType<T>::format();
