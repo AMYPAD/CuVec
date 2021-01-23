@@ -15,41 +15,8 @@ static PyObject *dev_sync(PyObject *self, PyObject *args) {
   Py_INCREF(Py_None);
   return Py_None;
 }
-/// tests: add 1 and return
-__global__ void _d_incr(float *dst, float *src, int X, int Y) {
-  int x = threadIdx.x + blockDim.x * blockIdx.x;
-  if (x >= X) return;
-  int y = threadIdx.y + blockDim.y * blockIdx.y;
-  if (y >= Y) return;
-  dst[y * X + x] = src[y * X + x] + 1;
-}
-static PyObject *_increment_f(PyObject *self, PyObject *args) {
-  PyCuVec<float> *src;
-  if (!PyArg_ParseTuple(args, "O", (PyObject **)&src)) return NULL;
-  std::vector<Py_ssize_t> &N = src->shape;
-
-  cudaEvent_t eStart, eAlloc, eKern;
-  cudaEventCreate(&eStart);
-  cudaEventCreate(&eAlloc);
-  cudaEventCreate(&eKern);
-  cudaEventRecord(eStart);
-  PyCuVec<float> *dst = PyCuVec_zeros_like(src);
-  cudaEventRecord(eAlloc);
-  dim3 thrds((N[1] + 31) / 32, (N[0] + 31) / 32);
-  dim3 blcks(32, 32);
-  _d_incr<<<thrds, blcks>>>(dst->vec.data(), src->vec.data(), N[1], N[0]);
-  // cudaDeviceSynchronize();
-  cudaEventRecord(eKern);
-  cudaEventSynchronize(eKern);
-  float alloc_ms, kernel_ms;
-  cudaEventElapsedTime(&alloc_ms, eStart, eAlloc);
-  cudaEventElapsedTime(&kernel_ms, eAlloc, eKern);
-  // fprintf(stderr, "%.3f ms, %.3f ms\n", alloc_ms, kernel_ms);
-  return Py_BuildValue("ddO", double(alloc_ms), double(kernel_ms), (PyObject *)dst);
-}
 static PyMethodDef cuvec_methods[] = {
     {"dev_sync", dev_sync, METH_NOARGS, "Required before accessing cuvec on host."},
-    {"_increment_f", _increment_f, METH_VARARGS, "Returns the input + 1."},
     {NULL, NULL, 0, NULL} // Sentinel
 };
 
@@ -146,7 +113,7 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   if (date == NULL) return NULL;
   PyModule_AddObject(m, "__date__", date);
 
-  PyObject *version = Py_BuildValue("s", "0.2.0");
+  PyObject *version = Py_BuildValue("s", "0.3.0");
   if (version == NULL) return NULL;
   PyModule_AddObject(m, "__version__", version);
 
