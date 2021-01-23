@@ -9,6 +9,7 @@ from .cuvec import (
     Vector_B,
     Vector_c,
     Vector_d,
+    Vector_e,
     Vector_f,
     Vector_h,
     Vector_H,
@@ -18,7 +19,8 @@ from .cuvec import (
     Vector_Q,
 )
 
-typecodes = [i for i in array.typecodes if i not in "ulL"]
+# u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
+typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
 vec_types = {
     np.dtype('int8'): Vector_b,
     np.dtype('uint8'): Vector_B,
@@ -29,6 +31,7 @@ vec_types = {
     np.dtype('uint32'): Vector_I,
     np.dtype('int64'): Vector_q,
     np.dtype('uint64'): Vector_Q,
+    np.dtype('float16'): Vector_e,
     np.dtype('float32'): Vector_f,
     np.dtype('float64'): Vector_d}
 

@@ -72,4 +72,8 @@ def asarray(arr, dtype=None, order=None):
     Returns a `cuvec.CuVec` view of `arr`, avoiding memory copies if possible.
     (`cuvec` equivalent of `numpy.asarray`).
     """
+    if not isinstance(arr, np.ndarray) and is_raw_cuvec(arr):
+        res = CuVec(arr)
+        if dtype is None or res.dtype == np.dtype(dtype):
+            return CuVec(np.asanyarray(res, order=order))
     return CuVec(np.asanyarray(arr, dtype=dtype, order=order))

@@ -32,6 +32,7 @@ static PyCuVec_tp<int> Vector_i;
 static PyCuVec_tp<unsigned int> Vector_I;
 static PyCuVec_tp<long long> Vector_q;          // _l
 static PyCuVec_tp<unsigned long long> Vector_Q; // _L
+static PyCuVec_tp<__half> Vector_e;
 static PyCuVec_tp<float> Vector_f;
 static PyCuVec_tp<double> Vector_d;
 
@@ -92,6 +93,10 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   Py_INCREF(&Vector_Q.tp_obj);
   PyModule_AddObject(m, "Vector_L", (PyObject *)&Vector_Q.tp_obj);
 
+  if (PyType_Ready(&Vector_e.tp_obj) < 0) return NULL;
+  Py_INCREF(&Vector_e.tp_obj);
+  PyModule_AddObject(m, Vector_e.name.c_str(), (PyObject *)&Vector_e.tp_obj);
+
   if (PyType_Ready(&Vector_f.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_f.tp_obj);
   PyModule_AddObject(m, Vector_f.name.c_str(), (PyObject *)&Vector_f.tp_obj);
@@ -108,7 +113,7 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   if (date == NULL) return NULL;
   PyModule_AddObject(m, "__date__", date);
 
-  PyObject *version = Py_BuildValue("s", "0.2.0");
+  PyObject *version = Py_BuildValue("s", "0.3.0");
   if (version == NULL) return NULL;
   PyModule_AddObject(m, "__version__", version);
 

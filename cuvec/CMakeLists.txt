@@ -60,6 +60,8 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
 install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
   NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
 
+add_subdirectory(src/example_mod)
+
 # install project
 
 include(CMakePackageConfigHelpers)

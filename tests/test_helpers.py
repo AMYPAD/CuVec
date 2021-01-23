@@ -49,9 +49,6 @@ def test_CuVec_creation(caplog):
     assert not caplog.record_tuples
     w = cu.CuVec(v)
     assert [i[1:] for i in caplog.record_tuples] == [(10, "new view")]
-    nested = cu.asarray(w.cuvec).cuvec
-    assert nested != w.cuvec, "expected different object"
-    assert np.asarray(nested).data == np.asarray(w.cuvec).data, "expected same data"
 
     caplog.clear()
     assert w[0, 0, 0] == 1
@@ -60,3 +57,19 @@ def test_CuVec_creation(caplog):
     assert v.cuvec is w.cuvec
     assert v.data == w.data
     assert not caplog.record_tuples
+
+
+def test_asarray():
+    v = cu.asarray(np.random.random(shape))
+    w = cu.CuVec(v)
+    assert w.cuvec == v.cuvec
+    assert (w == v).all()
+    assert np.asarray(w.cuvec).data == np.asarray(v.cuvec).data
+    x = cu.asarray(w.cuvec)
+    assert x.cuvec == v.cuvec
+    assert (x == v).all()
+    assert np.asarray(x.cuvec).data == np.asarray(v.cuvec).data
+    y = cu.asarray(x.tolist())
+    assert y.cuvec != v.cuvec
+    assert (y == v).all()
+    assert np.asarray(y.cuvec).data == np.asarray(v.cuvec).data

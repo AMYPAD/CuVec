@@ -5,12 +5,18 @@
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
 
-#include "cuhelpers.h" // HANDLE_ERROR
-#include <cstdio>      // fprintf
-#include <cstdlib>     // std::size_t
-#include <limits>      // std::numeric_limits
-#include <new>         // std::bad_alloc
-#include <vector>      // std::vector
+#include <cstdio>  // fprintf
+#include <cstdlib> // std::size_t
+#include <limits>  // std::numeric_limits
+#include <new>     // std::bad_alloc
+#include <vector>  // std::vector
+
+void HandleError(cudaError_t err, const char *file, int line) {
+  if (err != cudaSuccess) {
+    fprintf(stderr, "%s in %s at line %d\n", cudaGetErrorString(err), file, line);
+    exit(EXIT_FAILURE);
+  }
+}
 
 template <class T> struct CuAlloc {
   typedef T value_type;
@@ -26,7 +32,8 @@ template <class T> struct CuAlloc {
         if (n > std::numeric_limits<std::size_t>::max() / sizeof(T)) throw std::bad_alloc();
 
         T *p;
-        HANDLE_ERROR(cudaMallocManaged(&p, n * sizeof(T))); // p = (T *)malloc(n * sizeof(T));
+        // p = (T *)malloc(n * sizeof(T));
+        HandleError(cudaMallocManaged(&p, n * sizeof(T)), __FILE__, __LINE__);
         if (p) {
           report(p, n);
           return p;
@@ -37,7 +44,7 @@ template <class T> struct CuAlloc {
 
   void deallocate(T *p, std::size_t n) noexcept {
     report(p, n, 0);
-    HANDLE_ERROR(cudaFree(p)); // free(p);
+    HandleError(cudaFree(p), __FILE__, __LINE__); // free(p);
   }
 
 private:
