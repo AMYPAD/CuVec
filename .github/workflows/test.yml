@@ -82,7 +82,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: cuvec ${{ github.ref }} beta
+        release_name: CuVec ${{ github.ref }} beta
         body_path: _CHANGES.md
         draft: true
     - if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')

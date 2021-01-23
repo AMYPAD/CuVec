@@ -1,4 +1,4 @@
-cuvec
+CuVec
 =====
 
 Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 ``std::vector`` <-> CUDA managed memory.
@@ -157,7 +157,7 @@ Install in "development/editable" mode including dev/test dependencies:
 
 .. code:: sh
 
-    git clone https://github.com/AMYPAD/cuvec && cd cuvec
+    git clone https://github.com/AMYPAD/CuVec && cd CuVec
     pip install -e .[dev]
 
 Alternatively, if ``cmake`` and a generator (such as ``make`` or ``ninja``) are available, then ``setup.py build`` and ``develop`` can be explicitly called; optionally with extra ``cmake`` and generator arguments:
@@ -185,14 +185,14 @@ Copyright 2021
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg
    :target: https://doi.org/10.5281/zenodo.4446211
 .. |Licence| image:: https://img.shields.io/pypi/l/cuvec.svg?label=licence
-   :target: https://github.com/AMYPAD/cuvec/blob/master/LICENCE
-.. |Tests| image:: https://img.shields.io/github/workflow/status/AMYPAD/cuvec/Test?logo=GitHub
-   :target: https://github.com/AMYPAD/cuvec/actions
+   :target: https://github.com/AMYPAD/CuVec/blob/master/LICENCE
+.. |Tests| image:: https://img.shields.io/github/workflow/status/AMYPAD/CuVec/Test?logo=GitHub
+   :target: https://github.com/AMYPAD/CuVec/actions
 .. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads
    :target: https://pypi.org/project/cuvec
-.. |Coverage| image:: https://codecov.io/gh/AMYPAD/cuvec/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/AMYPAD/cuvec
+.. |Coverage| image:: https://codecov.io/gh/AMYPAD/CuVec/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/AMYPAD/CuVec
 .. |Version| image:: https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white
-   :target: https://github.com/AMYPAD/cuvec/releases
+   :target: https://github.com/AMYPAD/CuVec/releases
 .. |Py-Versions| image:: https://img.shields.io/pypi/pyversions/cuvec.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/cuvec
