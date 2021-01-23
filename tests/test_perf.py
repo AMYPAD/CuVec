@@ -1,3 +1,4 @@
+from functools import wraps
 from time import time
 
 import numpy as np
@@ -13,6 +14,7 @@ def _time_overhead():
 
 
 def timer(func):
+    @wraps(func)
     def inner(*args, **kwargs):
         overhead = np.mean([_time_overhead() for _ in range(100)])
         tic = time()
@@ -22,11 +24,11 @@ def timer(func):
     return inner
 
 
-def test_perf(shape=(1337, 42)):
+def test_perf(shape=(1337, 42), quiet=False):
     overhead = np.mean([_time_overhead() for _ in range(100)])
     t = {}
     t['init'], _ = timer(cu.dev_sync)()
-    t['create'], src = timer(cu.zeros)(shape, "float32")
+    t['create src'], src = timer(cu.zeros)(shape, "float32")
 
     rnd = np.random.random(shape)
     tic = time()
@@ -34,12 +36,34 @@ def test_perf(shape=(1337, 42)):
     t['assign'] = (time() - tic - overhead) * 1000
 
     # `_increment_f` is defined in ../cuvec/src/pycuvec.cu
-    t['call'], (t['create out'], t['kernel'], res) = timer(cu.cuvec._increment_f)(src.cuvec)
+    t['call ext'], (t['- create dst'], t['- kernel'],
+                    res) = timer(cu.cuvec._increment_f)(src.cuvec)
     t['view'], dst = timer(cu.asarray)(res)
 
-    print(t)
+    if not quiet:
+        print("\n".join(f"{k.ljust(14)} | {v:.3f}" for k, v in t.items()))
     assert (src + 1 == dst).all()
     # even a fast kernel takes longer than API overhead
-    assert t['kernel'] / (t['call'] - t['create out']) > 0.5
-    # API call should be <1 ms
-    assert t['call'] - t['create out'] - t['kernel'] < 1
+    assert t['- kernel'] / (t['call ext'] - t['- create dst']) > 0.5
+    # API call should be <0.1 ms... but set a higher threshold of 2 ms
+    assert t['call ext'] - t['- create dst'] - t['- kernel'] < 2
+    return t
+
+
+if __name__ == "__main__":
+    try:
+        from tqdm import trange
+    except ImportError:
+        trange = range
+    nruns = 1000
+    print("Repeating & averaging performance test metrics over {nruns} runs.")
+
+    runs = [test_perf((1000, 1000), True) for _ in trange(nruns)]
+    pretty = {
+        'init': 'Initialise', 'create src': 'Create input', 'assign': 'Assign',
+        'call ext': 'Call extension', '- create dst': '-- Create output',
+        '- kernel': '-- Launch kernel', 'view': 'View'}
+    runs = {pretty[k]: [i[k] for i in runs] for k in runs[0]}
+
+    print("\n".join(f"{k.ljust(16)} | {np.mean(v):.3f} ± {np.std(v, ddof=1)/np.sqrt(len(v)):.3f}"
+                    for k, v in runs.items()))
