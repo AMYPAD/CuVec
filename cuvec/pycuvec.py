@@ -19,7 +19,8 @@ from .cuvec import (
     Vector_Q,
 )
 
-typecodes = [i for i in array.typecodes if i not in "ulL"] + ["e"]
+# u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
+typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
 vec_types = {
     np.dtype('int8'): Vector_b,
     np.dtype('uint8'): Vector_B,
