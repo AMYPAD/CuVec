@@ -15,8 +15,38 @@ static PyObject *dev_sync(PyObject *self, PyObject *args) {
   Py_INCREF(Py_None);
   return Py_None;
 }
+/// tests: add 1 and return
+__global__ void _d_incr(float *dst, float *src, int X, int Y) {
+  int x = threadIdx.x + blockDim.x * blockIdx.x;
+  if (x >= X) return;
+  int y = threadIdx.y + blockDim.y * blockIdx.y;
+  if (y >= Y) return;
+  dst[y * X + x] = src[y * X + x] + 1;
+}
+static PyObject *_increment_f(PyObject *self, PyObject *args) {
+  PyCuVec<float> *src;
+  if (!PyArg_ParseTuple(args, "O", (PyObject **)&src)) return NULL;
+  std::vector<Py_ssize_t> &N = src->shape;
+  PyCuVec<float> *dst = PyCuVec_zeros_like(src);
+
+  cudaEvent_t start, stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
+  cudaEventRecord(start);
+  dim3 thrds((N[1] + 31) / 32, (N[0] + 31) / 32);
+  dim3 blcks(32, 32);
+  _d_incr<<<thrds, blcks>>>(dst->vec.data(), src->vec.data(), N[1], N[0]);
+  cudaDeviceSynchronize();
+  cudaEventRecord(stop);
+  cudaEventSynchronize(stop);
+  float msec = 0;
+  cudaEventElapsedTime(&msec, start, stop);
+  // fprintf(stderr, "%.5g ms\n", msec);
+  return Py_BuildValue("dO", double(msec), (PyObject *)dst);
+}
 static PyMethodDef cuvec_methods[] = {
     {"dev_sync", dev_sync, METH_NOARGS, "Required before accessing cuvec on host."},
+    {"_increment_f", _increment_f, METH_VARARGS, "Returns the input + 1."},
     {NULL, NULL, 0, NULL} // Sentinel
 };
 
