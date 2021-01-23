@@ -27,22 +27,25 @@ static PyObject *_increment_f(PyObject *self, PyObject *args) {
   PyCuVec<float> *src;
   if (!PyArg_ParseTuple(args, "O", (PyObject **)&src)) return NULL;
   std::vector<Py_ssize_t> &N = src->shape;
-  PyCuVec<float> *dst = PyCuVec_zeros_like(src);
 
-  cudaEvent_t start, stop;
-  cudaEventCreate(&start);
-  cudaEventCreate(&stop);
-  cudaEventRecord(start);
+  cudaEvent_t eStart, eAlloc, eKern;
+  cudaEventCreate(&eStart);
+  cudaEventCreate(&eAlloc);
+  cudaEventCreate(&eKern);
+  cudaEventRecord(eStart);
+  PyCuVec<float> *dst = PyCuVec_zeros_like(src);
+  cudaEventRecord(eAlloc);
   dim3 thrds((N[1] + 31) / 32, (N[0] + 31) / 32);
   dim3 blcks(32, 32);
   _d_incr<<<thrds, blcks>>>(dst->vec.data(), src->vec.data(), N[1], N[0]);
-  cudaDeviceSynchronize();
-  cudaEventRecord(stop);
-  cudaEventSynchronize(stop);
-  float msec = 0;
-  cudaEventElapsedTime(&msec, start, stop);
-  // fprintf(stderr, "%.5g ms\n", msec);
-  return Py_BuildValue("dO", double(msec), (PyObject *)dst);
+  // cudaDeviceSynchronize();
+  cudaEventRecord(eKern);
+  cudaEventSynchronize(eKern);
+  float alloc_ms, kernel_ms;
+  cudaEventElapsedTime(&alloc_ms, eStart, eAlloc);
+  cudaEventElapsedTime(&kernel_ms, eAlloc, eKern);
+  // fprintf(stderr, "%.3f ms, %.3f ms\n", alloc_ms, kernel_ms);
+  return Py_BuildValue("ddO", double(alloc_ms), double(kernel_ms), (PyObject *)dst);
 }
 static PyMethodDef cuvec_methods[] = {
     {"dev_sync", dev_sync, METH_NOARGS, "Required before accessing cuvec on host."},
