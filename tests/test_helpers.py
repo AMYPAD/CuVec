@@ -73,3 +73,11 @@ def test_asarray():
     assert y.cuvec != v.cuvec
     assert (y == v).all()
     assert np.asarray(y.cuvec).data == np.asarray(v.cuvec).data
+    z = cu.asarray(v[:])
+    assert z.cuvec != v.cuvec
+    assert (z == v[:]).all()
+    assert np.asarray(z.cuvec).data == np.asarray(v.cuvec).data
+    s = cu.asarray(v[1:])
+    assert s.cuvec != v.cuvec
+    assert (s == v[1:]).all()
+    assert np.asarray(s.cuvec).data != np.asarray(v.cuvec).data
