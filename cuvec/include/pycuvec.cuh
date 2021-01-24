@@ -17,6 +17,7 @@
 #include <typeinfo>    // typeid
 #include <vector>      // std::vector
 
+namespace cuvec {
 template <typename T> struct PyType {
   static const char *format() { return typeid(T).name(); }
 };
@@ -61,6 +62,7 @@ template <> struct PyType<float> {
 template <> struct PyType<double> {
   static const char *format() { return "d"; }
 };
+} // namespace cuvec
 
 /** classes */
 /// class PyCuVec<T>
@@ -107,7 +109,7 @@ template <class T> static void PyCuVec_dealloc(PyCuVec<T> *self) {
 /// __name__
 template <class T> const std::string PyCuVec_t_str() {
   std::stringstream s;
-  s << "Vector_" << PyType<T>::format();
+  s << "Vector_" << cuvec::PyType<T>::format();
   return s.str();
 }
 /// __str__
@@ -135,7 +137,7 @@ template <class T> static int PyCuVec_getbuffer(PyObject *obj, Py_buffer *view, 
   view->len = self->vec.size() * sizeof(T);
   view->readonly = 0;
   view->itemsize = sizeof(T);
-  view->format = (char *)PyType<T>::format();
+  view->format = (char *)cuvec::PyType<T>::format();
   view->ndim = self->shape.size();
   view->shape = self->shape.data();
   view->strides = self->strides.data();

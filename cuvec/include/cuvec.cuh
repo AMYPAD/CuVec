@@ -11,12 +11,14 @@
 #include <new>     // std::bad_alloc
 #include <vector>  // std::vector
 
+namespace cuvec {
 void HandleError(cudaError_t err, const char *file, int line) {
   if (err != cudaSuccess) {
     fprintf(stderr, "%s in %s at line %d\n", cudaGetErrorString(err), file, line);
     exit(EXIT_FAILURE);
   }
 }
+} // namespace cuvec
 
 template <class T> struct CuAlloc {
   typedef T value_type;
@@ -33,7 +35,7 @@ template <class T> struct CuAlloc {
 
         T *p;
         // p = (T *)malloc(n * sizeof(T));
-        HandleError(cudaMallocManaged(&p, n * sizeof(T)), __FILE__, __LINE__);
+        cuvec::HandleError(cudaMallocManaged((void **)&p, n * sizeof(T)), __FILE__, __LINE__);
         if (p) {
           report(p, n);
           return p;
@@ -43,8 +45,8 @@ template <class T> struct CuAlloc {
       }
 
   void deallocate(T *p, std::size_t n) noexcept {
-    report(p, n, 0);
-    HandleError(cudaFree(p), __FILE__, __LINE__); // free(p);
+    report(p, n, false);
+    cuvec::HandleError(cudaFree((void *)p), __FILE__, __LINE__); // free(p);
   }
 
 private:
