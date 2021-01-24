@@ -26,7 +26,7 @@ option(CUVEC_DEBUG "Print out CUDA malloc & free operations" OFF)
 if(CUVEC_DEBUG)
   add_compile_definitions(CUVEC_DEBUG)
 endif(CUVEC_DEBUG)
-message(STATUS "cuvec debugging: ${CUVEC_DEBUG}")
+message(STATUS "CuVec debugging: ${CUVEC_DEBUG}")
 
 set(${CMAKE_PROJECT_NAME}_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include/")  # / suffix important
 install(DIRECTORY "${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}" DESTINATION ${CMAKE_PROJECT_NAME}/include)

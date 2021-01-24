@@ -35,7 +35,7 @@ class CuVec(np.ndarray):
             obj = np.asarray(arr).view(cls)
             obj.cuvec = arr
             return obj
-        if isinstance(arr, CuVec):
+        if isinstance(arr, CuVec) and hasattr(arr, 'cuvec'):
             log.debug("new view")
             obj = np.asarray(arr).view(cls)
             obj.cuvec = arr.cuvec
