@@ -138,6 +138,8 @@ C++/CUDA Projects
 
     python -c "import cuvec; print(cuvec.include_path)"
 
+For reference, see ``cuvec.example_mod``'s source code: `example_mod.cu <https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu>`_.
+
 CMake Projects
 --------------
 

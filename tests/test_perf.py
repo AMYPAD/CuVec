@@ -26,7 +26,7 @@ def timer(func):
 
 def test_perf(shape=(1337, 42), quiet=False):
     # `example_mod` is defined in ../cuvec/src/example_mod/
-    from cuvec.example_mod import increment_f
+    from cuvec.example_mod import increment2d_f
 
     overhead = np.mean([_time_overhead() for _ in range(100)])
     t = {}
@@ -38,8 +38,8 @@ def test_perf(shape=(1337, 42), quiet=False):
     t['assign'] = (time() - tic - overhead) * 1000
 
     if not quiet:
-        t['warmup'], (t['> create dst'], t['> kernel'], _) = timer(increment_f)(src.cuvec)
-    t['call ext'], (t['- create dst'], t['- kernel'], res) = timer(increment_f)(src.cuvec)
+        t['warmup'], (t['> create dst'], t['> kernel'], _) = timer(increment2d_f)(src.cuvec)
+    t['call ext'], (t['- create dst'], t['- kernel'], res) = timer(increment2d_f)(src.cuvec)
     t['view'], dst = timer(cu.asarray)(res)
 
     if not quiet:
