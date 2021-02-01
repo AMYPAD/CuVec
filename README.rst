@@ -55,10 +55,6 @@ Creating
     # some_cpython_api_func(arr.cuvec)
     # import cupy; cupy_arr = cupy.asarray(arr)
 
-Note that ``arr`` contains all the attributes of a ``numpy.ndarray``.
-Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while
-``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
-
 **CPython API**
 
 .. code:: cpp
@@ -117,8 +113,18 @@ The following involve no memory copies.
     /// output: `type *arr`
     float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
 
-External C++/CUDA Projects
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+External Projects
+~~~~~~~~~~~~~~~~~
+
+Python Projects
+---------------
+
+Python objects (``arr``, returned by ``cuvec.zeros()``, ``cuvec.asarray()``, or ``cuvec.copy()``) contain all the attributes of a ``numpy.ndarray``.
+Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while
+``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
+
+C++/CUDA Projects
+-----------------
 
 ``cuvec`` is a header-only library so simply ``#include "pycuvec.cuh"``
 (or ``#include "cuvec.cuh"``). You can find the location of the headers using:
@@ -127,8 +133,8 @@ External C++/CUDA Projects
 
     python -c "import cuvec; print(cuvec.include_path)"
 
-External CMake Projects
-~~~~~~~~~~~~~~~~~~~~~~~
+CMake Projects
+--------------
 
 This is likely unnecessary (see above).
 
