@@ -5,6 +5,10 @@ Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 ``std::vector``
 
 |Version| |Downloads| |Py-Versions| |DOI| |Licence| |Tests| |Coverage|
 
+.. contents:: Table of contents
+   :backlinks: top
+   :local:
+
 Why
 ~~~
 
@@ -22,7 +26,8 @@ Anything to do with mathematical functionality. The aim is to expose functionali
 Even something as simple as setting element values is left to the user and/or pre-existing features - for example:
 
 - Python: ``arr[:] = value``
-- Numpy: ``arr.fill(value)``
+- NumPy: ``arr.fill(value)``
+- CuPy: ``cupy.asarray(arr).fill(value)``
 - C++: ``std::fill(vec.begin(), vec.end(), value)``
 - C/CUDA: ``memset(vec.data(), value, sizeof(T) * vec.size())``
 
@@ -53,6 +58,7 @@ Creating
     # print(sum(arr))
     # some_numpy_func(arr)
     # some_cpython_api_func(arr.cuvec)
+    # import cupy; cupy_arr = cupy.asarray(arr)
 
 **CPython API**
 
@@ -112,8 +118,18 @@ The following involve no memory copies.
     /// output: `type *arr`
     float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
 
-External C++/CUDA Projects
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+External Projects
+~~~~~~~~~~~~~~~~~
+
+Python Projects
+---------------
+
+Python objects (``arr``, returned by ``cuvec.zeros()``, ``cuvec.asarray()``, or ``cuvec.copy()``) contain all the attributes of a ``numpy.ndarray``.
+Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while
+``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
+
+C++/CUDA Projects
+-----------------
 
 ``cuvec`` is a header-only library so simply ``#include "pycuvec.cuh"``
 (or ``#include "cuvec.cuh"``). You can find the location of the headers using:
@@ -122,8 +138,8 @@ External C++/CUDA Projects
 
     python -c "import cuvec; print(cuvec.include_path)"
 
-External CMake Projects
-~~~~~~~~~~~~~~~~~~~~~~~
+CMake Projects
+--------------
 
 This is likely unnecessary (see above).
 

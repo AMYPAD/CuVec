@@ -50,7 +50,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run setup-python
-      run: setup-python -p${{ matrix.python }}
+      run: setup-python -p${{ matrix.python }} cupy
     - run: pip install -U -e .[dev]
     - run: pytest
     - run: codecov
