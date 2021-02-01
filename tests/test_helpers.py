@@ -1,7 +1,7 @@
 import logging
 
 import numpy as np
-from pytest import mark, raises
+from pytest import importorskip, mark, raises
 
 import cuvec as cu
 
@@ -81,3 +81,15 @@ def test_asarray():
     assert s.cuvec != v.cuvec
     assert (s == v[1:]).all()
     assert np.asarray(s.cuvec).data != np.asarray(v.cuvec).data
+
+
+def test_cuda_array_interface():
+    cupy = importorskip("cupy")
+    v = cu.asarray(np.random.random(shape))
+    c = cupy.asarray(v)
+
+    assert (c == v).all()
+    c[0, 0, 0] = 1
+    assert c[0, 0, 0] == v[0, 0, 0]
+    c[0, 0, 0] = 0
+    assert c[0, 0, 0] == v[0, 0, 0]

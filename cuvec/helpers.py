@@ -49,6 +49,12 @@ class CuVec(np.ndarray):
             (do not do `cuvec.CuVec((42, 1337))`;
             instead use `cuvec.zeros((42, 137))`"""))
 
+    @property
+    def __cuda_array_interface__(self):
+        res = self.__array_interface__
+        return {
+            'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
+
 
 def zeros(shape, dtype="float32"):
     """
