@@ -53,6 +53,11 @@ Creating
     # print(sum(arr))
     # some_numpy_func(arr)
     # some_cpython_api_func(arr.cuvec)
+    # import cupy; cupy_arr = cupy.asarray(arr)
+
+Note that ``arr`` contains all the attributes of a ``numpy.ndarray``.
+Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while
+``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
 
 **CPython API**
 
