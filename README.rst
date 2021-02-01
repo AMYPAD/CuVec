@@ -22,7 +22,8 @@ Anything to do with mathematical functionality. The aim is to expose functionali
 Even something as simple as setting element values is left to the user and/or pre-existing features - for example:
 
 - Python: ``arr[:] = value``
-- Numpy: ``arr.fill(value)``
+- NumPy: ``arr.fill(value)``
+- CuPy: ``cupy.asarray(arr).fill(value)``
 - C++: ``std::fill(vec.begin(), vec.end(), value)``
 - C/CUDA: ``memset(vec.data(), value, sizeof(T) * vec.size())``
 
