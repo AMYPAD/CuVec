@@ -50,15 +50,8 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run setup-python
-      run: setup-python -p${{ matrix.python }}
+      run: setup-python -p${{ matrix.python }} cupy
     - run: pip install -U -e .[dev]
-    - name: pip install cupy
-      run: |
-        CUVER=$(ls /usr/local/cuda-* -d | sed -r 's/\/usr\/local\/cuda-([0-9]+)\.([0-9]+)/\1\2/' | sort -nr | head -n1)
-        echo CUDA Tookit: $CUVER
-        [[ $CUVER -gt 111 ]] && CUVER=111
-        echo Installing: cupy-cuda$CUVER
-        pip install cupy-cuda$CUVER
     - run: pytest
     - run: codecov
     - name: Post Run setup-python
