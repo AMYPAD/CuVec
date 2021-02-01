@@ -5,6 +5,10 @@ Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 ``std::vector``
 
 |Version| |Downloads| |Py-Versions| |DOI| |Licence| |Tests| |Coverage|
 
+.. contents:: Table of contents
+   :backlinks: top
+   :local:
+
 Why
 ~~~
 
