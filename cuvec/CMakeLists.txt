@@ -50,7 +50,7 @@ add_library(AMYPAD::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
-target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} ${CUDA_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} CUDA::cudart_static)
 
 if(SKBUILD)
   python_extension_module(${PROJECT_NAME})

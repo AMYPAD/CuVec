@@ -2,18 +2,18 @@ project(example_swig)
 file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 file(GLOB ISRC LIST_DIRECTORIES false "*.i")
 
-include_directories(".")
 #include_directories(${Python3_INCLUDE_DIRS})
 #include_directories(${Python3_NumPy_INCLUDE_DIRS})
 
 if(SWIG_FOUND)
+  include_directories(${CUDAToolkit_INCLUDE_DIRS})
   set_source_files_properties(${PROJECT_NAME}.i PROPERTIES CPLUSPLUS ON)
   set_source_files_properties(${PROJECT_NAME}.i PROPERTIES USE_TARGET_INCLUDE_DIRECTORIES ON)
   swig_add_library(${PROJECT_NAME} LANGUAGE python SOURCES ${ISRC} ${SRC})
-  swig_link_libraries(${PROJECT_NAME} ${CUDA_LIBRARIES})
+  swig_link_libraries(${PROJECT_NAME} CUDA::cudart_static)
 else()
   add_library(${PROJECT_NAME} MODULE ${SRC})
-  target_link_libraries(${PROJECT_NAME} ${CUDA_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME} CUDA::cudart_static)
 endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
