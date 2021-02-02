@@ -68,6 +68,7 @@ install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
   NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
 
 add_subdirectory(src/example_mod)
+add_subdirectory(src/example_swig)
 
 # install project
 
