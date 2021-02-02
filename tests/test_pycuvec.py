@@ -10,7 +10,6 @@ shape = 127, 344, 344
 
 @mark.parametrize("tp", list(cu.typecodes))
 def test_Vector_asarray(tp):
-    """tp(char): any of bBhHiIqQfd"""
     v = getattr(cu.cuvec, f"Vector_{tp}")((1, 2, 3))
     assert str(v) == f"Vector_{tp}((1, 2, 3))"
     a = np.asarray(v)
@@ -113,8 +112,10 @@ def test_cuda_array_interface():
     c = cupy.asarray(v)
     assert (c == v).all()
     c[0, 0, 0] = 1
+    cu.dev_sync()
     assert c[0, 0, 0] == v[0, 0, 0]
     c[0, 0, 0] = 0
+    cu.dev_sync()
     assert c[0, 0, 0] == v[0, 0, 0]
 
     ndarr = v + 1
