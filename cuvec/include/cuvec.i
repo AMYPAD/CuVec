@@ -1,25 +1,32 @@
+/**
+ * SWIG template header wrapping `CuVec<T>`. Provides:
+ *     CuVec(T)
+ * for external use via `%include "cuvec.i"`.
+ * Note that `CuVec(T)` is `%define`d to be `CuVec<T>`, which in turn is
+ * defined in "cuvec.cuh"
+ */
 %include "std_vector.i"
 
 %{
 #include "cuvec.cuh"    // CuAlloc
 #include "cuda_fp16.h"  // __half
 
-template<class _Tp> size_t data(std::vector<_Tp, CuAlloc<_Tp>> &vec){
+template<class T> size_t data(std::vector<T, CuAlloc<T>> &vec){
   return (size_t) vec.data();
 };
 %}
 
-template<class _Tp> size_t data(std::vector<_Tp, CuAlloc<_Tp>> &vec);
+template<class T> size_t data(std::vector<T, CuAlloc<T>> &vec);
 
 // `%define X Y` rather than `using X = Y;`
 // due to https://github.com/swig/swig/issues/1058
-%define CuVec(Type)
-std::vector<Type, CuAlloc<Type>>
+%define CuVec(T)
+std::vector<T, CuAlloc<T>>
 %enddef
 
-%define MKCUVEC(Type, typechar)
-%template(Vector_ ## typechar) CuVec(Type);
-%template(Vector_ ## typechar ## _data) data<Type>;
+%define MKCUVEC(T, typechar)
+%template(CuVec_ ## typechar) CuVec(T);
+%template(CuVec_ ## typechar ## _data) data<T>;
 %enddef
 
 MKCUVEC(signed char, b)

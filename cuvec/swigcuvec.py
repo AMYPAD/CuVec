@@ -1,3 +1,4 @@
+import array
 import logging
 import re
 from functools import partial
@@ -6,9 +7,10 @@ from textwrap import dedent
 import numpy as np
 
 from . import example_swig as sw
-from .pycuvec import typecodes
 
 log = logging.getLogger(__name__)
+# u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
+typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
 RE_SWIG_TYPE = ("<Swig Object of type"
                 r" 'std::vector<\s*(\w+)\s*,\s*CuAlloc<\s*\1\s*>\s*>\s*\*' at 0x\w+>")
 SWIG_TYPES = {
@@ -33,18 +35,18 @@ class SWIGVector:
             self.owned = False
             return
         self.typechar = typechar
-        self.cuvec = getattr(sw, f'new_Vector_{typechar}')(size)
+        self.cuvec = getattr(sw, f'new_CuVec_{typechar}')(size)
         self.owned = True
 
     def __del__(self):
         if self.owned:
-            getattr(sw, f'delete_Vector_{self.typechar}')(self.cuvec)
+            getattr(sw, f'delete_CuVec_{self.typechar}')(self.cuvec)
 
     def __len__(self):
-        return getattr(sw, f'Vector_{self.typechar}___len__')(self.cuvec)
+        return getattr(sw, f'CuVec_{self.typechar}___len__')(self.cuvec)
 
     def data(self):
-        return getattr(sw, f'Vector_{self.typechar}_data')(self.cuvec)
+        return getattr(sw, f'CuVec_{self.typechar}_data')(self.cuvec)
 
     @property
     def __array_interface__(self):
