@@ -21,9 +21,9 @@ static PyMethodDef cuvec_methods[] = {
 };
 
 /** classes */
-static PyCuVec_tp<char> Vector_c;
 static PyCuVec_tp<signed char> Vector_b;
 static PyCuVec_tp<unsigned char> Vector_B;
+static PyCuVec_tp<char> Vector_c;
 // #ifdef _Bool
 // #endif
 static PyCuVec_tp<short> Vector_h;
@@ -50,10 +50,6 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   PyObject *m = PyModule_Create(&cuvec_module);
   if (m == NULL) return NULL;
 
-  if (PyType_Ready(&Vector_c.tp_obj) < 0) return NULL;
-  Py_INCREF(&Vector_c.tp_obj);
-  PyModule_AddObject(m, Vector_c.name.c_str(), (PyObject *)&Vector_c.tp_obj);
-
   if (PyType_Ready(&Vector_b.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_b.tp_obj);
   PyModule_AddObject(m, Vector_b.name.c_str(), (PyObject *)&Vector_b.tp_obj);
@@ -61,6 +57,10 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   if (PyType_Ready(&Vector_B.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_B.tp_obj);
   PyModule_AddObject(m, Vector_B.name.c_str(), (PyObject *)&Vector_B.tp_obj);
+
+  if (PyType_Ready(&Vector_c.tp_obj) < 0) return NULL;
+  Py_INCREF(&Vector_c.tp_obj);
+  PyModule_AddObject(m, Vector_c.name.c_str(), (PyObject *)&Vector_c.tp_obj);
 
   // #ifdef _Bool
   // #endif
