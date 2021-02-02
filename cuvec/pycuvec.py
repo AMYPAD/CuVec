@@ -51,7 +51,7 @@ def cu_copy(arr):
     Returns a new `<cuvec.Vector_*>` with data copied from the specified `arr`.
     """
     res = cu_zeros(arr.shape, arr.dtype)
-    np.asarray(res)[:] = arr[:]
+    np.asarray(res).flat = arr.flat
     return res
 
 
