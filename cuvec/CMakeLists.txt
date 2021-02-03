@@ -12,6 +12,13 @@ find_package(CUDAToolkit REQUIRED)
 if(SKBUILD)
   find_package(PythonExtensions REQUIRED)
   set(LIB_TYPE "MODULE")
+
+  find_package(SWIG 3.0 COMPONENTS python)
+  if(SWIG_FOUND)
+  include(${SWIG_USE_FILE})
+  set(${CMAKE_PROJECT_NAME}_SWIG_SRC "${CMAKE_CURRENT_LIST_DIR}/include/${CMAKE_PROJECT_NAME}.i")
+  set_source_files_properties("${${CMAKE_PROJECT_NAME}_SWIG_SRC}" PROPERTIES CPLUSPLUS ON)
+  endif()
 else()
   set(LIB_TYPE "SHARED")
 endif()
@@ -43,7 +50,7 @@ add_library(AMYPAD::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
-target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} ${CUDA_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} CUDA::cudart_static)
 
 if(SKBUILD)
   python_extension_module(${PROJECT_NAME})
@@ -61,6 +68,7 @@ install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
   NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
 
 add_subdirectory(src/example_mod)
+add_subdirectory(src/example_swig)
 
 # install project
 
