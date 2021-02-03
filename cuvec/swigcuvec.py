@@ -32,15 +32,12 @@ class SWIGVector:
             assert is_raw_cuvec(cuvec)
             self.typechar = SWIG_TYPES[re.match(RE_SWIG_TYPE, str(cuvec)).group(1)]
             self.cuvec = cuvec
-            self.owned = False
             return
         self.typechar = typechar
         self.cuvec = getattr(sw, f'new_CuVec_{typechar}')(size)
-        self.owned = True
 
     def __del__(self):
-        if self.owned:
-            getattr(sw, f'delete_CuVec_{self.typechar}')(self.cuvec)
+        getattr(sw, f'delete_CuVec_{self.typechar}')(self.cuvec)
 
     def __len__(self):
         return getattr(sw, f'CuVec_{self.typechar}___len__')(self.cuvec)
@@ -153,9 +150,7 @@ def asarray(arr, dtype=None, order=None):
     (`cuvec` equivalent of `numpy.asarray`).
     """
     if is_raw_cuvec(arr):
-        print("is_raw_cuvec")
         arr = SWIGVector(None, None, arr)
-    print("not is_raw_cuvec")
     if not isinstance(arr, np.ndarray) and is_raw_swvec(arr):
         res = CuVec(arr)
         if dtype is None or res.dtype == np.dtype(dtype):

@@ -87,7 +87,7 @@ def test_asarray():
     assert w.cuvec == v.cuvec
     assert (w == v).all()
     assert np.asarray(w.swvec).data == np.asarray(v.swvec).data
-    x = cu.asarray(w.cuvec)
+    x = cu.asarray(w.swvec)
     x.resize(w.shape)
     assert x.cuvec == v.cuvec
     # raise ValueError((x.shape, v.shape))
@@ -137,7 +137,7 @@ def test_cuda_array_interface():
 
 
 def test_increment():
-    # `example_swig` is defined in ../cuvec/src/example_mod/
+    # `example_swig` is defined in ../cuvec/src/example_swig/
     from cuvec.example_swig import increment_f, increment_inplace_f
     a = cu.zeros(shape, 'f')
     assert (a == 0).all()
