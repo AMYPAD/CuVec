@@ -82,11 +82,11 @@ if __name__ == "__main__":
         trange = range
     nruns = 1000
 
-    for args in [((1000, 1000), cu, cuinc), (1000 * 1000, sw, swinc)][::-1]:
+    for args in [((1000, 1000), cu, cuinc), (1000 * 1000, sw, swinc)]:
         print(f"# One run ({args[1].__name__}):")
         test_perf(*args)
 
-        print(f"Repeating & averaging performance test metrics over {nruns} runs.")
+        print(f"# Average over {nruns} runs:")
         runs = [test_perf(*args, quiet=True) for _ in trange(nruns)]
         pretty = {
             'create src': 'Create input', 'assign': 'Assign', 'call ext': 'Call extension',
