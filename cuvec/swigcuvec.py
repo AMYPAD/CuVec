@@ -14,14 +14,24 @@ typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
 RE_SWIG_TYPE = ("<Swig Object of type"
                 r" 'std::vector<\s*(\w+)\s*,\s*CuAlloc<\s*\1\s*>\s*>\s*\*' at 0x\w+>")
 SWIG_TYPES = {
-    "signed char": 'b', "unsigned char": 'B', "char": 'c', "short": 'h', "unsigned short": 'H',
-    "int": 'i', "unsigned int": 'I', "long long": 'q', "unsigned long long": 'Q', "__half": 'e',
-    "float": 'f', "double": 'd'}
+    "signed char": 'b',
+    "unsigned char": 'B',
+    "char": 'c',
+    "short": 'h',
+    "unsigned short": 'H',
+    "int": 'i',
+    "unsigned int": 'I',
+    "long long": 'q',
+    "unsigned long long": 'Q',
+    "__half": 'e',
+    "float": 'f',
+    "double": 'd'} # yapf: disable
 
 
 class SWIGVector:
     def __init__(self, typechar, size, cuvec=None):
         """
+        Thin wrapper around `SwigPyObject<CuVec<Type>>`. Always takes ownership.
         Args:
           typechar(char)
           size(tuple(int))
