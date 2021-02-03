@@ -87,8 +87,8 @@ template <class T> void PyCuVec_dealloc(PyCuVec<T> *self) {
 }
 /// __name__
 template <class T> const char *PyCuVec_t_str() {
-  static char s[] = "Vector_X";
-  s[7] = cuvec::PyType<T>::format()[0];
+  static char s[] = "PyCuVec_X";
+  s[8] = cuvec::PyType<T>::format()[0];
   return s;
 }
 /// __str__
@@ -187,9 +187,9 @@ template <class T> struct PyCuVec_tp {
 
 /// Helper functions for creating `PyCuVec<T> *`s in C++ for casting to CPython API `PyObject *`s
 template <class T> PyCuVec<T> *PyCuVec_new() {
-  static PyCuVec_tp<T> Vector_T;
-  if (PyType_Ready(&Vector_T.tp_obj) < 0) return NULL;
-  return (PyCuVec<T> *)Vector_T.tp_obj.tp_alloc(&Vector_T.tp_obj, 1);
+  static PyCuVec_tp<T> PyCuVec_T;
+  if (PyType_Ready(&PyCuVec_T.tp_obj) < 0) return NULL;
+  return (PyCuVec<T> *)PyCuVec_T.tp_obj.tp_alloc(&PyCuVec_T.tp_obj, 1);
 }
 template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
   PyCuVec<T> *self = PyCuVec_new<T>();

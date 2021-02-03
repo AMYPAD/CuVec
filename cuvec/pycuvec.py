@@ -7,56 +7,56 @@ from textwrap import dedent
 import numpy as np
 
 from .cuvec import (
-    Vector_b,
-    Vector_B,
-    Vector_c,
-    Vector_d,
-    Vector_e,
-    Vector_f,
-    Vector_h,
-    Vector_H,
-    Vector_i,
-    Vector_I,
-    Vector_q,
-    Vector_Q,
+    PyCuVec_b,
+    PyCuVec_B,
+    PyCuVec_c,
+    PyCuVec_d,
+    PyCuVec_e,
+    PyCuVec_f,
+    PyCuVec_h,
+    PyCuVec_H,
+    PyCuVec_i,
+    PyCuVec_I,
+    PyCuVec_q,
+    PyCuVec_Q,
 )
 
 log = logging.getLogger(__name__)
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
 typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
 vec_types = {
-    np.dtype('int8'): Vector_b,
-    np.dtype('uint8'): Vector_B,
-    np.dtype('S1'): Vector_c,
-    np.dtype('int16'): Vector_h,
-    np.dtype('uint16'): Vector_H,
-    np.dtype('int32'): Vector_i,
-    np.dtype('uint32'): Vector_I,
-    np.dtype('int64'): Vector_q,
-    np.dtype('uint64'): Vector_Q,
-    np.dtype('float16'): Vector_e,
-    np.dtype('float32'): Vector_f,
-    np.dtype('float64'): Vector_d}
+    np.dtype('int8'): PyCuVec_b,
+    np.dtype('uint8'): PyCuVec_B,
+    np.dtype('S1'): PyCuVec_c,
+    np.dtype('int16'): PyCuVec_h,
+    np.dtype('uint16'): PyCuVec_H,
+    np.dtype('int32'): PyCuVec_i,
+    np.dtype('uint32'): PyCuVec_I,
+    np.dtype('int64'): PyCuVec_q,
+    np.dtype('uint64'): PyCuVec_Q,
+    np.dtype('float16'): PyCuVec_e,
+    np.dtype('float32'): PyCuVec_f,
+    np.dtype('float64'): PyCuVec_d}
 
 
 def cu_zeros(shape, dtype="float32"):
     """
-    Returns a new `<cuvec.Vector_*>` of the specified shape and data type.
+    Returns a new `<cuvec.PyCuVec_*>` of the specified shape and data type.
     """
     return vec_types[np.dtype(dtype)](shape if isinstance(shape, Sequence) else (shape,))
 
 
 def cu_copy(arr):
     """
-    Returns a new `<cuvec.Vector_*>` with data copied from the specified `arr`.
+    Returns a new `<cuvec.PyCuVec_*>` with data copied from the specified `arr`.
     """
     res = cu_zeros(arr.shape, arr.dtype)
     np.asarray(res).flat = arr.flat
     return res
 
 
-_Vector_types = tuple(vec_types.values())
-_Vector_types_s = tuple(map(str, vec_types.values()))
+_PyCuVec_types = tuple(vec_types.values())
+_PyCuVec_types_s = tuple(map(str, vec_types.values()))
 
 
 def is_raw_cuvec(cuvec):
@@ -68,16 +68,16 @@ def is_raw_cuvec(cuvec):
     due to external libraries
     `#include "pycuvec.cuh"` making a distinct type object.
     """
-    return isinstance(cuvec, _Vector_types) or str(type(cuvec)) in _Vector_types_s
+    return isinstance(cuvec, _PyCuVec_types) or str(type(cuvec)) in _PyCuVec_types_s
 
 
 class CuVec(np.ndarray):
     """
     A `numpy.ndarray` compatible view with a `cuvec` member containing the
-    underlying `cuvec.Vector_*` object (for use in CPython API function calls).
+    underlying `cuvec.PyCuVec_*` object (for use in CPython API function calls).
     """
     def __new__(cls, arr):
-        """arr: `cuvec.CuVec`, raw `cuvec.Vector_*`, or `numpy.ndarray`"""
+        """arr: `cuvec.CuVec`, raw `cuvec.PyCuVec_*`, or `numpy.ndarray`"""
         if is_raw_cuvec(arr):
             log.debug("wrap raw %s", type(arr))
             obj = np.asarray(arr).view(cls)

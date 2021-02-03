@@ -35,10 +35,10 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   if (m == NULL) return NULL;
 
 #define _PYCUVEC_EXPOSE(T, typechar)                                                              \
-  static PyCuVec_tp<T> Vector_##typechar;                                                         \
-  if (PyType_Ready(&Vector_##typechar.tp_obj) < 0) return NULL;                                   \
-  Py_INCREF(&Vector_##typechar.tp_obj);                                                           \
-  PyModule_AddObject(m, Vector_##typechar.tp_obj.tp_name, (PyObject *)&Vector_##typechar.tp_obj)
+  static PyCuVec_tp<T> PyCuVec_##typechar;                                                        \
+  if (PyType_Ready(&PyCuVec_##typechar.tp_obj) < 0) return NULL;                                  \
+  Py_INCREF(&PyCuVec_##typechar.tp_obj);                                                          \
+  PyModule_AddObject(m, PyCuVec_##typechar.tp_obj.tp_name, (PyObject *)&PyCuVec_##typechar.tp_obj)
 
   _PYCUVEC_EXPOSE(signed char, b);
   _PYCUVEC_EXPOSE(unsigned char, B);
@@ -56,11 +56,11 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   _PYCUVEC_EXPOSE(double, d);
 
   /* aliases: inconsistent between `numpy.dtype` and `array.typecodes`
-  Py_INCREF(&Vector_q.tp_obj);
-  PyModule_AddObject(m, "Vector_l", (PyObject *)&Vector_q.tp_obj);
+  Py_INCREF(&PyCuVec_q.tp_obj);
+  PyModule_AddObject(m, "PyCuVec_l", (PyObject *)&PyCuVec_q.tp_obj);
 
-  Py_INCREF(&Vector_Q.tp_obj);
-  PyModule_AddObject(m, "Vector_L", (PyObject *)&Vector_Q.tp_obj);
+  Py_INCREF(&PyCuVec_Q.tp_obj);
+  PyModule_AddObject(m, "PyCuVec_L", (PyObject *)&PyCuVec_Q.tp_obj);
   */
 
   PyObject *author = Py_BuildValue("s", "Casper da Costa-Luis (https://github.com/casperdcl)");

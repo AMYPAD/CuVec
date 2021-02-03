@@ -9,9 +9,9 @@ shape = 127, 344, 344
 
 
 @mark.parametrize("tp", list(cu.typecodes))
-def test_Vector_asarray(tp):
-    v = getattr(cu.cuvec, f"Vector_{tp}")((1, 2, 3))
-    assert str(v) == f"Vector_{tp}((1, 2, 3))"
+def test_PyCuVec_asarray(tp):
+    v = getattr(cu.cuvec, f"PyCuVec_{tp}")((1, 2, 3))
+    assert str(v) == f"PyCuVec_{tp}((1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
     a[0, 0] = 42
@@ -22,8 +22,8 @@ def test_Vector_asarray(tp):
     del a, b, v
 
 
-def test_Vector_strides():
-    v = cu.cuvec.Vector_f(shape)
+def test_PyCuVec_strides():
+    v = cu.cuvec.PyCuVec_f(shape)
     a = np.asarray(v)
     assert a.shape == shape
     assert a.strides == (473344, 1376, 4)
@@ -56,14 +56,14 @@ def test_CuVec_creation(caplog):
     caplog.clear()
     v = cu.CuVec(np.ones(shape, dtype='h'))
     assert [i[1:] for i in caplog.record_tuples] == [(10, 'copy'),
-                                                     (10, "wrap raw <class 'Vector_h'>")]
+                                                     (10, "wrap raw <class 'PyCuVec_h'>")]
     assert v.shape == shape
     assert v.dtype.char == 'h'
     assert (v == 1).all()
 
     caplog.clear()
     v = cu.zeros(shape, 'd')
-    assert [i[1:] for i in caplog.record_tuples] == [(10, "wrap raw <class 'Vector_d'>")]
+    assert [i[1:] for i in caplog.record_tuples] == [(10, "wrap raw <class 'PyCuVec_d'>")]
 
     caplog.clear()
     v[0, 0, 0] = 1
