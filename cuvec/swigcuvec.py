@@ -171,6 +171,7 @@ def asarray(arr, dtype=None, order=None):
     (`cuvec` equivalent of `numpy.asarray`).
     """
     if is_raw_cuvec(arr):
+        log.debug("taking ownership")
         arr = SWIGVector(None, None, arr)
     if not isinstance(arr, np.ndarray) and is_raw_swvec(arr):
         res = CuVec(arr)

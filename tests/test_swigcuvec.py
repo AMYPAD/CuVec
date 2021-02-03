@@ -23,7 +23,7 @@ def test_SWIGVector_asarray(tp):
     del a, b, v
 
 
-def test_Vector_strides():
+def test_strides():
     a = cu.zeros(shape)
     assert a.shape == shape
     assert a.strides == (473344, 1376, 4)
