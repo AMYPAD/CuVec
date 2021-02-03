@@ -12,9 +12,7 @@
 %include "cuvec.i" // %{ CuVec<T> %}, CuVec(T)
 %{
 /// signatures from "example_swig.cu"
-float increment_inplace_f(CuVec<float> &src, bool sync = true);
-CuVec<float> *increment_f(CuVec<float> &src, bool sync = true);
+CuVec<float> *increment_f(CuVec<float> &src, CuVec<float> *output = NULL, bool timing = false);
 %}
 /// expose definitions
-float increment_inplace_f(CuVec(float) &src, bool sync = true);
-CuVec(float) *increment_f(CuVec(float) &src, bool sync = true);
+CuVec(float) *increment_f(CuVec(float) &src, CuVec(float) *output = NULL, bool timing = false);
