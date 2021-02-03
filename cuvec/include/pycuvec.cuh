@@ -21,47 +21,25 @@ namespace cuvec {
 template <typename T> struct PyType {
   static const char *format() { return typeid(T).name(); }
 };
-template <> struct PyType<char> {
-  static const char *format() { return "c"; }
-};
-template <> struct PyType<signed char> {
-  static const char *format() { return "b"; }
-};
-template <> struct PyType<unsigned char> {
-  static const char *format() { return "B"; }
-};
+#define _PYCVEC_TPCHR(T, typestr)                                                                 \
+  template <> struct PyType<T> {                                                                  \
+    static const char *format() { return typestr; }                                               \
+  }
+_PYCVEC_TPCHR(char, "c");
+_PYCVEC_TPCHR(signed char, "b");
+_PYCVEC_TPCHR(unsigned char, "B");
 #ifdef _Bool
-template <> struct PyType<_Bool> {
-  static const char *format() { return "?"; }
-};
+_PYCVEC_TPCHR(_Bool, "?");
 #endif
-template <> struct PyType<short> {
-  static const char *format() { return "h"; }
-};
-template <> struct PyType<unsigned short> {
-  static const char *format() { return "H"; }
-};
-template <> struct PyType<int> {
-  static const char *format() { return "i"; }
-};
-template <> struct PyType<unsigned int> {
-  static const char *format() { return "I"; }
-};
-template <> struct PyType<long long> {
-  static const char *format() { return "q"; }
-};
-template <> struct PyType<unsigned long long> {
-  static const char *format() { return "Q"; }
-};
-template <> struct PyType<__half> {
-  static const char *format() { return "e"; }
-};
-template <> struct PyType<float> {
-  static const char *format() { return "f"; }
-};
-template <> struct PyType<double> {
-  static const char *format() { return "d"; }
-};
+_PYCVEC_TPCHR(short, "h");
+_PYCVEC_TPCHR(unsigned short, "H");
+_PYCVEC_TPCHR(int, "i");
+_PYCVEC_TPCHR(unsigned int, "I");
+_PYCVEC_TPCHR(long long, "q");
+_PYCVEC_TPCHR(unsigned long long, "Q");
+_PYCVEC_TPCHR(__half, "e");
+_PYCVEC_TPCHR(float, "f");
+_PYCVEC_TPCHR(double, "d");
 } // namespace cuvec
 
 /** classes */
