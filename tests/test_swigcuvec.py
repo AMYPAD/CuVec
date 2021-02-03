@@ -90,7 +90,6 @@ def test_asarray():
     x = cu.asarray(w.swvec)
     x.resize(w.shape)
     assert x.cuvec == v.cuvec
-    # raise ValueError((x.shape, v.shape))
     assert (x == v).all()
     assert np.asarray(x.swvec).data == np.asarray(v.swvec).data
     y = cu.asarray(x.tolist())

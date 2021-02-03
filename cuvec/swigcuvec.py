@@ -1,3 +1,8 @@
+"""
+Thin wrappers around `example_swig` C++/CUDA module
+
+A SWIG-driven equivalent of the CPython Extension API-driven `pycuvec.py`
+"""
 import array
 import logging
 import re
