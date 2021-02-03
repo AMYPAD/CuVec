@@ -138,10 +138,19 @@ C++/CUDA Projects
 
     python -c "import cuvec; print(cuvec.include_path)"
 
+For reference, see ``cuvec.example_mod``'s source code: `example_mod.cu <https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu>`_.
+
+SWIG Projects
+-------------
+
+Using the include path from above, simply ``%include "cuvec.i"`` in a SWIG interface file.
+
+For reference, see ``cuvec.example_swig``'s source code: `example_swig.i <https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i>`_ and `example_swig.cu <https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu>`_.
+
 CMake Projects
 --------------
 
-This is likely unnecessary (see above).
+This is likely unnecessary (see above for simpler ``#include`` instructions).
 
 The raw C++/CUDA libraries may be included in external projects using ``cmake``.
 Simply build the project and use ``find_package(AMYPADcuvec)``.

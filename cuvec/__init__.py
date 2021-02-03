@@ -35,8 +35,7 @@ except ImportError as err: # pragma: no cover
     from warnings import warn
     warn(str(err), UserWarning)
 else:
-    from .helpers import CuVec, asarray, copy, zeros
-    from .pycuvec import cu_copy, cu_zeros, typecodes, vec_types
+    from .pycuvec import CuVec, asarray, copy, cu_copy, cu_zeros, typecodes, vec_types, zeros
 
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`
 cmake_prefix = Path(resource_filename(__name__, "cmake")).resolve()

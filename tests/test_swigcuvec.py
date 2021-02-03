@@ -3,9 +3,30 @@ import logging
 import numpy as np
 from pytest import importorskip, mark, raises
 
-import cuvec as cu
+from cuvec import dev_sync
 
+cu = importorskip("cuvec.swigcuvec")
 shape = 127, 344, 344
+
+
+@mark.parametrize("tp", list(cu.typecodes))
+def test_SWIGVector_asarray(tp):
+    v = cu.SWIGVector(tp, 1337)
+    assert repr(v) == f"SWIGVector('{tp}', 1337)"
+    a = np.asarray(v)
+    assert not a.any()
+    a[:7] = 42
+    b = np.asarray(v)
+    assert (b[:7] == 42).all()
+    assert not b[7:].any()
+    assert a.dtype == np.dtype(tp)
+    del a, b, v
+
+
+def test_strides():
+    a = cu.zeros(shape)
+    assert a.shape == shape
+    assert a.strides == (473344, 1376, 4)
 
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])
@@ -34,15 +55,16 @@ def test_CuVec_creation(caplog):
     caplog.set_level(logging.DEBUG)
     caplog.clear()
     v = cu.CuVec(np.ones(shape, dtype='h'))
-    assert [i[1:] for i in caplog.record_tuples] == [(10, 'copy'),
-                                                     (10, "wrap raw <class 'Vector_h'>")]
+    assert [i[1:] for i in caplog.record_tuples] == [
+        (10, 'copy'), (10, "wrap swraw <class 'cuvec.swigcuvec.SWIGVector'>")]
     assert v.shape == shape
     assert v.dtype.char == 'h'
     assert (v == 1).all()
 
     caplog.clear()
     v = cu.zeros(shape, 'd')
-    assert [i[1:] for i in caplog.record_tuples] == [(10, "wrap raw <class 'Vector_d'>")]
+    assert [i[1:] for i in caplog.record_tuples] == [
+        (10, "wrap swraw <class 'cuvec.swigcuvec.SWIGVector'>")]
 
     caplog.clear()
     v[0, 0, 0] = 1
@@ -64,23 +86,29 @@ def test_asarray():
     w = cu.CuVec(v)
     assert w.cuvec == v.cuvec
     assert (w == v).all()
-    assert np.asarray(w.cuvec).data == np.asarray(v.cuvec).data
-    x = cu.asarray(w.cuvec)
+    assert str(w.swvec) == str(v.swvec)
+    assert np.asarray(w.swvec).data == np.asarray(v.swvec).data
+    x = cu.asarray(w.swvec)
+    x.resize(w.shape)
     assert x.cuvec == v.cuvec
     assert (x == v).all()
-    assert np.asarray(x.cuvec).data == np.asarray(v.cuvec).data
+    assert str(x.swvec) == str(v.swvec)
+    assert np.asarray(x.swvec).data == np.asarray(v.swvec).data
     y = cu.asarray(x.tolist())
     assert y.cuvec != v.cuvec
     assert (y == v).all()
-    assert np.asarray(y.cuvec).data == np.asarray(v.cuvec).data
+    assert str(y.swvec) != str(v.swvec)
+    assert np.asarray(y.swvec).data == np.asarray(v.swvec).data
     z = cu.asarray(v[:])
     assert z.cuvec != v.cuvec
     assert (z == v[:]).all()
-    assert np.asarray(z.cuvec).data == np.asarray(v.cuvec).data
+    assert str(z.swvec) != str(v.swvec)
+    assert np.asarray(z.swvec).data == np.asarray(v.swvec).data
     s = cu.asarray(v[1:])
     assert s.cuvec != v.cuvec
     assert (s == v[1:]).all()
-    assert np.asarray(s.cuvec).data != np.asarray(v.cuvec).data
+    assert str(s.swvec) != str(v.swvec)
+    assert np.asarray(s.swvec).data != np.asarray(v.swvec).data
 
 
 def test_cuda_array_interface():
@@ -91,12 +119,37 @@ def test_cuda_array_interface():
     c = cupy.asarray(v)
     assert (c == v).all()
     c[0, 0, 0] = 1
+    dev_sync()
     assert c[0, 0, 0] == v[0, 0, 0]
     c[0, 0, 0] = 0
+    dev_sync()
     assert c[0, 0, 0] == v[0, 0, 0]
+
+    d = cupy.asarray(v.swvec)
+    d[0] = 1
+    dev_sync()
+    assert d[0] == v[0, 0, 0]
+    d[0] = 0
+    dev_sync()
+    assert d[0] == v[0, 0, 0]
 
     ndarr = v + 1
     assert ndarr.shape == v.shape
     assert ndarr.dtype == v.dtype
     with raises(AttributeError):
         ndarr.__cuda_array_interface__
+
+
+def test_increment():
+    # `example_swig` is defined in ../cuvec/src/example_swig/
+    from cuvec.example_swig import increment_f
+    a = cu.zeros(shape, 'f')
+    assert (a == 0).all()
+    increment_f(a.cuvec, a.cuvec)
+    assert (a == 1).all()
+
+    a[:] = 0
+    assert (a == 0).all()
+
+    res = cu.asarray(increment_f(a.cuvec))
+    assert (res == 1).all()

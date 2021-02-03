@@ -5,6 +5,7 @@
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
 
+#include "cuda_runtime.h"
 #include <cstdio>  // fprintf
 #include <cstdlib> // std::size_t
 #include <limits>  // std::numeric_limits
@@ -12,7 +13,7 @@
 #include <vector>  // std::vector
 
 namespace cuvec {
-void HandleError(cudaError_t err, const char *file, int line) {
+static void HandleError(cudaError_t err, const char *file, int line) {
   if (err != cudaSuccess) {
     fprintf(stderr, "%s in %s at line %d\n", cudaGetErrorString(err), file, line);
     exit(EXIT_FAILURE);
