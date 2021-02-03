@@ -11,24 +11,21 @@
 #include "cuvec.cuh"    // CuAlloc
 #include "cuda_fp16.h"  // __half
 
-template<class T> size_t data(std::vector<T, CuAlloc<T>> &vec){
+template<class T> size_t data(CuVec<T> &vec){
   return (size_t) vec.data();
 };
 %}
 
-template<class T> size_t data(std::vector<T, CuAlloc<T>> &vec);
+/// `%define X Y` rather than `using X = Y;`
+/// due to https://github.com/swig/swig/issues/1058
+%define CuVec(T) std::vector<T, CuAlloc<T>> %enddef
 
-// `%define X Y` rather than `using X = Y;`
-// due to https://github.com/swig/swig/issues/1058
-%define CuVec(T)
-std::vector<T, CuAlloc<T>>
-%enddef
+template<class T> size_t data(CuVec(T) &vec);
 
 %define MKCUVEC(T, typechar)
 %template(CuVec_ ## typechar) CuVec(T);
 %template(CuVec_ ## typechar ## _data) data<T>;
 %enddef
-
 MKCUVEC(signed char, b)
 MKCUVEC(unsigned char, B)
 MKCUVEC(char, c)
