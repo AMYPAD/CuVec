@@ -37,7 +37,25 @@ def timer(func):
     return inner
 
 
+def retry_on_except(n=3):
+    """decroator for retrying `n` times before raising Exceptions"""
+    def wrapper(func):
+        @wraps(func)
+        def test_inner(*args, **kwargs):
+            for i in range(1, n + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception:
+                    if i >= n:
+                        raise
+
+        return test_inner
+
+    return wrapper
+
+
 @mark.parametrize("shape,cu,increment", [((1337, 42), cu, cuinc), (1337 * 42, sw, swinc)])
+@retry_on_except()
 def test_perf(shape, cu, increment, quiet=False):
     if cu is None:
         skip("SWIG not available")
