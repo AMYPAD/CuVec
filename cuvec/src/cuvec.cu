@@ -52,58 +52,58 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
 
   if (PyType_Ready(&Vector_b.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_b.tp_obj);
-  PyModule_AddObject(m, Vector_b.name.c_str(), (PyObject *)&Vector_b.tp_obj);
+  PyModule_AddObject(m, Vector_b.tp_obj.tp_name, (PyObject *)&Vector_b.tp_obj);
 
   if (PyType_Ready(&Vector_B.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_B.tp_obj);
-  PyModule_AddObject(m, Vector_B.name.c_str(), (PyObject *)&Vector_B.tp_obj);
+  PyModule_AddObject(m, Vector_B.tp_obj.tp_name, (PyObject *)&Vector_B.tp_obj);
 
   if (PyType_Ready(&Vector_c.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_c.tp_obj);
-  PyModule_AddObject(m, Vector_c.name.c_str(), (PyObject *)&Vector_c.tp_obj);
+  PyModule_AddObject(m, Vector_c.tp_obj.tp_name, (PyObject *)&Vector_c.tp_obj);
 
   // #ifdef _Bool
   // #endif
 
   if (PyType_Ready(&Vector_h.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_h.tp_obj);
-  PyModule_AddObject(m, Vector_h.name.c_str(), (PyObject *)&Vector_h.tp_obj);
+  PyModule_AddObject(m, Vector_h.tp_obj.tp_name, (PyObject *)&Vector_h.tp_obj);
 
   if (PyType_Ready(&Vector_H.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_H.tp_obj);
-  PyModule_AddObject(m, Vector_H.name.c_str(), (PyObject *)&Vector_H.tp_obj);
+  PyModule_AddObject(m, Vector_H.tp_obj.tp_name, (PyObject *)&Vector_H.tp_obj);
 
   if (PyType_Ready(&Vector_i.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_i.tp_obj);
-  PyModule_AddObject(m, Vector_i.name.c_str(), (PyObject *)&Vector_i.tp_obj);
+  PyModule_AddObject(m, Vector_i.tp_obj.tp_name, (PyObject *)&Vector_i.tp_obj);
 
   if (PyType_Ready(&Vector_I.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_I.tp_obj);
-  PyModule_AddObject(m, Vector_I.name.c_str(), (PyObject *)&Vector_I.tp_obj);
+  PyModule_AddObject(m, Vector_I.tp_obj.tp_name, (PyObject *)&Vector_I.tp_obj);
 
   if (PyType_Ready(&Vector_q.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_q.tp_obj);
-  PyModule_AddObject(m, Vector_q.name.c_str(), (PyObject *)&Vector_q.tp_obj);
+  PyModule_AddObject(m, Vector_q.tp_obj.tp_name, (PyObject *)&Vector_q.tp_obj);
   Py_INCREF(&Vector_q.tp_obj);
   PyModule_AddObject(m, "Vector_l", (PyObject *)&Vector_q.tp_obj);
 
   if (PyType_Ready(&Vector_Q.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_Q.tp_obj);
-  PyModule_AddObject(m, Vector_Q.name.c_str(), (PyObject *)&Vector_Q.tp_obj);
+  PyModule_AddObject(m, Vector_Q.tp_obj.tp_name, (PyObject *)&Vector_Q.tp_obj);
   Py_INCREF(&Vector_Q.tp_obj);
   PyModule_AddObject(m, "Vector_L", (PyObject *)&Vector_Q.tp_obj);
 
   if (PyType_Ready(&Vector_e.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_e.tp_obj);
-  PyModule_AddObject(m, Vector_e.name.c_str(), (PyObject *)&Vector_e.tp_obj);
+  PyModule_AddObject(m, Vector_e.tp_obj.tp_name, (PyObject *)&Vector_e.tp_obj);
 
   if (PyType_Ready(&Vector_f.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_f.tp_obj);
-  PyModule_AddObject(m, Vector_f.name.c_str(), (PyObject *)&Vector_f.tp_obj);
+  PyModule_AddObject(m, Vector_f.tp_obj.tp_name, (PyObject *)&Vector_f.tp_obj);
 
   if (PyType_Ready(&Vector_d.tp_obj) < 0) return NULL;
   Py_INCREF(&Vector_d.tp_obj);
-  PyModule_AddObject(m, Vector_d.name.c_str(), (PyObject *)&Vector_d.tp_obj);
+  PyModule_AddObject(m, Vector_d.tp_obj.tp_name, (PyObject *)&Vector_d.tp_obj);
 
   PyObject *author = Py_BuildValue("s", "Casper da Costa-Luis (https://github.com/casperdcl)");
   if (author == NULL) return NULL;
