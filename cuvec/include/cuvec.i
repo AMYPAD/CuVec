@@ -11,7 +11,7 @@
 #include "cuvec.cuh"    // CuAlloc
 #include "cuda_fp16.h"  // __half
 
-template<class T> size_t data(CuVec<T> &vec){
+template<class T> size_t data(CuVec<T> &vec) {
   return (size_t) vec.data();
 };
 %}

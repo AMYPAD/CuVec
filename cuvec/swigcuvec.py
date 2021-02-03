@@ -70,6 +70,12 @@ class SWIGVector:
     def __cuda_array_interface__(self):
         return self.__array_interface__
 
+    def __repr__(self):
+        return f"{type(self).__name__}('{self.typechar}', {len(self)})"
+
+    def __str__(self):
+        return f"{np.dtype(self.typechar)}[{len(self)}] at 0x{self.data():x}"
+
 
 vec_types = {np.dtype(c): partial(SWIGVector, c) for c in typecodes}
 

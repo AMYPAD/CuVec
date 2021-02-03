@@ -12,7 +12,7 @@ shape = 127, 344, 344
 @mark.parametrize("tp", list(cu.typecodes))
 def test_SWIGVector_asarray(tp):
     v = cu.SWIGVector(tp, 1337)
-    # assert str(v) == f"Vector_{tp}(1337)"
+    assert repr(v) == f"SWIGVector('{tp}', 1337)"
     a = np.asarray(v)
     assert not a.any()
     a[:7] = 42
@@ -86,23 +86,28 @@ def test_asarray():
     w = cu.CuVec(v)
     assert w.cuvec == v.cuvec
     assert (w == v).all()
+    assert str(w.swvec) == str(v.swvec)
     assert np.asarray(w.swvec).data == np.asarray(v.swvec).data
     x = cu.asarray(w.swvec)
     x.resize(w.shape)
     assert x.cuvec == v.cuvec
     assert (x == v).all()
+    assert str(x.swvec) == str(v.swvec)
     assert np.asarray(x.swvec).data == np.asarray(v.swvec).data
     y = cu.asarray(x.tolist())
     assert y.cuvec != v.cuvec
     assert (y == v).all()
+    assert str(y.swvec) != str(v.swvec)
     assert np.asarray(y.swvec).data == np.asarray(v.swvec).data
     z = cu.asarray(v[:])
     assert z.cuvec != v.cuvec
     assert (z == v[:]).all()
+    assert str(z.swvec) != str(v.swvec)
     assert np.asarray(z.swvec).data == np.asarray(v.swvec).data
     s = cu.asarray(v[1:])
     assert s.cuvec != v.cuvec
     assert (s == v[1:]).all()
+    assert str(s.swvec) != str(v.swvec)
     assert np.asarray(s.swvec).data != np.asarray(v.swvec).data
 
 
