@@ -142,14 +142,14 @@ def test_cuda_array_interface():
 
 def test_increment():
     # `example_swig` is defined in ../cuvec/src/example_swig/
-    from cuvec.example_swig import increment_f
-    a = cu.zeros(shape, 'f')
+    from cuvec.example_swig import increment2d_f
+    a = cu.zeros((1337, 42), 'f')
     assert (a == 0).all()
-    increment_f(a.cuvec, a.cuvec)
+    increment2d_f(a.cuvec, False, a.cuvec)
     assert (a == 1).all()
 
     a[:] = 0
     assert (a == 0).all()
 
-    res = cu.asarray(increment_f(a.cuvec))
+    res = cu.asarray(increment2d_f(a.cuvec))
     assert (res == 1).all()
