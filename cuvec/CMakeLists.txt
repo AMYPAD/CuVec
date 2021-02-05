@@ -67,6 +67,31 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
 install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
   NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
 
+# alternative swvec package
+if(SWIG_FOUND)
+  include_directories(${CUDAToolkit_INCLUDE_DIRS})
+  set_source_files_properties(src/swvec.i PROPERTIES CPLUSPLUS ON)
+  set_source_files_properties(src/swvec.i PROPERTIES USE_TARGET_INCLUDE_DIRECTORIES ON)
+  swig_add_library(swvec LANGUAGE python SOURCES src/swvec.i)
+  swig_link_libraries(swvec CUDA::cudart_static)
+  target_include_directories(swvec PUBLIC
+    "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
+    "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
+  if(SKBUILD)
+    python_extension_module(swvec)
+  endif()
+  set_target_properties(swvec PROPERTIES
+    CXX_STANDARD 11
+    VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR}
+    INTERFACE_swvec_MAJOR_VERSION ${CMAKE_PROJECT_VERSION_MAJOR})
+  set_property(TARGET swvec APPEND PROPERTY COMPATIBLE_INTERFACE_STRING swvec_MAJOR_VERSION)
+  install(TARGETS swvec EXPORT swvecTargets
+    INCLUDES DESTINATION ${CMAKE_PROJECT_NAME}/include
+    LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
+  install(EXPORT swvecTargets FILE AMYPADswvecTargets.cmake
+    NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
+endif()
+
 add_subdirectory(src/example_mod)
 add_subdirectory(src/example_swig)
 

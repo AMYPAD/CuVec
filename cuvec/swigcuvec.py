@@ -1,5 +1,5 @@
 """
-Thin wrappers around `example_swig` C++/CUDA module
+Thin wrappers around `swvec` C++/CUDA module
 
 A SWIG-driven equivalent of the CPython Extension API-driven `pycuvec.py`
 """
@@ -12,7 +12,7 @@ from textwrap import dedent
 
 import numpy as np
 
-from . import example_swig as sw
+from . import swvec as sw
 
 log = logging.getLogger(__name__)
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
