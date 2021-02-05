@@ -4,17 +4,15 @@ from time import time
 import numpy as np
 from pytest import mark, skip
 
-from cuvec import pycuvec as cu
-
 # `example_mod` is defined in ../cuvec/src/example_mod/
-from cuvec.example_mod import increment2d_f as cuinc
+from cuvec import example_mod
+from cuvec import pycuvec as cu
 
 try:
     # alternative to `cu`
-    from cuvec import swigcuvec as sw
-
     # `example_swig` is defined in ../cuvec/src/example_swig/
-    from cuvec.example_swig import increment2d_f as swinc
+    from cuvec import example_swig
+    from cuvec import swigcuvec as sw
 except ImportError:
     sw, swinc = None, None
 
@@ -54,9 +52,9 @@ def retry_on_except(n=3):
     return wrapper
 
 
-@mark.parametrize("shape,cu,increment", [((1337, 42), cu, cuinc), ((1337, 42), sw, swinc)])
+@mark.parametrize("cu,ex", [(cu, example_mod), (sw, example_swig)])
 @retry_on_except()
-def test_perf(shape, cu, increment, quiet=False):
+def test_perf(cu, ex, shape=(1337, 42), quiet=False):
     if cu is None:
         skip("SWIG not available")
     overhead = np.mean([_time_overhead() for _ in range(100)])
@@ -70,17 +68,17 @@ def test_perf(shape, cu, increment, quiet=False):
 
     if not quiet:
         if cu is sw:
-            t['warmup'], res = timer(increment)(src.cuvec, True)
+            t['warmup'], res = timer(ex.increment2d_f)(src.cuvec, True)
             t['> create dst'], t['> kernel'] = cu.asarray(res)[0, :2]
         else:
-            t['warmup'], (t['> create dst'], t['> kernel'], _) = timer(increment)(src.cuvec)
+            t['warmup'], (t['> create dst'], t['> kernel'], _) = timer(ex.increment2d_f)(src.cuvec)
     if cu is sw:
-        t['call ext'], res = timer(increment)(src.cuvec, True)
+        t['call ext'], res = timer(ex.increment2d_f)(src.cuvec, True)
         t['- create dst'], t['- kernel'] = None, None
         t['view'], dst = timer(cu.asarray)(res)
         t['- create dst'], t['- kernel'] = dst[0, :2]
     else:
-        t['call ext'], (t['- create dst'], t['- kernel'], res) = timer(increment)(src.cuvec)
+        t['call ext'], (t['- create dst'], t['- kernel'], res) = timer(ex.increment2d_f)(src.cuvec)
         t['view'], dst = timer(cu.asarray)(res)
 
     if not quiet:
@@ -101,12 +99,12 @@ if __name__ == "__main__":
         trange = range
     nruns = 1000
 
-    for args in [((1000, 1000), cu, cuinc), ((1000, 1000), sw, swinc)]:
+    for args in [(cu, example_mod), (sw, example_swig)]:
         print(f"# One run ({args[1].__name__}):")
-        test_perf(*args)
+        test_perf(*args, shape=(1000, 1000))
 
         print(f"# Average over {nruns} runs:")
-        runs = [test_perf(*args, quiet=True) for _ in trange(nruns)]
+        runs = [test_perf(*args, shape=(1000, 1000), quiet=True) for _ in trange(nruns)]
         pretty = {
             'create src': 'Create input', 'assign': 'Assign', 'call ext': 'Call extension',
             '- create dst': '-- Create output', '- kernel': '-- Launch kernel', 'view': 'View'}
