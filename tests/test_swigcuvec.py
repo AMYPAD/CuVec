@@ -11,20 +11,21 @@ shape = 127, 344, 344
 
 @mark.parametrize("tp", list(cu.typecodes))
 def test_SWIGVector_asarray(tp):
-    v = cu.SWIGVector(tp, 1337)
-    assert repr(v) == f"SWIGVector('{tp}', 1337)"
+    v = cu.SWIGVector(tp, (1, 2, 3))
+    assert repr(v) == f"SWIGVector('{tp}', (1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
-    a[:7] = 42
+    a[0, 0] = 42
     b = np.asarray(v)
-    assert (b[:7] == 42).all()
-    assert not b[7:].any()
+    assert (b[0, 0] == 42).all()
+    assert not b[1:, 1:].any()
     assert a.dtype == np.dtype(tp)
     del a, b, v
 
 
-def test_strides():
-    a = cu.zeros(shape)
+def test_PyCuVec_strides():
+    v = cu.SWIGVector('f', shape)
+    a = np.asarray(v)
     assert a.shape == shape
     assert a.strides == (473344, 1376, 4)
 
@@ -89,7 +90,6 @@ def test_asarray():
     assert str(w.swvec) == str(v.swvec)
     assert np.asarray(w.swvec).data == np.asarray(v.swvec).data
     x = cu.asarray(w.swvec)
-    x.resize(w.shape)
     assert x.cuvec == v.cuvec
     assert (x == v).all()
     assert str(x.swvec) == str(v.swvec)
@@ -126,12 +126,12 @@ def test_cuda_array_interface():
     assert c[0, 0, 0] == v[0, 0, 0]
 
     d = cupy.asarray(v.swvec)
-    d[0] = 1
+    d[0, 0, 0] = 1
     dev_sync()
-    assert d[0] == v[0, 0, 0]
-    d[0] = 0
+    assert d[0, 0, 0] == v[0, 0, 0]
+    d[0, 0, 0] = 0
     dev_sync()
-    assert d[0] == v[0, 0, 0]
+    assert d[0, 0, 0] == v[0, 0, 0]
 
     ndarr = v + 1
     assert ndarr.shape == v.shape

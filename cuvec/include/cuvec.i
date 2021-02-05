@@ -1,30 +1,32 @@
 /**
- * SWIG template header wrapping `CuVec<T>`. Provides:
- *     CuVec(T)
+ * SWIG template header wrapping `SwigCuVec<T>` as defined in "cuvec.cuh"
  * for external use via `%include "cuvec.i"`.
- * Note that `CuVec(T)` is `%define`d to be `CuVec<T>`, which in turn is
- * defined in "cuvec.cuh"
  */
 %include "std_vector.i"
 
 %{
-#include "cuvec.cuh"    // CuAlloc
-#include "cuda_fp16.h"  // __half
-
-template<class T> size_t data(CuVec<T> &vec) {
-  return (size_t) vec.data();
-};
+#include "cuvec.cuh"   // SwigCuVec<T>
+#include "cuda_fp16.h" // __half
 %}
 
-/// `%define X Y` rather than `using X = Y;`
-/// due to https://github.com/swig/swig/issues/1058
-%define CuVec(T) std::vector<T, CuAlloc<T>> %enddef
+template <class T> struct SwigCuVec {
+  CuVec<T> vec;
+  std::vector<size_t> shape;
+};
+template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
+template <class T> void SwigCuVec_del(SwigCuVec<T> *self);
+template <class T> T *SwigCuVec_data(SwigCuVec<T> *self);
+template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self);
+template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self);
 
-template<class T> size_t data(CuVec(T) &vec);
-
+%template(SwigCuVec_Shape) std::vector<size_t>;
 %define MKCUVEC(T, typechar)
-%template(CuVec_ ## typechar) CuVec(T);
-%template(CuVec_ ## typechar ## _data) data<T>;
+%template(SwigCuVec_ ## typechar) SwigCuVec<T>;
+%template(SwigCuVec_ ## typechar ## _new) SwigCuVec_new<T>;
+%template(SwigCuVec_ ## typechar ## _del) SwigCuVec_del<T>;
+%template(SwigCuVec_ ## typechar ## _data) SwigCuVec_data<T>;
+%template(SwigCuVec_ ## typechar ## _address) SwigCuVec_address<T>;
+%template(SwigCuVec_ ## typechar ## _shape) SwigCuVec_shape<T>;
 %enddef
 MKCUVEC(signed char, b)
 MKCUVEC(unsigned char, B)
