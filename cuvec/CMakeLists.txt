@@ -2,13 +2,28 @@ cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 if("${CUVEC_BUILD_VERSION}" STREQUAL "")
   set(CUVEC_BUILD_VERSION 2 CACHE STRING "version" FORCE)
 endif()
-project(cuvec LANGUAGES C CXX CUDA VERSION "${CUVEC_BUILD_VERSION}")
+project(cuvec LANGUAGES C CXX VERSION "${CUVEC_BUILD_VERSION}")
+
+option(CUVEC_CUDA_OPTIONAL "Make CUDA optional rahter than forced" OFF)
 
 cmake_policy(PUSH)
 cmake_policy(SET CMP0074 NEW)  # <PackageName>_ROOT hints for find_package
 cmake_policy(SET CMP0104 NEW)  # CMAKE_CUDA_ARCHITECTURES
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED) # NumPy
-find_package(CUDAToolkit REQUIRED)
+if(NOT CUVEC_CUDA_OPTIONAL)
+  find_package(CUDAToolkit REQUIRED)
+  enable_language(CUDA)
+else()
+  find_package(CUDAToolkit)
+  if(NOT CUDAToolkit_FOUND)
+    message(WARNING "Could not find CUDA: using CPU")
+    add_compile_definitions(CUVEC_DISABLE_CUDA)
+    #list(APPEND CMAKE_CXX_SOURCE_FILE_EXTENSIONS cu)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      add_definitions("-x c++")
+    endif()
+  endif()
+endif()
 if(SKBUILD)
   find_package(PythonExtensions REQUIRED)
   set(LIB_TYPE "MODULE")
@@ -50,7 +65,12 @@ add_library(AMYPAD::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
-target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} CUDA::cudart_static)
+if(CUDAToolkit_FOUND)
+  target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} CUDA::cudart_static)
+else()
+  set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
+  target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES})
+endif()
 
 if(SKBUILD)
   python_extension_module(${PROJECT_NAME})
@@ -69,11 +89,16 @@ install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
 
 # alternative swvec module
 if(SWIG_FOUND AND SKBUILD)
-  include_directories(${CUDAToolkit_INCLUDE_DIRS})
+  if(CUDAToolkit_FOUND)
+    include_directories(${CUDAToolkit_INCLUDE_DIRS})
+    set_source_files_properties(src/swvec.i PROPERTIES COMPILE_DEFINITIONS _CUVEC_HALF=__half)
+  endif()
   set_source_files_properties(src/swvec.i PROPERTIES CPLUSPLUS ON)
   set_source_files_properties(src/swvec.i PROPERTIES USE_TARGET_INCLUDE_DIRECTORIES ON)
   swig_add_library(swvec LANGUAGE python SOURCES src/swvec.i)
-  swig_link_libraries(swvec CUDA::cudart_static)
+  if(CUDAToolkit_FOUND)
+    swig_link_libraries(swvec CUDA::cudart_static)
+  endif()
   target_include_directories(swvec PUBLIC
     "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
     "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")

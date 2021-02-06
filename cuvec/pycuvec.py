@@ -6,37 +6,26 @@ from textwrap import dedent
 
 import numpy as np
 
-from .cuvec import (
-    PyCuVec_b,
-    PyCuVec_B,
-    PyCuVec_c,
-    PyCuVec_d,
-    PyCuVec_e,
-    PyCuVec_f,
-    PyCuVec_h,
-    PyCuVec_H,
-    PyCuVec_i,
-    PyCuVec_I,
-    PyCuVec_q,
-    PyCuVec_Q,
-)
+from . import cuvec as cu
 
 log = logging.getLogger(__name__)
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
-typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
+typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
 vec_types = {
-    np.dtype('int8'): PyCuVec_b,
-    np.dtype('uint8'): PyCuVec_B,
-    np.dtype('S1'): PyCuVec_c,
-    np.dtype('int16'): PyCuVec_h,
-    np.dtype('uint16'): PyCuVec_H,
-    np.dtype('int32'): PyCuVec_i,
-    np.dtype('uint32'): PyCuVec_I,
-    np.dtype('int64'): PyCuVec_q,
-    np.dtype('uint64'): PyCuVec_Q,
-    np.dtype('float16'): PyCuVec_e,
-    np.dtype('float32'): PyCuVec_f,
-    np.dtype('float64'): PyCuVec_d}
+    np.dtype('int8'): cu.PyCuVec_b,
+    np.dtype('uint8'): cu.PyCuVec_B,
+    np.dtype('S1'): cu.PyCuVec_c,
+    np.dtype('int16'): cu.PyCuVec_h,
+    np.dtype('uint16'): cu.PyCuVec_H,
+    np.dtype('int32'): cu.PyCuVec_i,
+    np.dtype('uint32'): cu.PyCuVec_I,
+    np.dtype('int64'): cu.PyCuVec_q,
+    np.dtype('uint64'): cu.PyCuVec_Q,
+    np.dtype('float32'): cu.PyCuVec_f,
+    np.dtype('float64'): cu.PyCuVec_d}
+if hasattr(cu, 'PyCuVec_e'):
+    typecodes += 'e'
+    vec_types[np.dtype('float16')] = cu.PyCuVec_e
 
 
 def cu_zeros(shape, dtype="float32"):

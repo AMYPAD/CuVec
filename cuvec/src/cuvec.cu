@@ -10,7 +10,9 @@
 /** functions */
 /// required before accessing on host
 static PyObject *dev_sync(PyObject *self, PyObject *args) {
+#ifndef CUVEC_DISABLE_CUDA
   cudaDeviceSynchronize();
+#endif
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -51,7 +53,9 @@ PyMODINIT_FUNC PyInit_cuvec(void) {
   _PYCUVEC_EXPOSE(unsigned int, I);
   _PYCUVEC_EXPOSE(long long, q);
   _PYCUVEC_EXPOSE(unsigned long long, Q);
-  _PYCUVEC_EXPOSE(__half, e);
+#ifdef _CUVEC_HALF
+  _PYCUVEC_EXPOSE(_CUVEC_HALF, e);
+#endif
   _PYCUVEC_EXPOSE(float, f);
   _PYCUVEC_EXPOSE(double, d);
 
