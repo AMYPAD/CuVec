@@ -5,6 +5,9 @@
  */
 #include "Python.h"
 #include "pycuvec.cuh" // PyCuVec
+#ifdef CUVEC_DISABLE_CUDA
+#include <chrono> // std::chrono
+#else
 /** functions */
 /// dst = src + 1
 __global__ void _d_incr(float *dst, float *src, int X, int Y) {
@@ -14,6 +17,7 @@ __global__ void _d_incr(float *dst, float *src, int X, int Y) {
   if (y >= Y) return;
   dst[y * X + x] = src[y * X + x] + 1;
 }
+#endif // CUVEC_DISABLE_CUDA
 static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyCuVec<float> *dst = NULL;
   PyCuVec<float> *src = NULL;
@@ -28,11 +32,16 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
     return NULL;
   }
 
+#ifndef CUVEC_DISABLE_CUDA
   cudaEvent_t eStart, eAlloc, eKern;
   cudaEventCreate(&eStart);
   cudaEventCreate(&eAlloc);
   cudaEventCreate(&eKern);
   cudaEventRecord(eStart);
+#else
+  auto eStart = std::chrono::steady_clock::now();
+#endif
+
   if (dst) {
     if (N != dst->shape) {
       PyErr_SetString(PyExc_IndexError, "`output` must be same shape as `src`");
@@ -42,6 +51,8 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
     dst = PyCuVec_zeros_like(src);
     if (!dst) return NULL;
   }
+
+#ifndef CUVEC_DISABLE_CUDA
   cudaEventRecord(eAlloc);
   dim3 thrds((N[1] + 31) / 32, (N[0] + 31) / 32);
   dim3 blcks(32, 32);
@@ -52,7 +63,15 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
   float alloc_ms, kernel_ms;
   cudaEventElapsedTime(&alloc_ms, eStart, eAlloc);
   cudaEventElapsedTime(&kernel_ms, eAlloc, eKern);
-  // fprintf(stderr, "%.3f ms, %.3f ms\n", alloc_ms, kernel_ms);
+// fprintf(stderr, "%.3f ms, %.3f ms\n", alloc_ms, kernel_ms);
+#else
+  auto eAlloc = std::chrono::steady_clock::now();
+  for (size_t i = 0; i < src->vec.size(); i++) dst->vec[i] = src->vec[i] + 1;
+  auto eKern = std::chrono::steady_clock::now();
+  double alloc_ms = std::chrono::duration<double, std::milli>(eAlloc - eStart).count();
+  double kernel_ms = std::chrono::duration<double, std::milli>(eKern - eAlloc).count();
+// fprintf(stderr, "%.3lf ms, %.3lf ms\n", alloc_ms, kernel_ms);
+#endif
   return Py_BuildValue("ddO", double(alloc_ms), double(kernel_ms), (PyObject *)dst);
 }
 static PyMethodDef example_methods[] = {

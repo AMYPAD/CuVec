@@ -10,7 +10,16 @@
 }
 
 %{
+#ifndef _CUVEC_HALF
+#ifndef CUVEC_DISABLE_CUDA
 #include "cuda_fp16.h" // __half
+#define _CUVEC_HALF __half
+#else // CUVEC_DISABLE_CUDA
+#ifdef __fp16
+#define _CUVEC_HALF __fp16
+#endif // __fp16
+#endif // CUVEC_DISABLE_CUDA
+#endif // _CUVEC_HALF
 %}
 
 %include "cuvec.i" // SwigCuVec<T>
@@ -39,6 +48,8 @@ MKCUVEC(int, i)
 MKCUVEC(unsigned int, I)
 MKCUVEC(long long, q)
 MKCUVEC(unsigned long long, Q)
-MKCUVEC(__half, e)
+#ifdef _CUVEC_HALF
+MKCUVEC(_CUVEC_HALF, e)
+#endif
 MKCUVEC(float, f)
 MKCUVEC(double, d)

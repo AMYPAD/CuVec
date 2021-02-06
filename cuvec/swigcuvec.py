@@ -16,7 +16,7 @@ from . import swvec as sw
 
 log = logging.getLogger(__name__)
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
-typecodes = ''.join(i for i in array.typecodes if i not in "ulL") + "e"
+typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
 RE_SWIG_TYPE = r"<Swig Object of type 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>"
 SWIG_TYPES = {
     "signed char": 'b',
@@ -28,9 +28,11 @@ SWIG_TYPES = {
     "unsigned int": 'I',
     "long long": 'q',
     "unsigned long long": 'Q',
-    "__half": 'e',
     "float": 'f',
     "double": 'd'} # yapf: disable
+if hasattr(sw, 'SwigCuVec_e_new'):
+    typecodes += 'e'
+    SWIG_TYPES["__half"] = 'e'
 
 
 class SWIGVector:
