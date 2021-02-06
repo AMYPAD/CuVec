@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 if("${CUVEC_BUILD_VERSION}" STREQUAL "")
-  set(CUVEC_BUILD_VERSION 1 CACHE STRING "version" FORCE)
+  set(CUVEC_BUILD_VERSION 2 CACHE STRING "version" FORCE)
 endif()
 project(cuvec LANGUAGES C CXX CUDA VERSION "${CUVEC_BUILD_VERSION}")
 
@@ -66,6 +66,27 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
   LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
 install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
   NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
+
+# alternative swvec module
+if(SWIG_FOUND AND SKBUILD)
+  include_directories(${CUDAToolkit_INCLUDE_DIRS})
+  set_source_files_properties(src/swvec.i PROPERTIES CPLUSPLUS ON)
+  set_source_files_properties(src/swvec.i PROPERTIES USE_TARGET_INCLUDE_DIRECTORIES ON)
+  swig_add_library(swvec LANGUAGE python SOURCES src/swvec.i)
+  swig_link_libraries(swvec CUDA::cudart_static)
+  target_include_directories(swvec PUBLIC
+    "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
+    "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
+  python_extension_module(swvec)
+  set_target_properties(swvec PROPERTIES
+    CXX_STANDARD 11
+    VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR}
+    INTERFACE_swvec_MAJOR_VERSION ${CMAKE_PROJECT_VERSION_MAJOR})
+  set_property(TARGET swvec APPEND PROPERTY COMPATIBLE_INTERFACE_STRING swvec_MAJOR_VERSION)
+  install(TARGETS swvec
+    INCLUDES DESTINATION ${CMAKE_PROJECT_NAME}/include
+    LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
+endif()
 
 add_subdirectory(src/example_mod)
 add_subdirectory(src/example_swig)

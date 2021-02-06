@@ -9,10 +9,10 @@
   }
 }
 
-%include "cuvec.i" // %{ CuVec<T> %}, CuVec(T)
+%include "cuvec.i" // SwigCuVec<T>
 %{
 /// signatures from "example_swig.cu"
-CuVec<float> *increment_f(CuVec<float> &src, CuVec<float> *output = NULL, bool timing = false);
+SwigCuVec<float> *increment2d_f(SwigCuVec<float> &src, SwigCuVec<float> *output = NULL, bool timing = false);
 %}
 /// expose definitions
-CuVec(float) *increment_f(CuVec(float) &src, CuVec(float) *output = NULL, bool timing = false);
+SwigCuVec<float> *increment2d_f(SwigCuVec<float> &src, SwigCuVec<float> *output = NULL, bool timing = false);
