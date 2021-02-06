@@ -54,6 +54,7 @@ Creating
 .. code:: python
 
     import cuvec
+    # from cuvec import swigcuvec as cuvec  # SWIG alternative
     arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
     # print(sum(arr))
     # some_numpy_func(arr)
@@ -65,7 +66,7 @@ Creating
 .. code:: cpp
 
     #include "Python.h"
-    #include "pycuvec.cuh" // requires nvcc
+    #include "pycuvec.cuh"
     PyObject *obj = (PyObject *)PyCuVec_zeros<float>({1337, 42});
     // don't forget to Py_INCREF(obj) if returning it.
 
@@ -74,11 +75,25 @@ Creating
     // PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
     // PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
 
+**C++/SWIG API**
+
+.. code:: cpp
+
+    #include "cuvec.cuh"
+    SwigCuVec<float> *swv = SwigCuVec_new<float>({1337, 42});
+
+    /// N.B.: convenience functions provided by "cuvec.cuh":
+    // SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
+    // void SwigCuVec_del(SwigCuVec<T> *swv);
+    // T *SwigCuVec_data(SwigCuVec<T> *swv);
+    // size_t SwigCuVec_address(SwigCuVec<T> *swv);
+    // std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *swv);
+
 **C++/CUDA**
 
 .. code:: cpp
 
-    #include "cuvec.cuh" // requires nvcc
+    #include "cuvec.cuh"
     CuVec<float> vec(1337 * 42); // like std::vector<float>
 
 Converting
@@ -118,6 +133,30 @@ The following involve no memory copies.
     /// output: `type *arr`
     float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
 
+**Python** to **SWIG API**
+
+.. code:: python
+
+    # import cuvec, my_custom_lib
+    # arr = cuvec.swigcuvec.zeros((1337, 42), "float32")
+    my_custom_lib.some_cpython_api_func(arr.cuvec)
+
+**SWIG API** to **Python**
+
+.. code:: python
+
+    import cuvec, my_custom_lib
+    arr = cuvec.swigcuvec.asarray(my_custom_lib.some_cpython_api_func())
+
+**SWIG API** to **C++**
+
+.. code:: cpp
+
+    /// input: `SwigCuVec<type> *swv`
+    /// output: `CuVec<type> vec`, `std::vector<size_> shape`
+    CuVec<float> &vec = swv->vec; // like std::vector<float>
+    std::vector<size_t> &shape = swv->shape;
+
 External Projects
 ~~~~~~~~~~~~~~~~~
 
@@ -127,6 +166,8 @@ Python Projects
 Python objects (``arr``, returned by ``cuvec.zeros()``, ``cuvec.asarray()``, or ``cuvec.copy()``) contain all the attributes of a ``numpy.ndarray``.
 Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while
 ``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
+
+When using the SWIG alternative module, ``arr.cuvec`` is a wrapper around ``SwigCuVec<type> *``.
 
 C++/CUDA Projects
 -----------------
