@@ -6,7 +6,6 @@
 
 %{
 #include "cuvec.cuh"   // SwigCuVec<T>
-#include "cuda_fp16.h" // __half
 %}
 
 template <class T> struct SwigCuVec {

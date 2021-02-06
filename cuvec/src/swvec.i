@@ -9,6 +9,10 @@
   }
 }
 
+%{
+#include "cuda_fp16.h" // __half
+%}
+
 %include "cuvec.i" // SwigCuVec<T>
 
 template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
