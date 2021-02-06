@@ -68,12 +68,12 @@ def test_perf(cu, ex, shape=(1337, 42), quiet=False):
 
     if not quiet:
         if cu is sw:
-            t['warmup'], res = timer(ex.increment2d_f)(src.cuvec, True)
+            t['warmup'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
             t['> create dst'], t['> kernel'] = cu.asarray(res)[0, :2]
         else:
             t['warmup'], (t['> create dst'], t['> kernel'], _) = timer(ex.increment2d_f)(src.cuvec)
     if cu is sw:
-        t['call ext'], res = timer(ex.increment2d_f)(src.cuvec, True)
+        t['call ext'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
         t['- create dst'], t['- kernel'] = None, None
         t['view'], dst = timer(cu.asarray)(res)
         t['- create dst'], t['- kernel'] = dst[0, :2]
