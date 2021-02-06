@@ -52,10 +52,12 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python }}
-    - name: pip install -U -e .[dev]
+    - name: pip install [setup_requires,dev]
       run: |
-        python -c 'import configparser as c; p=c.ConfigParser(); p.read("setup.cfg"); print(" ".join(i for i in (p["options"]["setup_requires"].split() + p["options.extras_require"]["dev"].split()) if "cuda" not in i))' | xargs pip install
-        python setup.py build develop -- -DCUVEC_CUDA_OPTIONAL=1
+        # numpy won't easy_install on py3.6 so use pip
+        python -c 'import configparser as c; p=c.ConfigParser(); p.read("setup.cfg"); print(" ".join(i for i in (p["options"]["setup_requires"].split() + p["options.extras_require"]["dev"].split()) if "cuda" not in i))' | xargs pip install numpy
+        dirname $(which ninja) >> $GITHUB_PATH
+    - run: python setup.py build develop -- -DCUVEC_CUDA_OPTIONAL=1
     - run: pytest
     - run: codecov
   cuda:
