@@ -54,8 +54,8 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: pip install -U -e .[dev]
       run: |
-        python -c 'import configparser as c; p=c.ConfigParser(); p.read("setup.cfg"); print(" ".join(p["options"]["setup_requires"].split()))' | xargs pip install
-        python setup.py build develop easy_install cuvec[dev] -- -DCUVEC_CUDA_OPTIONAL=1
+        python -c 'import configparser as c; p=c.ConfigParser(); p.read("setup.cfg"); print(" ".join(i for i in (p["options"]["setup_requires"].split() + p["options.extras_require"]["dev"].split()) if "cuda" not in i))' | xargs pip install
+        python setup.py build develop -- -DCUVEC_CUDA_OPTIONAL=1
     - run: pytest
     - run: codecov
   cuda:
