@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-set(_supported_components improc)
+set(_supported_components cuvec)
 
 foreach(_comp ${AMYPAD@CMAKE_PROJECT_NAME@_FIND_COMPONENTS})
   if (NOT _comp IN_LIST _supported_components)
