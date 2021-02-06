@@ -40,11 +40,31 @@ jobs:
     - run: pre-commit run -a --show-diff-on-failure
   test:
     if: github.event_name != 'pull_request' || github.head_ref != 'devel'
-    runs-on: [self-hosted, cuda, python]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python: [3.6, 3.9]
     name: Test py${{ matrix.python }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: pip install -U -e .[dev]
+      run: |
+        python -c 'import configparser as c; p=c.ConfigParser(); p.read("setup.cfg"); print(" ".join(p["options"]["setup_requires"].split()))' | xargs pip install
+        python setup.py build develop easy_install cuvec[dev] -- -DCUVEC_CUDA_OPTIONAL=1
+    - run: pytest
+    - run: codecov
+  cuda:
+    if: github.event_name != 'pull_request' || github.head_ref != 'devel'
+    runs-on: [self-hosted, cuda, python]
+    strategy:
+      matrix:
+        python: [3.6, 3.9]
+    name: CUDA py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -58,7 +78,7 @@ jobs:
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
   deploy:
-    needs: [check, test]
+    needs: [check, test, cuda]
     name: PyPI Deploy
     runs-on: ubuntu-latest
     steps:
