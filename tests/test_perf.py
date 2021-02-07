@@ -14,7 +14,7 @@ try:
     from cuvec import example_swig
     from cuvec import swigcuvec as sw
 except ImportError:
-    sw, swinc = None, None
+    sw, example_swig = None, None
 
 
 def _time_overhead():
