@@ -68,7 +68,7 @@ Creating
     #include "Python.h"
     #include "pycuvec.cuh"
     PyObject *obj = (PyObject *)PyCuVec_zeros<float>({1337, 42});
-    // don't forget to Py_INCREF(obj) if returning it.
+    // don't forget to Py_DECREF(obj) if not returning it.
 
     /// N.B.: convenience functions provided by "pycuvec.cuh":
     // PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape);
@@ -139,14 +139,14 @@ The following involve no memory copies.
 
     # import cuvec, my_custom_lib
     # arr = cuvec.swigcuvec.zeros((1337, 42), "float32")
-    my_custom_lib.some_cpython_api_func(arr.cuvec)
+    my_custom_lib.some_swig_api_unc(arr.cuvec)
 
 **SWIG API** to **Python**
 
 .. code:: python
 
     import cuvec, my_custom_lib
-    arr = cuvec.swigcuvec.asarray(my_custom_lib.some_cpython_api_func())
+    arr = cuvec.swigcuvec.asarray(my_custom_lib.some_swig_api_func())
 
 **SWIG API** to **C++**
 
