@@ -29,7 +29,7 @@ Even something as simple as setting element values is left to the user and/or pr
 - NumPy: ``arr.fill(value)``
 - CuPy: ``cupy.asarray(arr).fill(value)``
 - C++: ``std::fill(vec.begin(), vec.end(), value)``
-- C/CUDA: ``memset(vec.data(), value, sizeof(T) * vec.size())``
+- C & CUDA: ``memset(vec.data(), value, sizeof(T) * vec.size())``
 
 Install
 ~~~~~~~
@@ -54,7 +54,7 @@ Creating
 .. code:: python
 
     import cuvec
-    # from cuvec import swigcuvec as cuvec  # SWIG alternative
+    # from cuvec import swigcuvec as cuvec   # SWIG alternative
     arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
     # print(sum(arr))
     # some_numpy_func(arr)
@@ -125,7 +125,7 @@ The following involve no memory copies.
     CuVec<float> &vec = ((PyCuVec<float> *)obj)->vec; // like std::vector<float>
     std::vector<Py_ssize_t> &shape = ((PyCuVec<float> *)obj)->shape;
 
-**C++** to **C/CUDA**
+**C++** to **C & CUDA**
 
 .. code:: cpp
 
@@ -139,7 +139,7 @@ The following involve no memory copies.
 
     # import cuvec, my_custom_lib
     # arr = cuvec.swigcuvec.zeros((1337, 42), "float32")
-    my_custom_lib.some_swig_api_unc(arr.cuvec)
+    my_custom_lib.some_swig_api_func(arr.cuvec)
 
 **SWIG API** to **Python**
 
@@ -153,7 +153,7 @@ The following involve no memory copies.
 .. code:: cpp
 
     /// input: `SwigCuVec<type> *swv`
-    /// output: `CuVec<type> vec`, `std::vector<size_> shape`
+    /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
     CuVec<float> &vec = swv->vec; // like std::vector<float>
     std::vector<size_t> &shape = swv->shape;
 
@@ -164,13 +164,12 @@ Python Projects
 ---------------
 
 Python objects (``arr``, returned by ``cuvec.zeros()``, ``cuvec.asarray()``, or ``cuvec.copy()``) contain all the attributes of a ``numpy.ndarray``.
-Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while
-``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
+Additionally, ``arr.cuvec`` implements the `buffer protocol <https://docs.python.org/3/c-api/buffer.html>`_, while ``arr.__cuda_array_interface__`` provides `compatibility with other libraries  <https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html>`_ such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
 
 When using the SWIG alternative module, ``arr.cuvec`` is a wrapper around ``SwigCuVec<type> *``.
 
-C++/CUDA Projects
------------------
+C++ & CUDA Projects
+-------------------
 
 ``cuvec`` is a header-only library so simply ``#include "pycuvec.cuh"``
 (or ``#include "cuvec.cuh"``). You can find the location of the headers using:
