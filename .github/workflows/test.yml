@@ -89,25 +89,19 @@ jobs:
         requirements: twine setuptools wheel setuptools_scm[toml] scikit-build
         build: sdist
         password: ${{ secrets.PYPI_TOKEN }}
-        upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
-    - name: Changelog
-      run: git log --pretty='format:%d%n- %s%n%b---' $(git tag --sort=v:refname | tail -n2 | head -n1)..HEAD > _CHANGES.md
-    - if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      id: create_release
-      uses: actions/create-release@v1
+        upload: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
+    - id: meta
+      name: Changelog
+      run: |
+        echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
+        git log --pretty='format:%d%n- %s%n%b---' $(git tag --sort=v:refname | tail -n2 | head -n1)..HEAD > _CHANGES.md
+    - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: CuVec ${{ github.ref }} beta
+        name: CuVec ${{ steps.meta.outputs.tag }} stable
         body_path: _CHANGES.md
         draft: true
-    - if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/${{ steps.dist.outputs.targz }}
-        asset_name: ${{ steps.dist.outputs.targz }}
-        asset_content_type: application/gzip
+        files: |
+          dist/${{ steps.dist.outputs.targz }}

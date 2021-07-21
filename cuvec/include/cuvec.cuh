@@ -42,23 +42,24 @@ template <class T> struct CuAlloc {
 #if __cplusplus > 201703L
   [[nodiscard]]
 #endif
-      T *
+  T
+      *
       allocate(std::size_t n) {
-        if (n > std::numeric_limits<std::size_t>::max() / sizeof(T)) throw std::bad_alloc();
+    if (n > std::numeric_limits<std::size_t>::max() / sizeof(T)) throw std::bad_alloc();
 
-        T *p;
+    T *p;
 #ifndef CUVEC_DISABLE_CUDA
-        cuvec::HandleError(cudaMallocManaged((void **)&p, n * sizeof(T)), __FILE__, __LINE__);
+    cuvec::HandleError(cudaMallocManaged((void **)&p, n * sizeof(T)), __FILE__, __LINE__);
 #else
     p = (T *)std::malloc(n * sizeof(T));
 #endif
-        if (p) {
-          report(p, n);
-          return p;
-        }
+    if (p) {
+      report(p, n);
+      return p;
+    }
 
-        throw std::bad_alloc();
-      }
+    throw std::bad_alloc();
+  }
 
   void deallocate(T *p, std::size_t n) noexcept {
     report(p, n, false);
