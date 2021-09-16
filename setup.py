@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("cuvec.setup")
 
 build_ver = ".".join(__version__.split('.')[:3]).split(".dev")[0]
-setup_kwargs = {"use_scm_version": True, "packages": find_packages(exclude=["tests"])}
+setup_kwargs = {"use_scm_version": True, "packages": find_packages(exclude=["docs", "tests"])}
 cmake_args = [f"-DCUVEC_BUILD_VERSION={build_ver}", f"-DPython3_ROOT_DIR={sys.prefix}"]
 
 try:
