@@ -18,8 +18,8 @@ cmake_args = [f"-DCUVEC_BUILD_VERSION={build_ver}", f"-DPython3_ROOT_DIR={sys.pr
 
 try:
     from miutil import cuinfo
-    nvcc_arches = map(cuinfo.compute_capability, range(cuinfo.num_devices()))
-    nvcc_arches = {"%d%d" % i for i in nvcc_arches if i >= (3, 5)}
+    nvcc_arch_raw = map(cuinfo.compute_capability, range(cuinfo.num_devices()))
+    nvcc_arches = {"%d%d" % i for i in nvcc_arch_raw if i >= (3, 5)}
     if nvcc_arches:
         cmake_args.append("-DCMAKE_CUDA_ARCHITECTURES=" + " ".join(sorted(nvcc_arches)))
 except Exception as exc:

@@ -9,12 +9,16 @@ import re
 from collections.abc import Sequence
 from functools import partial
 from textwrap import dedent
+from typing import Any, Dict, Optional
+from typing import Sequence as Seq
+from typing import Union
 
 import numpy as np
 
-from . import swvec as sw
+from . import swvec as sw  # type: ignore # yapf: disable
 
 log = logging.getLogger(__name__)
+Shape = Union[Seq[int], int]
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
 typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
 RE_SWIG_TYPE = r"<Swig Object of type 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>"
@@ -36,7 +40,7 @@ if hasattr(sw, 'SwigCuVec_e_new'):
 
 
 class SWIGVector:
-    def __init__(self, typechar, shape, cuvec=None):
+    def __init__(self, typechar: Optional[str], shape: Optional[Shape], cuvec=None):
         """
         Thin wrapper around `SwigPyObject<CuVec<Type>>`. Always takes ownership.
         Args:
@@ -47,10 +51,12 @@ class SWIGVector:
         """
         if cuvec is not None:
             assert is_raw_cuvec(cuvec)
-            self.typechar = SWIG_TYPES[re.match(RE_SWIG_TYPE, str(cuvec)).group(1)]
+            tp = re.match(RE_SWIG_TYPE, str(cuvec)).group(1) # type: ignore
+            self.typechar = SWIG_TYPES[tp]
             self.cuvec = cuvec
             return
-        self.typechar = typechar
+
+        self.typechar = typechar # type: ignore
         self.cuvec = getattr(
             sw, f'SwigCuVec_{typechar}_new')(shape if isinstance(shape, Sequence) else (shape,))
 
@@ -58,34 +64,34 @@ class SWIGVector:
         getattr(sw, f'SwigCuVec_{self.typechar}_del')(self.cuvec)
 
     @property
-    def shape(self):
+    def shape(self) -> tuple:
         return getattr(sw, f'SwigCuVec_{self.typechar}_shape')(self.cuvec)
 
     @property
-    def address(self):
+    def address(self) -> int:
         return getattr(sw, f'SwigCuVec_{self.typechar}_address')(self.cuvec)
 
     @property
-    def __array_interface__(self):
+    def __array_interface__(self) -> Dict[str, Any]:
         return {
             'shape': self.shape, 'typestr': np.dtype(self.typechar).str,
             'data': (self.address, False), 'version': 3}
 
     @property
-    def __cuda_array_interface__(self):
+    def __cuda_array_interface__(self) -> Dict[str, Any]:
         return self.__array_interface__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.typechar}', {self.shape})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{np.dtype(self.typechar)}{self.shape} at 0x{self.address:x}"
 
 
 vec_types = {np.dtype(c): partial(SWIGVector, c) for c in typecodes}
 
 
-def cu_zeros(shape, dtype="float32"):
+def cu_zeros(shape: Shape, dtype="float32"):
     """
     Returns a new `SWIGVector` of the specified shape and data type.
     """
@@ -138,7 +144,7 @@ class CuVec(np.ndarray):
             instead use `swigcuvec.zeros((42, 137))`"""))
 
     @property
-    def __cuda_array_interface__(self):
+    def __cuda_array_interface__(self) -> Dict[str, Any]:
         if not hasattr(self, 'cuvec'):
             raise AttributeError(
                 dedent("""\
@@ -149,7 +155,7 @@ class CuVec(np.ndarray):
             'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
 
 
-def zeros(shape, dtype="float32"):
+def zeros(shape: Shape, dtype="float32") -> CuVec:
     """
     Returns a `swigcuvec.CuVec` view of a new `numpy.ndarray`
     of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
@@ -157,7 +163,7 @@ def zeros(shape, dtype="float32"):
     return CuVec(cu_zeros(shape, dtype))
 
 
-def copy(arr):
+def copy(arr) -> CuVec:
     """
     Returns a `swigcuvec.CuVec` view of a new `numpy.ndarray`
     with data copied from the specified `arr`
@@ -166,7 +172,7 @@ def copy(arr):
     return CuVec(cu_copy(arr))
 
 
-def asarray(arr, dtype=None, order=None):
+def asarray(arr, dtype=None, order=None) -> CuVec:
     """
     Returns a `swigcuvec.CuVec` view of `arr`, avoiding memory copies if possible.
     (`cuvec` equivalent of `numpy.asarray`).
