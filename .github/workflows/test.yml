@@ -84,6 +84,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+        token: ${{ secrets.GH_TOKEN }}
     - uses: actions/setup-python@v2
     - id: dist
       uses: casperdcl/deploy-pypi@v2
@@ -107,3 +108,19 @@ jobs:
         draft: true
         files: |
           dist/${{ steps.dist.outputs.targz }}
+    - name: Docs
+      run: |
+        pushd docs
+        pip install -U -r requirements.txt
+        PYTHONPATH=. pydoc-markdown --build --site-dir=../../../dist/site
+        popd
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
+      uses: casperdcl/push-dir@v1
+      with:
+        message: update static site
+        branch: gh-pages
+        history: false
+        dir: dist/site
+        nojekyll: true
+        name: AMYPAD[bot]
+        email: 74983049+amypad-bot@users.noreply.github.com
