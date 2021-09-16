@@ -2,7 +2,7 @@ name: Test
 on: [push, pull_request]
 jobs:
   check:
-    if: github.event_name != 'push' || github.ref != 'refs/heads/devel'
+    if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,7 +40,7 @@ jobs:
         EVENT: ${{ github.event_name }}
     - run: pre-commit run -a --show-diff-on-failure
   test:
-    if: github.event_name != 'pull_request' || github.head_ref != 'devel'
+    if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,7 +57,7 @@ jobs:
     - run: pytest
     - run: codecov
   cuda:
-    if: github.event_name != 'pull_request' || github.head_ref != 'devel'
+    if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
