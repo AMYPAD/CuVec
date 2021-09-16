@@ -21,10 +21,10 @@ repos:
   - id: todo
     name: Check TODO
     language: pygrep
+    args: [-i]
     entry: TODO
     types: [text]
     exclude: ^(.pre-commit-config.yaml|.github/workflows/test.yml)$
-    args: [-i]
 - repo: https://gitlab.com/pycqa/flake8
   rev: 3.9.2
   hooks:

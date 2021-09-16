@@ -1,8 +1,9 @@
-*.py[co]
+*.py[cod]
 __pycache__/
 
 # build
 MANIFEST
+/*.egg*/
 *.so
 /cuvec/cmake/
 /cuvec/_dist_ver.py
@@ -10,7 +11,9 @@ MANIFEST
 /dist/
 /_skbuild/
 /_cmake_test_compile/
-/*.egg*/
+/docs/build/
 
+# Unit test / coverage reports
 /.coverage*
 /coverage.xml
+/.pytest_cache/

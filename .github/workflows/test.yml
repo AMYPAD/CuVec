@@ -1,10 +1,14 @@
 name: Test
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+  - cron: '30 23 * * 6'  # M H d m w (Sat at 23:30)
 jobs:
   check:
     if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
-    runs-on: ubuntu-latest
     name: Check py3.6
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -38,11 +42,11 @@ jobs:
     - run: pre-commit run -a --show-diff-on-failure
   test:
     if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
+    name: py${{ matrix.python }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python: [3.6, 3.9]
-    name: py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -52,14 +56,14 @@ jobs:
         python-version: ${{ matrix.python }}
     - run: pip install -U -e .[dev]
     - run: pytest
-    - run: codecov
+    - uses: codecov/codecov-action@v1
   cuda:
     if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
+    name: CUDA py${{ matrix.python }}
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
         python: [3.6, 3.9]
-    name: CUDA py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -68,7 +72,7 @@ jobs:
       run: setup-python -p${{ matrix.python }} cupy
     - run: pip install -U -e .[dev]
     - run: pytest
-    - run: codecov
+    - uses: codecov/codecov-action@v1
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
