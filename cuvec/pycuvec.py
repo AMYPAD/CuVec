@@ -3,12 +3,16 @@ import array
 import logging
 from collections.abc import Sequence
 from textwrap import dedent
+from typing import Any, Dict
+from typing import Sequence as Seq
+from typing import Union
 
 import numpy as np
 
 from . import cuvec as cu
 
 log = logging.getLogger(__name__)
+Shape = Union[Seq[int], int]
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
 typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
 vec_types = {
@@ -28,7 +32,7 @@ if hasattr(cu, 'PyCuVec_e'):
     vec_types[np.dtype('float16')] = cu.PyCuVec_e
 
 
-def cu_zeros(shape, dtype="float32"):
+def cu_zeros(shape: Shape, dtype="float32"):
     """
     Returns a new `<cuvec.PyCuVec_*>` of the specified shape and data type.
     """
@@ -87,7 +91,7 @@ class CuVec(np.ndarray):
             instead use `cuvec.zeros((42, 137))`"""))
 
     @property
-    def __cuda_array_interface__(self):
+    def __cuda_array_interface__(self) -> Dict[str, Any]:
         if not hasattr(self, 'cuvec'):
             raise AttributeError(
                 dedent("""\
@@ -98,7 +102,7 @@ class CuVec(np.ndarray):
             'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
 
 
-def zeros(shape, dtype="float32"):
+def zeros(shape: Shape, dtype="float32") -> CuVec:
     """
     Returns a `cuvec.CuVec` view of a new `numpy.ndarray`
     of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
@@ -106,7 +110,7 @@ def zeros(shape, dtype="float32"):
     return CuVec(cu_zeros(shape, dtype))
 
 
-def copy(arr):
+def copy(arr) -> CuVec:
     """
     Returns a `cuvec.CuVec` view of a new `numpy.ndarray`
     with data copied from the specified `arr`
@@ -115,7 +119,7 @@ def copy(arr):
     return CuVec(cu_copy(arr))
 
 
-def asarray(arr, dtype=None, order=None):
+def asarray(arr, dtype=None, order=None) -> CuVec:
     """
     Returns a `cuvec.CuVec` view of `arr`, avoiding memory copies if possible.
     (`cuvec` equivalent of `numpy.asarray`).

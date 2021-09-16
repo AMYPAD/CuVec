@@ -1,0 +1,75 @@
+loaders:
+- type: python
+  search_path: [..]
+processors:
+- type: filter
+- type: crossref
+renderer:
+  type: mkdocs
+  markdown:
+    source_linker:
+      type: github
+      repo: AMYPAD/CuVec
+      root: ..
+    source_position: before signature
+    source_format: |
+      <span style="float: right; font-size: 75%;">
+      [[view source]]({url})
+      </span>
+  pages:
+  - title: Home
+    name: index
+    source: index.md
+  - title: Python Reference
+    name: ref-py
+    contents: [cuvec.*.CuVec, cuvec.*.zeros, cuvec.*.copy, cuvec.*.asarray]
+  - title: External Links
+    children:
+    - title: Source Code
+      href: https://github.com/AMYPAD/CuVec
+    - title: Changelog
+      href: https://github.com/AMYPAD/CuVec/releases
+    - title: Issues
+      href: https://github.com/AMYPAD/CuVec/issues?q=
+    - title: Citation/DOI
+      href: https://doi.org/10.5281/zenodo.4446211
+  - title: Contributing
+    name: contrib
+    source: contrib.md
+  - title: Licence
+    name: licence
+    source: ../LICENCE
+  mkdocs_config:
+    site_name: CuVec documentation
+    site_description: 'Unifying Python/C++/CUDA memory: Python buffered array -> C++11 `std::vector` -> CUDA managed memory'
+    site_url: https://amypad.github.io/CuVec/
+    site_author: Casper da Costa-Luis
+    repo_name: AMYPAD/CuVec
+    repo_url: https://github.com/AMYPAD/CuVec
+    copyright: |
+      &copy; Casper da Costa-Luis <a href="https://github.com/casperdcl">@casperdcl</a> 2021
+
+    theme:
+      name: material
+      palette:
+      - scheme: default
+        primary: orange
+        toggle:
+          icon: material/toggle-switch-off-outline
+          name: Switch to dark mode
+      - scheme: slate
+        primary: blue
+        toggle:
+          icon: material/toggle-switch
+          name: Switch to light mode
+    plugins:
+    - search
+    - minify:
+        minify_js: true
+        minify_html: true
+    markdown_extensions:
+    - admonition
+    - toc:
+        permalink: '#'
+    - pymdownx.superfences
+    - pymdownx.tabbed

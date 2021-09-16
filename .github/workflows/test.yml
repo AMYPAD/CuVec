@@ -1,18 +1,19 @@
 name: Test
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+  - cron: '30 23 * * 6'  # M H d m w (Sat at 23:30)
 jobs:
   check:
-    if: github.event_name != 'push' || github.ref != 'refs/heads/devel'
+    if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
+    name: Check py3.6
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python: [3.6, 3.9]
-    name: Check py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python }}
+        python-version: 3.6
     - name: set PYSHA
       run: echo "PYSHA=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
     - uses: actions/cache@v1
@@ -34,17 +35,18 @@ jobs:
         fi
         pre-commit run -a todo | reviewdog -efm="%f:%l: %m" -name=TODO -tee -reporter=$REPORTER -filter-mode nofilter
         pre-commit run -a flake8 | reviewdog -f=pep8 -name=flake8 -tee -reporter=$REPORTER -filter-mode nofilter
+        pre-commit run -a mypy | reviewdog -efm="%f:%l: %m" -name=mypy -tee -reporter=$REPORTER -filter-mode nofilter
       env:
         REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         EVENT: ${{ github.event_name }}
     - run: pre-commit run -a --show-diff-on-failure
   test:
-    if: github.event_name != 'pull_request' || github.head_ref != 'devel'
+    if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
+    name: py${{ matrix.python }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python: [3.6, 3.9]
-    name: py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -54,14 +56,14 @@ jobs:
         python-version: ${{ matrix.python }}
     - run: pip install -U -e .[dev]
     - run: pytest
-    - run: codecov
+    - uses: codecov/codecov-action@v1
   cuda:
-    if: github.event_name != 'pull_request' || github.head_ref != 'devel'
+    if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
+    name: CUDA py${{ matrix.python }}
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
         python: [3.6, 3.9]
-    name: CUDA py${{ matrix.python }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -70,7 +72,7 @@ jobs:
       run: setup-python -p${{ matrix.python }} cupy
     - run: pip install -U -e .[dev]
     - run: pytest
-    - run: codecov
+    - uses: codecov/codecov-action@v1
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
@@ -82,6 +84,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+        token: ${{ secrets.GH_TOKEN }}
     - uses: actions/setup-python@v2
     - id: dist
       uses: casperdcl/deploy-pypi@v2
@@ -105,3 +108,19 @@ jobs:
         draft: true
         files: |
           dist/${{ steps.dist.outputs.targz }}
+    - name: Docs
+      run: |
+        pushd docs
+        pip install -U -r requirements.txt
+        PYTHONPATH=. pydoc-markdown --build --site-dir=../../../dist/site
+        popd
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
+      uses: casperdcl/push-dir@v1
+      with:
+        message: update static site
+        branch: gh-pages
+        history: false
+        dir: dist/site
+        nojekyll: true
+        name: AMYPAD[bot]
+        email: 74983049+amypad-bot@users.noreply.github.com

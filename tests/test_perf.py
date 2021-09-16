@@ -5,7 +5,7 @@ import numpy as np
 from pytest import mark, skip
 
 # `example_mod` is defined in ../cuvec/src/example_mod/
-from cuvec import example_mod
+from cuvec import example_mod  # type: ignore # yapf: disable
 from cuvec import pycuvec as cu
 
 try:
@@ -14,7 +14,7 @@ try:
     from cuvec import example_swig
     from cuvec import swigcuvec as sw
 except ImportError:
-    sw, example_swig = None, None
+    sw, example_swig = None, None  # type: ignore # yapf: disable
 
 
 def _time_overhead():
@@ -104,11 +104,11 @@ if __name__ == "__main__":
         test_perf(*args, shape=(1000, 1000))
 
         print(f"# Average over {nruns} runs:")
-        runs = [test_perf(*args, shape=(1000, 1000), quiet=True) for _ in trange(nruns)]
+        res_runs = [test_perf(*args, shape=(1000, 1000), quiet=True) for _ in trange(nruns)]
         pretty = {
             'create src': 'Create input', 'assign': 'Assign', 'call ext': 'Call extension',
             '- create dst': '-- Create output', '- kernel': '-- Launch kernel', 'view': 'View'}
-        runs = {pretty[k]: [i[k] for i in runs] for k in runs[0]}
+        runs = {pretty[k]: [i[k] for i in res_runs] for k in res_runs[0]}
         print("\n".join(
             f"{k.ljust(16)} | {np.mean(v):.3f} ± {np.std(v, ddof=1)/np.sqrt(len(v)):.3f}"
             for k, v in runs.items()))
