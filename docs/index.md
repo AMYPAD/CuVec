@@ -189,7 +189,7 @@ C++:
 
       // hardcode upsampling factor 2
       npy_intp *src_shape = PyArray_SHAPE(p_src);
-      npy_intp dst_shape[3];
+      Py_ssize_t dst_shape[3];
       dst_shape[2] = src_shape[2] * 2;
       dst_shape[1] = src_shape[1] * 2;
       dst_shape[0] = src_shape[0] * 2;
@@ -198,7 +198,7 @@ C++:
         dst_shape[2] * dst_shape[1] * dst_shape[0] * sizeof(float));
       mycudafunction(dst, src, dst_shape);
       PyArrayObject *p_dst = (PyArrayObject *)PyArray_SimpleNewFromData(
-        3, dims, NPY_FLOAT32, dst);
+        3, dst_shape, NPY_FLOAT32, dst);
       return PyArray_Return(p_dst);
     }
     ...
@@ -236,7 +236,7 @@ C++:
 
       PyCuVec<float> *dst = PyCuVec_zeros<float>(dst_shape);
 
-      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape);
+      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape.data());
 
 
       return dst;
@@ -253,14 +253,14 @@ CUDA:
 
 === "Before: pure NumPy"
     ```{.cpp linenums="1"}
-    void mycudafunction(float *dst, float *src, int X, int Y) {
+    void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
       float *d_src;
-      cudaMalloc(&d_src, X / 2 * Y / 2 * sizeof(float));
-      cudaMemcpy(d_src, src, X / 2 * Y / 2 * sizeof(float),
-        cudaMemcpyHostToDevice);
+      int src_size = shape[0]/2 * shape[1]/2 * shape[2]/2 * sizeof(float);
+      cudaMalloc(&d_src, src_size);
+      cudaMemcpy(d_src, src, src_size, cudaMemcpyHostToDevice);
       float *d_dst;
-      cudaMalloc(&d_dst, X * Y * sizeof(float));
-      mykernel<<<...>>>(d_dst, d_src, X, Y);
+      cudaMalloc(&d_dst, shape[0] * shape[1] * shape[2] * sizeof(float));
+      mykernel<<<...>>>(d_dst, d_src, shape[0], shape[1], shape[2]);
       cudaMemcpy(dst, d_dst, cudaMemcpyDeviceToHost);
       cudaFree(d_dst);
       cudaFree(d_src);
@@ -269,14 +269,14 @@ CUDA:
 
 === "After: with CuVec"
     ```{.cpp linenums="1"}
-    void mycudafunction(float *dst, float *src, int X, int Y) {
+    void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
 
 
 
 
 
 
-      mykernel<<<...>>>(dst, src, X, Y);
+      mykernel<<<...>>>(dst, src, shape[0], shape[1], shape[2]);
       cudaDeviceSynchronize();
 
 
