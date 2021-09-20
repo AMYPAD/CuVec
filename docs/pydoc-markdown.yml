@@ -4,6 +4,9 @@ loaders:
 processors:
 - type: filter
 - type: crossref
+hooks:
+  post-render: # https://github.com/NiklasRosenstein/pydoc-markdown/issues/215
+  - cp extra.js build/docs/content/
 renderer:
   type: mkdocs
   markdown:
@@ -51,6 +54,7 @@ renderer:
 
     extra:
       generator: false
+    extra_javascript: [extra.js]
     theme:
       name: material
       favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
