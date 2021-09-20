@@ -325,8 +325,11 @@ For a full reference, see `cuvec.example_mod`'s source code:
     [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu).
 
 === "SWIG"
-    Using the include path from above, simply `%include "cuvec.i"` in a SWIG
-    interface file.
+    `cuvec` is a header-only library so simply `%include "cuvec.i"` in a SWIG interface file. You can find the location of the headers using:
+
+    ```py
+    python -c "import cuvec; print(cuvec.include_path)"
+    ```
 
     For reference, see `cuvec.example_swig`'s source code:
     [example_swig.i](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i)
@@ -334,8 +337,7 @@ For a full reference, see `cuvec.example_mod`'s source code:
     [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu).
 
 === "CMake"
-    This is likely unnecessary (see above for simpler `#include`
-    instructions).
+    This is likely unnecessary (see the "C++ & CUDA" tab above for simpler `#include` instructions).
 
     The raw C++/CUDA libraries may be included in external projects using
     `cmake`. Simply build the project and use `find_package(AMYPADcuvec)`.
