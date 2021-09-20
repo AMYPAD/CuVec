@@ -12,29 +12,21 @@ Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 `std::vector` <
 
 ## Why
 
-Data should be manipulated using the existing functionality and design paradigms
-of each programming language. Python code should be Pythonic. CUDA code should
-be... CUDActic? C code should be... er, Clean.
+Data should be manipulated using the existing functionality and design paradigms of each programming language. Python code should be Pythonic. CUDA code should be... CUDActic? C code should be... er, Clean.
 
-However, in practice converting between data formats across languages can be a
-pain.
+However, in practice converting between data formats across languages can be a pain.
 
-Other libraries which expose functionality to convert/pass data formats between
-these different language spaces tend to be bloated, unnecessarily complex, and
-relatively unmaintainable. By comparison, `cuvec` uses the latest functionality
-of Python, C/C++11, and CUDA to keep its code (and yours) as succinct as
-possible. "Native" containers are exposed so your code follows the conventions
-of your language. Want something which works like a `numpy.ndarray`? Not a
-problem. Want to convert it to a `std::vector`? Or perhaps a raw `float *` to
-use in a CUDA kernel? Trivial.
+Other libraries which expose functionality to convert/pass data formats between these different language spaces tend to be bloated, unnecessarily complex, and relatively unmaintainable. By comparison, `cuvec` uses the latest functionality of Python, C/C++11, and CUDA to keep its code (and yours) as succinct as possible. "Native" containers are exposed so your code follows the conventions of your language. Want something which works like a `numpy.ndarray`? Not a problem. Want to convert it to a `std::vector`? Or perhaps a raw `float *` to use in a CUDA kernel? Trivial.
+
+- Less boilerplate code (fewer bugs, easier debugging, and faster prototyping)
+- Fewer memory copies (faster execution)
+- Lower memory usage (do more with less hardware)
 
 ### Non objectives
 
-Anything to do with mathematical functionality. The aim is to expose
-functionality, not create it.
+Anything to do with mathematical functionality. The aim is to expose functionality, not create it.
 
-Even something as simple as setting element values is left to the user and/or
-pre-existing features - for example:
+Even something as simple as setting element values is left to the user and/or pre-existing features - for example:
 
 - Python: `arr[:] = value`
 - NumPy: `arr.fill(value)`
@@ -44,22 +36,20 @@ pre-existing features - for example:
 
 ## Install
 
-Requirements:
-
-- Python 3.6 or greater (e.g. via
-  [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda))
-- [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
-
 ```sh
 pip install cuvec
 ```
+
+Requirements:
+
+- Python 3.6 or greater (e.g. via [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda))
+- [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
 
 ## Usage
 
 ### Creating
 
 === "Python"
-
     ```py
     import cuvec
     # from cuvec import swigcuvec as cuvec   # SWIG alternative
@@ -71,7 +61,6 @@ pip install cuvec
     ```
 
 === "CPython API"
-
     ```cpp
     #include "Python.h"
     #include "pycuvec.cuh"
@@ -85,7 +74,6 @@ pip install cuvec
     ```
 
 === "C++/SWIG API"
-
     ```cpp
     #include "cuvec.cuh"
     SwigCuVec<float> *swv = SwigCuVec_new<float>({1337, 42});
@@ -99,7 +87,6 @@ pip install cuvec
     ```
 
 === "C++/CUDA"
-
     ```cpp
     #include "cuvec.cuh"
     CuVec<float> vec(1337 * 42); // like std::vector<float>
@@ -110,7 +97,6 @@ pip install cuvec
 The following involve no memory copies.
 
 === "**Python** to **CPython API**"
-
     ```py
     # import cuvec, my_custom_lib
     # arr = cuvec.zeros((1337, 42), "float32")
@@ -118,14 +104,12 @@ The following involve no memory copies.
     ```
 
 === "**CPython API** to **Python**"
-
     ```py
     import cuvec, my_custom_lib
     arr = cuvec.asarray(my_custom_lib.some_cpython_api_func())
     ```
 
 === "**CPython API** to **C++**"
-
     ```cpp
     /// input: `PyObject *obj` (obtained from e.g.: `PyArg_ParseTuple()`, etc)
     /// output: `CuVec<type> vec`
@@ -134,7 +118,6 @@ The following involve no memory copies.
     ```
 
 === "**C++** to **C & CUDA**"
-
     ```cpp
     /// input: `CuVec<type> vec`
     /// output: `type *arr`
@@ -142,7 +125,6 @@ The following involve no memory copies.
     ```
 
 === "**Python** to **SWIG API**"
-
     ```py
     # import cuvec, my_custom_lib
     # arr = cuvec.swigcuvec.zeros((1337, 42), "float32")
@@ -150,14 +132,12 @@ The following involve no memory copies.
     ```
 
 === "**SWIG API** to **Python**"
-
     ```py
     import cuvec, my_custom_lib
     arr = cuvec.swigcuvec.asarray(my_custom_lib.some_swig_api_func())
     ```
 
 === "**SWIG API** to **C++**"
-
     ```cpp
     /// input: `SwigCuVec<type> *swv`
     /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
@@ -165,50 +145,175 @@ The following involve no memory copies.
     std::vector<size_t> &shape = swv->shape;
     ```
 
+### Examples
+
+Here's a before and after comparison of a Python ↔ CUDA interface.
+
+Python:
+
+=== "Before: pure NumPy"
+    ```{.py linenums="1"}
+    import numpy, mymod
+    arr = numpy.zeros((1337, 42, 7), "float32")
+    assert all(numpy.mean(arr, axis=(0, 1)) == 0)
+    print(mymod.myfunc(arr).sum())
+    ```
+
+=== "After: with CuVec"
+    ```{.py linenums="1"}
+    import cuvec, numpy, mymod
+    arr = cuvec.zeros((1337, 42, 7), "float32")
+    assert all(numpy.mean(arr, axis=(0, 1)) == 0)
+    print(mymod.myfunc(arr.cuvec).sum())
+    ```
+
+C++:
+
+=== "Before: pure NumPy"
+    ```{.cpp linenums="1"}
+    #include <numpy/arrayobject.h>
+    #include "mycudafunction.h"
+
+    static PyObject *myfunc(PyObject *self, PyObject *args) {
+      PyObject *o_src = NULL;
+      PyArg_ParseTuple(args, "O", &o_src)
+      PyArrayObject *p_src = NULL;
+      p_src = (PyArrayObject *)PyArray_FROM_OTF(
+        o_src, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+      if (p_src == NULL) {
+        Py_XDECREF(p_src);
+        return NULL;
+      }
+      float *src = (float *)PyArray_DATA(p_src);
+      Py_DECREF(p_src);
+
+      // hardcode upsampling factor 2
+      npy_intp *src_shape = PyArray_SHAPE(p_src);
+      npy_intp dst_shape[3];
+      dst_shape[2] = src_shape[2] * 2;
+      dst_shape[1] = src_shape[1] * 2;
+      dst_shape[0] = src_shape[0] * 2;
+
+      float *dst = (float *)malloc(
+        dst_shape[2] * dst_shape[1] * dst_shape[0] * sizeof(float));
+      mycudafunction(dst, src, dst_shape);
+      PyArrayObject *p_dst = (PyArrayObject *)PyArray_SimpleNewFromData(
+        3, dims, NPY_FLOAT32, dst);
+      return PyArray_Return(p_dst);
+    }
+    ...
+    PyMODINIT_FUNC PyInit_mymod(void) {
+      ...
+      import_array();
+      ...
+    }
+    ```
+
+=== "After: with CuVec"
+    ```{.cpp linenums="1"}
+    #include "pycuvec.cuh"
+    #include "mycudafunction.h"
+
+    static PyObject *myfunc(PyObject *self, PyObject *args) {
+      PyCuVec<float> *src = NULL;
+      PyArg_ParseTuple(args, "O", (PyObject **)&src);
+
+
+
+      if (!src) return NULL;
+
+
+
+
+
+
+      // hardcode upsampling factor 2
+
+      std::vector<Py_ssize_t> dst_shape = src->shape();
+      dst_shape[2] *= 2;
+      dst_shape[1] *= 2;
+      dst_shape[0] *= 2;
+
+      PyCuVec<float> *dst = PyCuVec_zeros<float>(dst_shape);
+
+      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape);
+
+
+      return dst;
+    }
+    ...
+    PyMODINIT_FUNC PyInit_mymod(void) {
+      ...
+
+      ...
+    }
+    ```
+
+CUDA:
+
+=== "Before: pure NumPy"
+    ```{.cpp linenums="1"}
+    void mycudafunction(float *dst, float *src, int X, int Y) {
+      float *d_src;
+      cudaMalloc(&d_src, X / 2 * Y / 2 * sizeof(float));
+      cudaMemcpy(d_src, src, X / 2 * Y / 2 * sizeof(float),
+        cudaMemcpyHostToDevice);
+      float *d_dst;
+      cudaMalloc(&d_dst, X * Y * sizeof(float));
+      mykernel<<<...>>>(d_dst, d_src, X, Y);
+      cudaMemcpy(dst, d_dst, cudaMemcpyDeviceToHost);
+      cudaFree(d_dst);
+      cudaFree(d_src);
+    }
+    ```
+
+=== "After: with CuVec"
+    ```{.cpp linenums="1"}
+    void mycudafunction(float *dst, float *src, int X, int Y) {
+
+
+
+
+
+
+      mykernel<<<...>>>(dst, src, X, Y);
+      cudaDeviceSynchronize();
+
+
+    }
+    ```
+
+For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu).
+
 ## External Projects
 
 === "Python"
+    Python objects (`arr`, returned by `cuvec.zeros()`, `cuvec.asarray()`, or `cuvec.copy()`) contain all the attributes of a `numpy.ndarray`. Additionally, `arr.cuvec` implements the [buffer protocol](https://docs.python.org/3/c-api/buffer.html), while `arr.__cuda_array_interface__` provides [compatibility with other libraries](https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html) such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
 
-    Python objects (`arr`, returned by `cuvec.zeros()`, `cuvec.asarray()`,
-    or `cuvec.copy()`) contain all the attributes of a `numpy.ndarray`.
-    Additionally, `arr.cuvec` implements the [buffer
-    protocol](https://docs.python.org/3/c-api/buffer.html), while
-    `arr.__cuda_array_interface__` provides [compatibility with other
-    libraries](https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html)
-    such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
-
-    When using the SWIG alternative module, `arr.cuvec` is a wrapper around
-    `SwigCuVec<type> *`.
+    When using the SWIG alternative module, `arr.cuvec` is a wrapper around `SwigCuVec<type> *`.
 
 === "C++ & CUDA"
-
-    `cuvec` is a header-only library so simply `#include "pycuvec.cuh"` (or
-    `#include "cuvec.cuh"`). You can find the location of the headers using:
+    `cuvec` is a header-only library so simply `#include "pycuvec.cuh"` (or `#include "cuvec.cuh"`). You can find the location of the headers using:
 
     ```py
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_mod`\'s source code:
-    [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu).
+    For reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu).
 
 === "SWIG"
+    `cuvec` is a header-only library so simply `%include "cuvec.i"` in a SWIG interface file. You can find the location of the headers using:
 
-    Using the include path from above, simply `%include "cuvec.i"` in a SWIG
-    interface file.
+    ```py
+    python -c "import cuvec; print(cuvec.include_path)"
+    ```
 
-    For reference, see `cuvec.example_swig`\'s source code:
-    [example_swig.i](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i)
-    and
-    [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu).
+    For reference, see `cuvec.example_swig`'s source code: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu).
 
 === "CMake"
+    This is likely unnecessary (see the "C++ & CUDA" tab above for simpler `#include` instructions).
 
-    This is likely unnecessary (see above for simpler `#include`
-    instructions).
-
-    The raw C++/CUDA libraries may be included in external projects using
-    `cmake`. Simply build the project and use `find_package(AMYPADcuvec)`.
+    The raw C++/CUDA libraries may be included in external projects using `cmake`. Simply build the project and use `find_package(AMYPADcuvec)`.
 
     ```sh
     # print installation directory (after `pip install cuvec`)...
@@ -219,8 +324,7 @@ The following involve no memory copies.
     cmake ../cuvec && cmake --build . && cmake --install . --prefix /my/install/dir
     ```
 
-    At this point any external project may include `cuvec` as follows (Once
-    setting `-DCMAKE_PREFIX_DIR=<installation prefix from above>`):
+    At this point any external project may include `cuvec` as follows (Once setting `-DCMAKE_PREFIX_DIR=<installation prefix from above>`):
 
     ```{.cmake linenums="1" hl_lines="3 5"}
     cmake_minimum_required(VERSION 3.3 FATAL_ERROR)

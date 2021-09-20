@@ -4,6 +4,7 @@ on:
   pull_request:
   schedule:
   - cron: '30 23 * * 6'  # M H d m w (Sat at 23:30)
+  workflow_dispatch:
 jobs:
   check:
     if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
@@ -25,7 +26,7 @@ jobs:
         pip install -U pre-commit
         sudo apt-get install -yqq clang-format
     - uses: reviewdog/action-setup@v1
-    - if: github.event_name != 'schedule'
+    - if: github.event_name == 'push' || github.event_name == 'pull_request'
       name: comment
       run: |
         if [[ $EVENT == pull_request ]]; then
@@ -114,7 +115,7 @@ jobs:
         pip install -U -r requirements.txt
         PYTHONPATH=. pydoc-markdown --build --site-dir=../../../dist/site
         popd
-    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') || github.event_name == 'workflow_dispatch' }}
       uses: casperdcl/push-dir@v1
       with:
         message: update static site
