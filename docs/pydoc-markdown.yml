@@ -49,10 +49,13 @@ renderer:
     copyright: |
       &copy; Casper da Costa-Luis <a href="https://github.com/casperdcl">@casperdcl</a> 2021
 
+    extra:
+      generator: false
     theme:
       name: material
       favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
       logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
+      features: [content.tabs.link]
       palette:
       - scheme: default
         primary: orange
