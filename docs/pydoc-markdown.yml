@@ -38,7 +38,7 @@ renderer:
     source: contrib.md
   - title: Licence
     name: licence
-    source: ../LICENCE
+    source: licence.md
   mkdocs_config:
     site_name: CuVec documentation
     site_description: 'Unifying Python/C++/CUDA memory: Python buffered array -> C++11 `std::vector` -> CUDA managed memory'
