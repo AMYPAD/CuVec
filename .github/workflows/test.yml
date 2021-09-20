@@ -8,13 +8,10 @@ on:
 jobs:
   check:
     if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
-    name: Check py3.6
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
-      with:
-        python-version: 3.6
     - name: set PYSHA
       run: echo "PYSHA=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
     - uses: actions/cache@v1

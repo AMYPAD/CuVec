@@ -29,7 +29,7 @@ try:
     from skbuild import setup as sksetup
 except ImportError:
     log.warning("`skbuild.setup` not found: Using `setuptools.setup`")
-    setup(**setup_kwargs)
+    setup(**setup_kwargs) # type: ignore # yapf: disable
 else:
     for i in (Path(__file__).resolve().parent / "_skbuild").rglob("CMakeCache.txt"):
         i.write_text(re.sub("^//.*$\n^[^#].*pip-build-env.*$", "", i.read_text(), flags=re.M))
