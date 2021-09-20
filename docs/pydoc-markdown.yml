@@ -51,6 +51,8 @@ renderer:
 
     theme:
       name: material
+      favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
+      logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
       palette:
       - scheme: default
         primary: orange
