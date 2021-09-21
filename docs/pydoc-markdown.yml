@@ -38,7 +38,7 @@ renderer:
       href: https://doi.org/10.5281/zenodo.4446211
   - title: Contributing
     name: contrib
-    source: contrib.md
+    source: ../CONTRIBUTING.md
   - title: Licence
     name: licence
     source: licence.md
