@@ -1,6 +1,6 @@
 # CuVec
 
-Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 `std::vector` <-> CUDA managed memory.
+Unifying Python/C++/CUDA memory: Python buffered array ↔ C++11 `std::vector` ↔ CUDA managed memory.
 
 [![Version](https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white)](https://github.com/AMYPAD/CuVec/releases)
 [![Downloads](https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads)](https://pypi.org/project/cuvec)
@@ -43,7 +43,8 @@ pip install cuvec
 Requirements:
 
 - Python 3.6 or greater (e.g. via [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda))
-- [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
+- (optional) [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
+  + note that if the CUDA SDK/Toolkit is installed *after* CuVec, then CuVec must be re-installed to enable CUDA support
 
 ## Usage
 
@@ -326,10 +327,11 @@ For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](ht
 
     At this point any external project may include `cuvec` as follows (Once setting `-DCMAKE_PREFIX_DIR=<installation prefix from above>`):
 
-    ```{.cmake linenums="1" hl_lines="3 5"}
+    ```{.cmake linenums="1" hl_lines="3 6"}
     cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
     project(myproj)
     find_package(AMYPADcuvec COMPONENTS cuvec REQUIRED)
     add_executable(myexe ...)
+    set_target_properties(myexe PROPERTIES CXX_STANDARD 11)
     target_link_libraries(myexe PRIVATE AMYPAD::cuvec)
     ```
