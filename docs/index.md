@@ -175,18 +175,17 @@ C++:
     #include <numpy/arrayobject.h>
     #include "mycudafunction.h"
 
-    static PyObject *myfunc(PyObject *self, PyObject *args) {
+    static PyObject *myfunc(PyObject *self, PyObject *args, PyObject *kwargs) {
       PyObject *o_src = NULL;
-      PyArg_ParseTuple(args, "O", &o_src)
-      PyArrayObject *p_src = NULL;
-      p_src = (PyArrayObject *)PyArray_FROM_OTF(
-        o_src, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
-      if (p_src == NULL) {
-        Py_XDECREF(p_src);
+      PyObject *o_dst = NULL;
+      static const char *kwds[] = {"src", "output", NULL};
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds,
+                                       &o_src, &o_dst))
         return NULL;
-      }
+      PyArrayObject *p_src = (PyArrayObject *)PyArray_FROM_OTF(
+        o_src, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+      if (p_src == NULL) return NULL;
       float *src = (float *)PyArray_DATA(p_src);
-      Py_DECREF(p_src);
 
       // hardcode upsampling factor 2
       npy_intp *src_shape = PyArray_SHAPE(p_src);
@@ -195,11 +194,18 @@ C++:
       dst_shape[1] = src_shape[1] * 2;
       dst_shape[0] = src_shape[0] * 2;
 
-      float *dst = (float *)malloc(
-        dst_shape[2] * dst_shape[1] * dst_shape[0] * sizeof(float));
+      PyArrayObject *p_dst = NULL;
+      if (o_dst == NULL)
+        p_dst = (PyArrayObject *)PyArray_ZEROS(3, dst_shape, NPY_FLOAT32, 0);
+      else
+        p_dst = (PyArrayObject *)PyArray_FROM_OTF(
+          o_dst, NPY_FLOAT32, NPY_ARRAY_INOUT_ARRAY);
+      if (p_dst == NULL) return NULL;
+      float *dst = (float *)PyArray_DATA(p_dst);
+
       mycudafunction(dst, src, dst_shape);
-      PyArrayObject *p_dst = (PyArrayObject *)PyArray_SimpleNewFromData(
-        3, dst_shape, NPY_FLOAT32, dst);
+
+      Py_DECREF(p_src);
       return PyArray_Return(p_dst);
     }
     ...
@@ -215,17 +221,16 @@ C++:
     #include "pycuvec.cuh"
     #include "mycudafunction.h"
 
-    static PyObject *myfunc(PyObject *self, PyObject *args) {
+    static PyObject *myfunc(PyObject *self, PyObject *args, PyObject *kwargs) {
       PyCuVec<float> *src = NULL;
-      PyArg_ParseTuple(args, "O", (PyObject **)&src);
-
+      PyCuVec<float> *dst = NULL;
+      static const char *kwds[] = {"src", "output", NULL};
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds,
+                                       (PyObject **)&src, (PyObject **)&dst))
+        return NULL;
 
 
       if (!src) return NULL;
-
-
-
-
 
 
       // hardcode upsampling factor 2
@@ -235,7 +240,14 @@ C++:
       dst_shape[1] *= 2;
       dst_shape[0] *= 2;
 
-      PyCuVec<float> *dst = PyCuVec_zeros<float>(dst_shape);
+
+      if (!dst)
+        dst = PyCuVec_zeros<float>(dst_shape);
+
+
+
+      if (!dst) return NULL;
+
 
       mycudafunction(dst->vec.data(), src->vec.data(), dst_shape.data());
 
