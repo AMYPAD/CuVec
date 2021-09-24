@@ -72,7 +72,7 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
   double kernel_ms = std::chrono::duration<double, std::milli>(eKern - eAlloc).count();
 // fprintf(stderr, "%.3lf ms, %.3lf ms\n", alloc_ms, kernel_ms);
 #endif
-  return Py_BuildValue("ddO", double(alloc_ms), double(kernel_ms), (PyObject *)dst);
+  return Py_BuildValue("ddN", double(alloc_ms), double(kernel_ms), (PyObject *)dst);
 }
 static PyMethodDef example_methods[] = {
     {"increment2d_f", (PyCFunction)increment2d_f, METH_VARARGS | METH_KEYWORDS,
