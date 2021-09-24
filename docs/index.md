@@ -1,6 +1,6 @@
 # CuVec
 
-Unifying Python/C++/CUDA memory: Python buffered array <-> C++11 `std::vector` <-> CUDA managed memory.
+Unifying Python/C++/CUDA memory: Python buffered array ↔ C++11 `std::vector` ↔ CUDA managed memory.
 
 [![Version](https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white)](https://github.com/AMYPAD/CuVec/releases)
 [![Downloads](https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads)](https://pypi.org/project/cuvec)
@@ -43,7 +43,8 @@ pip install cuvec
 Requirements:
 
 - Python 3.6 or greater (e.g. via [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda))
-- [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
+- (optional) [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
+  + note that if the CUDA SDK/Toolkit is installed *after* CuVec, then CuVec must be re-installed to enable CUDA support
 
 ## Usage
 
@@ -174,31 +175,37 @@ C++:
     #include <numpy/arrayobject.h>
     #include "mycudafunction.h"
 
-    static PyObject *myfunc(PyObject *self, PyObject *args) {
+    static PyObject *myfunc(PyObject *self, PyObject *args, PyObject *kwargs) {
       PyObject *o_src = NULL;
-      PyArg_ParseTuple(args, "O", &o_src)
-      PyArrayObject *p_src = NULL;
-      p_src = (PyArrayObject *)PyArray_FROM_OTF(
-        o_src, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
-      if (p_src == NULL) {
-        Py_XDECREF(p_src);
+      PyObject *o_dst = NULL;
+      static const char *kwds[] = {"src", "output", NULL};
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds,
+                                       &o_src, &o_dst))
         return NULL;
-      }
+      PyArrayObject *p_src = (PyArrayObject *)PyArray_FROM_OTF(
+        o_src, NPY_FLOAT32, NPY_ARRAY_IN_ARRAY);
+      if (p_src == NULL) return NULL;
       float *src = (float *)PyArray_DATA(p_src);
-      Py_DECREF(p_src);
 
       // hardcode upsampling factor 2
       npy_intp *src_shape = PyArray_SHAPE(p_src);
-      npy_intp dst_shape[3];
+      Py_ssize_t dst_shape[3];
       dst_shape[2] = src_shape[2] * 2;
       dst_shape[1] = src_shape[1] * 2;
       dst_shape[0] = src_shape[0] * 2;
 
-      float *dst = (float *)malloc(
-        dst_shape[2] * dst_shape[1] * dst_shape[0] * sizeof(float));
+      PyArrayObject *p_dst = NULL;
+      if (o_dst == NULL)
+        p_dst = (PyArrayObject *)PyArray_ZEROS(3, dst_shape, NPY_FLOAT32, 0);
+      else
+        p_dst = (PyArrayObject *)PyArray_FROM_OTF(
+          o_dst, NPY_FLOAT32, NPY_ARRAY_INOUT_ARRAY);
+      if (p_dst == NULL) return NULL;
+      float *dst = (float *)PyArray_DATA(p_dst);
+
       mycudafunction(dst, src, dst_shape);
-      PyArrayObject *p_dst = (PyArrayObject *)PyArray_SimpleNewFromData(
-        3, dims, NPY_FLOAT32, dst);
+
+      Py_DECREF(p_src);
       return PyArray_Return(p_dst);
     }
     ...
@@ -214,17 +221,16 @@ C++:
     #include "pycuvec.cuh"
     #include "mycudafunction.h"
 
-    static PyObject *myfunc(PyObject *self, PyObject *args) {
+    static PyObject *myfunc(PyObject *self, PyObject *args, PyObject *kwargs) {
       PyCuVec<float> *src = NULL;
-      PyArg_ParseTuple(args, "O", (PyObject **)&src);
-
+      PyCuVec<float> *dst = NULL;
+      static const char *kwds[] = {"src", "output", NULL};
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds,
+                                       (PyObject **)&src, (PyObject **)&dst))
+        return NULL;
 
 
       if (!src) return NULL;
-
-
-
-
 
 
       // hardcode upsampling factor 2
@@ -234,9 +240,16 @@ C++:
       dst_shape[1] *= 2;
       dst_shape[0] *= 2;
 
-      PyCuVec<float> *dst = PyCuVec_zeros<float>(dst_shape);
 
-      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape);
+      if (!dst)
+        dst = PyCuVec_zeros<float>(dst_shape);
+
+
+
+      if (!dst) return NULL;
+
+
+      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape.data());
 
 
       return dst;
@@ -253,14 +266,14 @@ CUDA:
 
 === "Before: pure NumPy"
     ```{.cpp linenums="1"}
-    void mycudafunction(float *dst, float *src, int X, int Y) {
+    void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
       float *d_src;
-      cudaMalloc(&d_src, X / 2 * Y / 2 * sizeof(float));
-      cudaMemcpy(d_src, src, X / 2 * Y / 2 * sizeof(float),
-        cudaMemcpyHostToDevice);
+      int src_size = shape[0]/2 * shape[1]/2 * shape[2]/2 * sizeof(float);
+      cudaMalloc(&d_src, src_size);
+      cudaMemcpy(d_src, src, src_size, cudaMemcpyHostToDevice);
       float *d_dst;
-      cudaMalloc(&d_dst, X * Y * sizeof(float));
-      mykernel<<<...>>>(d_dst, d_src, X, Y);
+      cudaMalloc(&d_dst, shape[0] * shape[1] * shape[2] * sizeof(float));
+      mykernel<<<...>>>(d_dst, d_src, shape[0], shape[1], shape[2]);
       cudaMemcpy(dst, d_dst, cudaMemcpyDeviceToHost);
       cudaFree(d_dst);
       cudaFree(d_src);
@@ -269,14 +282,14 @@ CUDA:
 
 === "After: with CuVec"
     ```{.cpp linenums="1"}
-    void mycudafunction(float *dst, float *src, int X, int Y) {
+    void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
 
 
 
 
 
 
-      mykernel<<<...>>>(dst, src, X, Y);
+      mykernel<<<...>>>(dst, src, shape[0], shape[1], shape[2]);
       cudaDeviceSynchronize();
 
 
@@ -326,10 +339,11 @@ For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](ht
 
     At this point any external project may include `cuvec` as follows (Once setting `-DCMAKE_PREFIX_DIR=<installation prefix from above>`):
 
-    ```{.cmake linenums="1" hl_lines="3 5"}
+    ```{.cmake linenums="1" hl_lines="3 6"}
     cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
     project(myproj)
     find_package(AMYPADcuvec COMPONENTS cuvec REQUIRED)
     add_executable(myexe ...)
+    set_target_properties(myexe PROPERTIES CXX_STANDARD 11)
     target_link_libraries(myexe PRIVATE AMYPAD::cuvec)
     ```
