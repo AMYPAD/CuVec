@@ -322,13 +322,13 @@ CUDA:
     ```{.cpp linenums="1"}
     void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
       float *d_src;
-      int src_size = shape[0]/2 * shape[1]/2 * shape[2]/2 * sizeof(float);
-      cudaMalloc(&d_src, src_size);
-      cudaMemcpy(d_src, src, src_size, cudaMemcpyHostToDevice);
+      int dst_size = shape[0] * shape[1] * shape[2] * sizeof(float);
+      cudaMalloc(&d_src, dst_size / 8);
+      cudaMemcpy(d_src, src, dst_size / 8, cudaMemcpyHostToDevice);
       float *d_dst;
-      cudaMalloc(&d_dst, shape[0] * shape[1] * shape[2] * sizeof(float));
+      cudaMalloc(&d_dst, dst_size);
       mykernel<<<...>>>(d_dst, d_src, shape[0], shape[1], shape[2]);
-      cudaMemcpy(dst, d_dst, cudaMemcpyDeviceToHost);
+      cudaMemcpy(dst, d_dst, dst_size, cudaMemcpyDeviceToHost);
       cudaFree(d_dst);
       cudaFree(d_src);
     }
