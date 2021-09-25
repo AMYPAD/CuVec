@@ -51,6 +51,9 @@ renderer:
     extra_javascript: [js/extra.js]
 
     extra:
+      analytics:
+        provider: google
+        property: G-8P266FZJFY
       generator: false
     theme:
       name: material
