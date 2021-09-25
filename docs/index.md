@@ -165,7 +165,15 @@ Python:
     import cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
     assert all(numpy.mean(arr, axis=(0, 1)) == 0)
-    print(mymod.myfunc(arr.cuvec).sum())
+    print(cuvec.asarray(mymod.myfunc(arr.cuvec)).sum())
+    ```
+
+=== "Alternative: with CuVec & SWIG"
+    ```{.py linenums="1"}
+    import cuvec.swigcuvec as cuvec, numpy, mymod
+    arr = cuvec.zeros((1337, 42, 7), "float32")
+    assert all(numpy.mean(arr, axis=(0, 1)) == 0)
+    print(cuvec.asarray(mymod.myfunc(arr.cuvec)).sum())
     ```
 
 C++:
@@ -262,6 +270,52 @@ C++:
     }
     ```
 
+=== "Alternative: with CuVec & SWIG"
+    ```{.cpp linenums="1"}
+    /// SWIG interface file mymod.i (not mymod.cpp)
+    %module mymod
+    %include "cuvec.i"
+    %{
+    #include "mycudafunction_swig.h"
+    %}
+    SwigCuVec<float> *myfunc(
+      SwigCuVec<float> &src, SwigCuVec<float> *output = NULL);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // that's it :)
+    // all non-wrapper logic is actually moved to the implementation below
+    ```
+
 CUDA:
 
 === "Before: pure NumPy"
@@ -296,7 +350,23 @@ CUDA:
     }
     ```
 
-For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu).
+=== "Alternative: with CuVec & SWIG"
+    ```{.cpp linenums="1"}
+    #include "cuvec.cuh"
+    SwigCuVec<float> *myfunc(
+        SwigCuVec<float> &src, SwigCuVec<float> *output = NULL) {
+      // hardcode upsampling factor 2
+      std::vector<size_t> shape = src.shape;
+      for (auto &i : shape) i *= 2;
+      if (!output) output = SwigCuVec_new<float>(shape);
+      mykernel<<<...>>>(output->vec.data(), src.vec.data(),
+                        shape[0], shape[1], shape[2]);
+      cudaDeviceSynchronize();
+      return output;
+    }
+    ```
+
+For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu) or the alternative `cuvec.example_swig` sources [example_swig.i](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu).
 
 ## External Projects
 
