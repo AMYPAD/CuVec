@@ -21,7 +21,7 @@ try:
     nvcc_arch_raw = map(cuinfo.compute_capability, range(cuinfo.num_devices()))
     nvcc_arches = {"%d%d" % i for i in nvcc_arch_raw if i >= (3, 5)}
     if nvcc_arches:
-        cmake_args.append("-DCMAKE_CUDA_ARCHITECTURES=" + " ".join(sorted(nvcc_arches)))
+        cmake_args.append("-DCMAKE_CUDA_ARCHITECTURES=" + ";".join(sorted(nvcc_arches)))
 except Exception as exc:
     log.warning("Import or CUDA device detection error:\n%s", exc)
 
