@@ -25,9 +25,10 @@ __all__ = [
     # data
     'typecodes', 'vec_types'] # yapf: disable
 
-from pathlib import Path
-
-from pkg_resources import resource_filename
+try:          # py<3.9
+    import importlib_resources as resources
+except ImportError:
+    from importlib import resources
 
 try:
     from .cuvec import dev_sync
@@ -37,6 +38,8 @@ except ImportError as err: # pragma: no cover
 else:
     from .pycuvec import CuVec, asarray, copy, cu_copy, cu_zeros, typecodes, vec_types, zeros
 
+p = resources.files('cuvec').resolve()
+# for C++/CUDA/SWIG includes
+include_path = p / 'include'
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`
-cmake_prefix = Path(resource_filename(__name__, "cmake")).resolve()
-include_path = Path(resource_filename(__name__, "include")).resolve()
+cmake_prefix = p / 'cmake'
