@@ -55,6 +55,14 @@ jobs:
     - run: pip install -U -e .[dev]
     - run: pytest
     - uses: codecov/codecov-action@v1
+    - name: compile -Wall
+      run: |
+        git clean -Xdf
+        pip install toml
+        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
+          | xargs -0 pip install
+        python setup.py build -- -DCUVEC_DEBUG=1 \
+          -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
   cuda:
     if: github.event_name != 'pull_request' || github.repository_owner != 'AMYPAD'
     name: CUDA py${{ matrix.python }}
@@ -71,6 +79,14 @@ jobs:
     - run: pip install -U -e .[dev]
     - run: pytest
     - uses: codecov/codecov-action@v1
+    - name: compile -Wall
+      run: |
+        git clean -Xdf
+        pip install toml
+        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
+          | xargs -0 pip install
+        python setup.py build -- -DCUVEC_DEBUG=1 \
+          -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}

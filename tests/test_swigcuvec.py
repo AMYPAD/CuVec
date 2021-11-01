@@ -109,6 +109,8 @@ def test_asarray():
     assert (s == v[1:]).all()
     assert str(s.swvec) != str(v.swvec)
     assert np.asarray(s.swvec).data != np.asarray(v.swvec).data
+    with raises(IOError):
+        cu.asarray(s.swvec.cuvec, ownership='error')
 
 
 def test_cuda_array_interface():

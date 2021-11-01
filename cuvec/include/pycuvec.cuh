@@ -229,5 +229,44 @@ template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
   self->strides = other->strides;
   return self;
 }
+/// returns `getattr(o, 'cuvec', o) or NULL` without altering refcount
+template <class T> PyCuVec<T> *asPyCuVec(PyObject *o) {
+  if (!o || Py_None == o) return NULL;
+  if (PyObject_HasAttrString(o, "cuvec")) {
+    o = PyObject_GetAttrString(o, "cuvec");
+    if (!o) return NULL;
+    Py_DECREF(o);
+  }
+  return (PyCuVec<T> *)o;
+}
+template <class T> PyCuVec<T> *asPyCuVec(PyCuVec<T> *o) {
+  if (!o || Py_None == (PyObject *)o) return NULL;
+  if (PyObject_HasAttrString((PyObject *)o, "cuvec")) {
+    o = (PyCuVec<T> *)PyObject_GetAttrString((PyObject *)o, "cuvec");
+    if (!o) return NULL;
+    Py_DECREF((PyObject *)o);
+  }
+  return o;
+}
+/// conversion functions for PyArg_Parse...(..., "O&", ...)
+#define ASCUVEC(T, typechar)                                                                      \
+  int asPyCuVec_##typechar(PyObject *object, void **address) {                                    \
+    *address = (void *)asPyCuVec<T>(object);                                                      \
+    return 1;                                                                                     \
+  }
+ASCUVEC(signed char, b)
+ASCUVEC(unsigned char, B)
+ASCUVEC(char, c)
+ASCUVEC(short, h)
+ASCUVEC(unsigned short, H)
+ASCUVEC(int, i)
+ASCUVEC(unsigned int, I)
+ASCUVEC(long long, q)
+ASCUVEC(unsigned long long, Q)
+#ifdef _CUVEC_HALF
+ASCUVEC(_CUVEC_HALF, e)
+#endif
+ASCUVEC(float, f)
+ASCUVEC(double, d)
 
 #endif // _PYCUVEC_H_

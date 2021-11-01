@@ -123,3 +123,30 @@ def test_cuda_array_interface():
     assert ndarr.dtype == v.dtype
     with raises(AttributeError):
         ndarr.__cuda_array_interface__
+
+
+def test_increment():
+    # `example_mod` is defined in ../cuvec/src/example_mod/
+    from cuvec.example_mod import increment2d_f
+    a = cu.zeros((1337, 42), 'f')
+    assert (a == 0).all()
+    res = cu.asarray(increment2d_f(a.cuvec, a.cuvec))
+    assert (a == 1).all()
+    assert (res == 1).all()
+
+    a[:] = 0
+    assert (a == 0).all()
+    assert (res == 0).all()
+
+    res = cu.asarray(increment2d_f(a))
+    assert (res == 1).all()
+
+
+def test_increment_return():
+    from cuvec.example_mod import increment2d_f
+    a = cu.zeros((1337, 42), 'f')
+    assert (a == 0).all()
+    res = cu.asarray(increment2d_f(a, a))
+    assert (a == 1).all()
+    del a
+    assert (res == 1).all()

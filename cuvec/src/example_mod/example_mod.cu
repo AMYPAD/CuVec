@@ -19,12 +19,14 @@ __global__ void _d_incr(float *dst, float *src, int X, int Y) {
 }
 #endif // CUVEC_DISABLE_CUDA
 static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs) {
-  PyCuVec<float> *dst = NULL;
   PyCuVec<float> *src = NULL;
-  static const char *kwds[] = {"src", "output", NULL};
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds, (PyObject **)&src,
-                                   (PyObject **)&dst))
+  PyCuVec<float> *dst = NULL;
+  bool timing = false;
+  static const char *kwds[] = {"src", "output", "timing", NULL};
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&|Ob", (char **)kwds, &asPyCuVec_f, &src, &dst,
+                                   &timing))
     return NULL;
+  dst = asPyCuVec(dst);
   if (!src) return NULL;
   std::vector<Py_ssize_t> &N = src->shape;
   if (N.size() != 2) {
@@ -47,6 +49,7 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
       PyErr_SetString(PyExc_IndexError, "`output` must be same shape as `src`");
       return NULL;
     }
+    Py_INCREF((PyObject *)dst); // anticipating returning
   } else {
     dst = PyCuVec_zeros_like(src);
     if (!dst) return NULL;
@@ -72,7 +75,12 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
   double kernel_ms = std::chrono::duration<double, std::milli>(eKern - eAlloc).count();
 // fprintf(stderr, "%.3lf ms, %.3lf ms\n", alloc_ms, kernel_ms);
 #endif
-  return Py_BuildValue("ddN", double(alloc_ms), double(kernel_ms), (PyObject *)dst);
+  if (timing) {
+    // hack: store times in first two elements of output
+    dst->vec[0] = alloc_ms;
+    dst->vec[1] = kernel_ms;
+  }
+  return (PyObject *)dst;
 }
 static PyMethodDef example_methods[] = {
     {"increment2d_f", (PyCFunction)increment2d_f, METH_VARARGS | METH_KEYWORDS,

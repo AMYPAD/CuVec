@@ -67,24 +67,17 @@ def test_perf(cu, ex, shape=(1337, 42), quiet=False):
     t['assign'] = (time() - tic - overhead) * 1000
 
     if not quiet:
-        if cu is sw:
-            t['warmup'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
-            t['> create dst'], t['> kernel'] = cu.asarray(res)[0, :2]
-        else:
-            t['warmup'], (t['> create dst'], t['> kernel'], _) = timer(ex.increment2d_f)(src.cuvec)
-    if cu is sw:
-        t['call ext'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
-        t['- create dst'], t['- kernel'] = None, None
-        t['view'], dst = timer(cu.asarray)(res)
-        t['- create dst'], t['- kernel'] = dst[0, :2]
-    else:
-        t['call ext'], (t['- create dst'], t['- kernel'], res) = timer(ex.increment2d_f)(src.cuvec)
-        t['view'], dst = timer(cu.asarray)(res)
+        t['warmup'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
+        t['> create dst'], t['> kernel'] = cu.asarray(res)[0, :2]
+    t['call ext'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
+    t['- create dst'], t['- kernel'] = None, None
+    t['view'], dst = timer(cu.asarray)(res)
+    t['- create dst'], t['- kernel'] = dst[0, :2]
 
     if not quiet:
         print("\n".join(f"{k.ljust(14)} | {v:.3f}" for k, v in t.items()))
     assert (src + 1 == dst)[1:].all()
-    assert (src + 1 == dst)[0, 2 if cu is sw else 0:].all()
+    assert (src + 1 == dst)[0, 2:].all()
     # even a fast kernel takes longer than API overhead
     assert t['- kernel'] / (t['call ext'] - t['- create dst']) > 0.5
     # API call should be <0.1 ms... but set a higher threshold of 2 ms
