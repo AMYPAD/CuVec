@@ -145,11 +145,13 @@ def test_increment():
     from cuvec.example_swig import increment2d_f
     a = cu.zeros((1337, 42), 'f')
     assert (a == 0).all()
-    increment2d_f(a.cuvec, a.cuvec)
+    res = cu.asarray(increment2d_f(a.cuvec, a.cuvec))
     assert (a == 1).all()
+    assert (res == 1).all()
 
     a[:] = 0
     assert (a == 0).all()
+    assert (res == 0).all()
 
     res = cu.asarray(increment2d_f(a.cuvec))
     assert (res == 1).all()
