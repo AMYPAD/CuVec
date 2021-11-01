@@ -23,10 +23,9 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
   PyCuVec<float> *dst = NULL;
   bool timing = false;
   static const char *kwds[] = {"src", "output", "timing", NULL};
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|Ob", (char **)kwds, (PyObject **)&src,
-                                   (PyObject **)&dst, &timing))
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&|Ob", (char **)kwds, &asPyCuVec_f, &src, &dst,
+                                   &timing))
     return NULL;
-  src = asPyCuVec(src);
   dst = asPyCuVec(dst);
   if (!src) return NULL;
   std::vector<Py_ssize_t> &N = src->shape;

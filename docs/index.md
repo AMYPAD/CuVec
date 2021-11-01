@@ -73,9 +73,23 @@ Requirements:
     // PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
     // PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
     /// returns `NULL` if `self is None`, or
-    /// `getattr(self, 'cuvec', self)` otherwise
+    /// `getattr(self, 'cuvec', self)` otherwise:
     // PyCuVec<T> *asPyCuVec(PyObject *self);
     // PyCuVec<T> *asPyCuVec(PyCuVec<T> *self);
+    /// conversion functions for `PyArg_Parse*()`
+    /// e.g.: `PyArg_ParseTuple(args, "O&", &PyCuVec_f, &obj)`:
+    // int asPyCuVec_b(PyObject *o, PyCuVec<signed char> **self);
+    // int asPyCuVec_B(PyObject *o, PyCuVec<unsigned char> **self);
+    // int asPyCuVec_c(PyObject *o, PyCuVec<char> **self);
+    // int asPyCuVec_h(PyObject *o, PyCuVec<short> **self);
+    // int asPyCuVec_H(PyObject *o, PyCuVec<unsigned short> **self);
+    // int asPyCuVec_i(PyObject *o, PyCuVec<int> **self);
+    // int asPyCuVec_I(PyObject *o, PyCuVec<unsigned int> **self);
+    // int asPyCuVec_q(PyObject *o, PyCuVec<long long> **self);
+    // int asPyCuVec_Q(PyObject *o, PyCuVec<unsigned long long> **self);
+    // int asPyCuVec_e(PyObject *o, PyCuVec<__half> **self);
+    // int asPyCuVec_f(PyObject *o, PyCuVec<float> **self);
+    // int asPyCuVec_d(PyObject *o, PyCuVec<double> **self);
     ```
 
 === "C++/SWIG API"
@@ -116,7 +130,7 @@ The following involve no memory copies.
 
 === "**CPython API** to **C++**"
     ```cpp
-    /// input: `PyObject *obj` (obtained from e.g.: `PyArg_ParseTuple()`, etc)
+    /// input: `PyObject *obj` (obtained from e.g.: `PyArg_Parse*()`, etc)
     /// output: `CuVec<type> vec`
     CuVec<float> &vec = ((PyCuVec<float> *)obj)->vec; // like std::vector<float>
     std::vector<Py_ssize_t> &shape = ((PyCuVec<float> *)obj)->shape;
@@ -237,11 +251,11 @@ C++:
       PyCuVec<float> *src = NULL;
       PyCuVec<float> *dst = NULL;
       static const char *kwds[] = {"src", "output", NULL};
-      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds,
-                                       (PyObject **)&src, (PyObject **)&dst))
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&|O&", (char **)kwds,
+                                      &asPyCuVec_f, &src, &asPyCuVec_f, &dst))
         return NULL;
-      src = asPyCuVec(src);
-      dst = asPyCuVec(dst);
+
+
       if (!src) return NULL;
 
 
