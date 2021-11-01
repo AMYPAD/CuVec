@@ -50,6 +50,7 @@ static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs)
       PyErr_SetString(PyExc_IndexError, "`output` must be same shape as `src`");
       return NULL;
     }
+    Py_INCREF((PyObject *)dst); // anticipating returning
   } else {
     dst = PyCuVec_zeros_like(src);
     if (!dst) return NULL;

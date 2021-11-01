@@ -140,3 +140,13 @@ def test_increment():
 
     res = cu.asarray(increment2d_f(a))
     assert (res == 1).all()
+
+
+def test_increment_return():
+    from cuvec.example_mod import increment2d_f
+    a = cu.zeros((1337, 42), 'f')
+    assert (a == 0).all()
+    res = cu.asarray(increment2d_f(a, a))
+    assert (a == 1).all()
+    del a
+    assert (res == 1).all()
