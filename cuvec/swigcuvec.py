@@ -172,13 +172,28 @@ def copy(arr) -> CuVec:
     return CuVec(cu_copy(arr))
 
 
-def asarray(arr, dtype=None, order=None) -> CuVec:
+def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
     """
     Returns a `swigcuvec.CuVec` view of `arr`, avoiding memory copies if possible.
     (`cuvec` equivalent of `numpy.asarray`).
+
+    Args:
+      ownership: logging level if `is_raw_cuvec(arr)`.
+        WARNING: `asarray()` should not be used on an existing reference, e.g.:
+        >>> res = asarray(some_swig_api_func(..., output=getattr(out, 'cuvec', None)))
+        `res.cuvec` and `out.cuvec` are now the same
+        yet garbage collected separately (dangling ptr).
+        Instead, use:
+        >>> res = some_swig_api_func(..., output=getattr(out, 'cuvec', None))
+        >>> res = out if hasattr(out, 'cuvec') else asarray(res)
+        NB: `asarray()` is safe if the raw cuvec was created in C++/SWIG, e.g.:
+        >>> res = asarray(some_swig_api_func(..., output=None), ownership='debug')
     """
     if is_raw_cuvec(arr):
-        log.debug("taking ownership")
+        ownership = ownership.lower()
+        if ownership in {'critical', 'fatal', 'error'}:
+            raise IOError("Can't take ownership of existing cuvec (would create dangling ptr)")
+        getattr(log, ownership)("taking ownership")
         arr = SWIGVector(None, None, arr)
     if not isinstance(arr, np.ndarray) and is_raw_swvec(arr):
         res = CuVec(arr)
