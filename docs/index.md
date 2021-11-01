@@ -72,6 +72,10 @@ Requirements:
     // PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape);
     // PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
     // PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
+    /// returns `NULL` if `self is None`, or
+    /// `getattr(self, 'cuvec', self)` otherwise
+    // PyCuVec<T> *asPyCuVec(PyObject *self);
+    // PyCuVec<T> *asPyCuVec(PyCuVec<T> *self);
     ```
 
 === "C++/SWIG API"
@@ -165,7 +169,7 @@ Python:
     import cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
     assert all(numpy.mean(arr, axis=(0, 1)) == 0)
-    print(cuvec.asarray(mymod.myfunc(arr.cuvec)).sum())
+    print(cuvec.asarray(mymod.myfunc(arr)).sum())
     ```
 
 === "Alternative: with CuVec & SWIG"
@@ -236,8 +240,8 @@ C++:
       if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds,
                                        (PyObject **)&src, (PyObject **)&dst))
         return NULL;
-
-
+      src = asPyCuVec(src);
+      dst = asPyCuVec(dst);
       if (!src) return NULL;
 
 

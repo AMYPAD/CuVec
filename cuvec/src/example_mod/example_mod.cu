@@ -19,12 +19,14 @@ __global__ void _d_incr(float *dst, float *src, int X, int Y) {
 }
 #endif // CUVEC_DISABLE_CUDA
 static PyObject *increment2d_f(PyObject *self, PyObject *args, PyObject *kwargs) {
-  PyCuVec<float> *dst = NULL;
   PyCuVec<float> *src = NULL;
+  PyCuVec<float> *dst = NULL;
   static const char *kwds[] = {"src", "output", NULL};
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O", (char **)kwds, (PyObject **)&src,
                                    (PyObject **)&dst))
     return NULL;
+  src = asPyCuVec(src);
+  dst = asPyCuVec(dst);
   if (!src) return NULL;
   std::vector<Py_ssize_t> &N = src->shape;
   if (N.size() != 2) {

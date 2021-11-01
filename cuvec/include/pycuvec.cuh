@@ -229,5 +229,24 @@ template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
   self->strides = other->strides;
   return self;
 }
+/// returns `getattr(o, 'cuvec', o) or NULL` without altering refcount
+template <class T> PyCuVec<T> *asPyCuVec(PyObject *o) {
+  if (!o || Py_None == o) return NULL;
+  if (PyObject_HasAttrString(o, "cuvec")) {
+    o = PyObject_GetAttrString(o, "cuvec");
+    if (!o) return NULL;
+    Py_DECREF(o);
+  }
+  return (PyCuVec<T> *)o;
+}
+template <class T> PyCuVec<T> *asPyCuVec(PyCuVec<T> *o) {
+  if (!o || Py_None == (PyObject *)o) return NULL;
+  if (PyObject_HasAttrString((PyObject *)o, "cuvec")) {
+    o = (PyCuVec<T> *)PyObject_GetAttrString((PyObject *)o, "cuvec");
+    if (!o) return NULL;
+    Py_DECREF((PyObject *)o);
+  }
+  return o;
+}
 
 #endif // _PYCUVEC_H_
