@@ -150,3 +150,15 @@ def test_increment_return():
     assert (a == 1).all()
     del a
     assert (res == 1).all()
+
+
+def test_np_types():
+    from cuvec.example_mod import increment2d_f
+    f = cu.zeros((1337, 42), 'f')
+    d = cu.zeros((1337, 42), 'd')
+    cu.asarray(increment2d_f(f))
+    cu.asarray(increment2d_f(f, f))
+    with raises((TypeError, SystemError)):
+        cu.asarray(increment2d_f(f, d))
+    with raises((TypeError, SystemError)):
+        cu.asarray(increment2d_f(d))

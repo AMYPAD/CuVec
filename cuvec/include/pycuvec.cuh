@@ -244,6 +244,22 @@ template <class T> PyCuVec<T> *asPyCuVec(PyObject *o) {
 template <class T> PyCuVec<T> *asPyCuVec(PyCuVec<T> *o) {
   if (!o || Py_None == (PyObject *)o) return NULL;
   if (PyObject_HasAttrString((PyObject *)o, "cuvec")) {
+    // NumPy type checking
+    PyObject *dtype = PyObject_GetAttrString((PyObject *)o, "dtype");
+    PyObject *c = PyObject_GetAttrString(dtype, "char");
+    Py_XDECREF(dtype);
+    if (PyUnicode_Check(c)) {
+      char *npchr = (char *)PyUnicode_1BYTE_DATA(c);
+      if (*npchr != *cuvec::PyType<T>::npchr()) {
+        PyErr_Format(PyExc_TypeError,
+                     "cannot convert underlying dtype('%s') to requested dtype('%s')", npchr,
+                     cuvec::PyType<T>::npchr());
+        Py_DECREF(c);
+        return NULL;
+      }
+    }
+    Py_XDECREF(c);
+    // return cuvec
     o = (PyCuVec<T> *)PyObject_GetAttrString((PyObject *)o, "cuvec");
     if (!o) return NULL;
     Py_DECREF((PyObject *)o);
@@ -253,12 +269,17 @@ template <class T> PyCuVec<T> *asPyCuVec(PyCuVec<T> *o) {
 /// conversion functions for PyArg_Parse...(..., "O&", ...)
 #define ASCUVEC(T, typechar)                                                                      \
   int asPyCuVec_##typechar(PyObject *object, void **address) {                                    \
-    *address = (void *)asPyCuVec<T>(object);                                                      \
+    PyCuVec<T> *o = asPyCuVec<T>(object);                                                         \
+    if (!o) return 0;                                                                             \
+    *address = (void *)o;                                                                         \
     return 1;                                                                                     \
   }
 ASCUVEC(signed char, b)
 ASCUVEC(unsigned char, B)
 ASCUVEC(char, c)
+#ifdef _Bool
+ASCUVEC(_Bool, "?", "?");
+#endif
 ASCUVEC(short, h)
 ASCUVEC(unsigned short, H)
 ASCUVEC(int, i)
