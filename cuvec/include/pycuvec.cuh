@@ -29,28 +29,30 @@
 namespace cuvec {
 template <typename T> struct PyType {
   static const char *format() { return typeid(T).name(); }
+  static const char *npchr() { return ""; }
 };
-#define _PYCVEC_TPCHR(T, typestr)                                                                 \
+#define _PYCUVEC_TPCHR(T, typestr, npy_char)                                                      \
   template <> struct PyType<T> {                                                                  \
     static const char *format() { return typestr; }                                               \
+    static const char *npchr() { return npy_char; }                                               \
   }
-_PYCVEC_TPCHR(char, "c");
-_PYCVEC_TPCHR(signed char, "b");
-_PYCVEC_TPCHR(unsigned char, "B");
+_PYCUVEC_TPCHR(char, "c", "S");
+_PYCUVEC_TPCHR(signed char, "b", "b");
+_PYCUVEC_TPCHR(unsigned char, "B", "B");
 #ifdef _Bool
-_PYCVEC_TPCHR(_Bool, "?");
+_PYCUVEC_TPCHR(_Bool, "?", "?");
 #endif
-_PYCVEC_TPCHR(short, "h");
-_PYCVEC_TPCHR(unsigned short, "H");
-_PYCVEC_TPCHR(int, "i");
-_PYCVEC_TPCHR(unsigned int, "I");
-_PYCVEC_TPCHR(long long, "q");
-_PYCVEC_TPCHR(unsigned long long, "Q");
+_PYCUVEC_TPCHR(short, "h", "h");
+_PYCUVEC_TPCHR(unsigned short, "H", "H");
+_PYCUVEC_TPCHR(int, "i", "i");
+_PYCUVEC_TPCHR(unsigned int, "I", "I");
+_PYCUVEC_TPCHR(long long, "q", "l");
+_PYCUVEC_TPCHR(unsigned long long, "Q", "L");
 #ifdef _CUVEC_HALF
-_PYCVEC_TPCHR(_CUVEC_HALF, "e");
+_PYCUVEC_TPCHR(_CUVEC_HALF, "e", "e");
 #endif
-_PYCVEC_TPCHR(float, "f");
-_PYCVEC_TPCHR(double, "d");
+_PYCUVEC_TPCHR(float, "f", "f");
+_PYCUVEC_TPCHR(double, "d", "d");
 } // namespace cuvec
 
 /** classes */
