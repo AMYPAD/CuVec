@@ -119,7 +119,7 @@ The following involve no memory copies.
     ```py
     # import cuvec, my_custom_lib
     # arr = cuvec.zeros((1337, 42), "float32")
-    my_custom_lib.some_cpython_api_func(arr.cuvec)
+    my_custom_lib.some_cpython_api_func(arr)
     ```
 
 === "**CPython API** to **Python**"
