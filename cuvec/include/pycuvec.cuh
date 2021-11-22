@@ -235,6 +235,22 @@ template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
 template <class T> PyCuVec<T> *asPyCuVec(PyObject *o) {
   if (!o || Py_None == o) return NULL;
   if (PyObject_HasAttrString(o, "cuvec")) {
+    // NumPy type checking
+    PyObject *dtype = PyObject_GetAttrString(o, "dtype");
+    PyObject *c = PyObject_GetAttrString(dtype, "char");
+    Py_XDECREF(dtype);
+    if (PyUnicode_Check(c)) {
+      char *npchr = (char *)PyUnicode_1BYTE_DATA(c);
+      if (*npchr != *cuvec::PyType<T>::npchr()) {
+        PyErr_Format(PyExc_TypeError,
+                     "cannot convert underlying dtype('%s') to requested dtype('%s')", npchr,
+                     cuvec::PyType<T>::npchr());
+        Py_DECREF(c);
+        return NULL;
+      }
+    }
+    Py_XDECREF(c);
+    // return cuvec
     o = PyObject_GetAttrString(o, "cuvec");
     if (!o) return NULL;
     Py_DECREF(o);

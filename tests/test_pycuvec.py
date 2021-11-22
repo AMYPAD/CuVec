@@ -158,7 +158,8 @@ def test_np_types():
     d = cu.zeros((1337, 42), 'd')
     cu.asarray(increment2d_f(f))
     cu.asarray(increment2d_f(f, f))
-    with raises((TypeError, SystemError)):
-        cu.asarray(increment2d_f(f, d))
-    with raises((TypeError, SystemError)):
+    with raises(TypeError):
         cu.asarray(increment2d_f(d))
+    with raises(SystemError):
+        # the TypeError is suppressed since a new output is generated
+        cu.asarray(increment2d_f(f, d))
