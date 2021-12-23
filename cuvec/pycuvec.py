@@ -1,20 +1,15 @@
 """Thin wrappers around `cuvec` C++/CUDA module"""
-import array
 import logging
 from collections.abc import Sequence
 from textwrap import dedent
 from typing import Any, Dict
-from typing import Sequence as Seq
-from typing import Union
 
 import numpy as np
 
 from . import cuvec as cu
+from ._common import Shape, _generate_helpers, typecodes
 
 log = logging.getLogger(__name__)
-Shape = Union[Seq[int], int]
-# u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
-typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
 vec_types = {
     np.dtype('int8'): cu.PyCuVec_b,
     np.dtype('uint8'): cu.PyCuVec_B,
@@ -108,6 +103,9 @@ def zeros(shape: Shape, dtype="float32") -> CuVec:
     of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
     """
     return CuVec(cu_zeros(shape, dtype))
+
+
+ones, zeros_like, ones_like = _generate_helpers(zeros, CuVec)
 
 
 def copy(arr) -> CuVec:

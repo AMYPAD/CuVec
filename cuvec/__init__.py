@@ -21,7 +21,9 @@ __all__ = [
     # classes
     'CuVec',
     # functions
-    'dev_sync', 'copy', 'zeros', 'asarray', 'cu_copy', 'cu_zeros',
+    'dev_sync', 'cu_copy', 'cu_zeros',
+    'copy', 'asarray',
+    'zeros', 'ones', 'zeros_like', 'ones_like',
     # data
     'typecodes', 'vec_types'] # yapf: disable
 
@@ -36,7 +38,19 @@ except ImportError as err: # pragma: no cover
     from warnings import warn
     warn(str(err), UserWarning)
 else:
-    from .pycuvec import CuVec, asarray, copy, cu_copy, cu_zeros, typecodes, vec_types, zeros
+    from .pycuvec import (
+        CuVec,
+        asarray,
+        copy,
+        cu_copy,
+        cu_zeros,
+        ones,
+        ones_like,
+        typecodes,
+        vec_types,
+        zeros,
+        zeros_like,
+    )
 
 p = resources.files('cuvec').resolve()
 # for C++/CUDA/SWIG includes
