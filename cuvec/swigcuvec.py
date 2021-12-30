@@ -3,24 +3,19 @@ Thin wrappers around `swvec` C++/CUDA module
 
 A SWIG-driven equivalent of the CPython Extension API-driven `pycuvec.py`
 """
-import array
 import logging
 import re
 from collections.abc import Sequence
 from functools import partial
 from textwrap import dedent
 from typing import Any, Dict, Optional
-from typing import Sequence as Seq
-from typing import Union
 
 import numpy as np
 
 from . import swvec as sw  # type: ignore # yapf: disable
+from ._common import Shape, _generate_helpers, typecodes
 
 log = logging.getLogger(__name__)
-Shape = Union[Seq[int], int]
-# u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
-typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
 RE_SWIG_TYPE = r"<Swig Object of type 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>"
 SWIG_TYPES = {
     "signed char": 'b',
@@ -161,6 +156,9 @@ def zeros(shape: Shape, dtype="float32") -> CuVec:
     of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
     """
     return CuVec(cu_zeros(shape, dtype))
+
+
+ones, zeros_like, ones_like = _generate_helpers(zeros, CuVec)
 
 
 def copy(arr) -> CuVec:

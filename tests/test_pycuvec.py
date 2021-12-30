@@ -30,11 +30,16 @@ def test_PyCuVec_strides():
 
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])
-def test_zeros(spec, result):
-    a = np.asarray(cu.zeros(shape, spec))
+@mark.parametrize("init", ["zeros", "ones"])
+def test_create(init, spec, result):
+    a = np.asarray(getattr(cu, init)(shape, spec))
     assert a.dtype == result
     assert a.shape == shape
-    assert not a.any()
+    assert (a == (0 if init == 'zeros' else 1)).all()
+
+    b = getattr(cu, f'{init}_like')(a)
+    assert b.shape == a.shape
+    assert b.dtype == a.dtype
 
 
 def test_copy():
