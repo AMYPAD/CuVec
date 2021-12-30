@@ -31,9 +31,11 @@ repos:
   - id: flake8
     args: [-j8]
     additional_dependencies:
+    - flake8-broken-line
     - flake8-bugbear
     - flake8-comprehensions
     - flake8-debugger
+    - flake8-isort
     - flake8-string-format
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.910
@@ -47,7 +49,7 @@ repos:
   - id: yapf
     args: [-i]
 - repo: https://github.com/PyCQA/isort
-  rev: 5.9.3
+  rev: 5.10.1
   hooks:
   - id: isort
 - repo: https://github.com/doublify/pre-commit-clang-format
