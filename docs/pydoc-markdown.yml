@@ -48,7 +48,6 @@ renderer:
     repo_url: https://github.com/AMYPAD/CuVec
     copyright: |
       &copy; Casper da Costa-Luis <a href="https://github.com/casperdcl">@casperdcl</a> 2021
-    extra_javascript: [js/extra.js]
 
     extra:
       analytics:
@@ -59,7 +58,6 @@ renderer:
       name: material
       favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
       logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
-      custom_dir: ../../custom_theme/
       features: [content.tabs.link]
       palette:
       - scheme: default
@@ -82,4 +80,5 @@ renderer:
     - toc:
         permalink: '#'
     - pymdownx.superfences
-    - pymdownx.tabbed
+    - pymdownx.tabbed:
+        alternate_style: true
