@@ -21,7 +21,7 @@ __all__ = [
     # classes
     'CuVec',
     # functions
-    'dev_sync', 'cu_copy', 'cu_zeros',
+    'dev_set', 'dev_sync', 'cu_copy', 'cu_zeros',
     'copy', 'asarray',
     'zeros', 'ones', 'zeros_like', 'ones_like',
     # data
@@ -33,7 +33,7 @@ except ImportError:
     from importlib import resources
 
 try:
-    from .cuvec import dev_sync
+    from .cuvec import dev_set, dev_sync
 except ImportError as err: # pragma: no cover
     from warnings import warn
     warn(str(err), UserWarning)

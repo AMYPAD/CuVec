@@ -53,7 +53,26 @@ _PYCUVEC_TPCHR(_CUVEC_HALF, "e", "e");
 #endif
 _PYCUVEC_TPCHR(float, "f", "f");
 _PYCUVEC_TPCHR(double, "d", "d");
+#ifndef CUVEC_DISABLE_CUDA
+static bool PyHandleError(cudaError_t err, const char *file, int line) {
+  if (err != cudaSuccess) {
+    std::stringstream ss;
+    ss << file << ':' << line << ": " << cudaGetErrorString(err);
+    std::string s = ss.str();
+    PyErr_SetString(PyExc_ValueError, s.c_str());
+    return false;
+  }
+  return true;
+}
+#endif // CUVEC_DISABLE_CUDA
 } // namespace cuvec
+#ifndef HANDLE_CUDA_PyErr
+#ifdef CUVEC_DISABLE_CUDA
+#define HANDLE_CUDA_PyErr() (true)
+#else // CUVEC_DISABLE_CUDA
+#define HANDLE_CUDA_PyErr() (cuvec::PyHandleError(cudaGetLastError(), __FILE__, __LINE__))
+#endif // CUVEC_DISABLE_CUDA
+#endif // HANDLE_CUDA_PyErr
 
 /** classes */
 /// class PyCuVec<T>
