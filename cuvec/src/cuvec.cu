@@ -12,13 +12,25 @@
 static PyObject *dev_sync(PyObject *self, PyObject *args) {
 #ifndef CUVEC_DISABLE_CUDA
   cudaDeviceSynchronize();
+  if (CUDA_PyErr()) return NULL;
 #endif
-
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+/// select CUDA device
+static PyObject *dev_set(PyObject *self, PyObject *args) {
+#ifndef CUVEC_DISABLE_CUDA
+  int DEVID = 0;
+  if (!PyArg_ParseTuple(args, "i", &DEVID)) return NULL;
+  cudaSetDevice(DEVID);
+  if (CUDA_PyErr()) return NULL;
+#endif
   Py_INCREF(Py_None);
   return Py_None;
 }
 static PyMethodDef cuvec_methods[] = {
     {"dev_sync", dev_sync, METH_NOARGS, "Required before accessing cuvec on host."},
+    {"dev_set", dev_set, METH_VARARGS, "Select CUDA device."},
     {NULL, NULL, 0, NULL} // Sentinel
 };
 
