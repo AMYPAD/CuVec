@@ -12,7 +12,7 @@
 static PyObject *dev_sync(PyObject *self, PyObject *args) {
 #ifndef CUVEC_DISABLE_CUDA
   cudaDeviceSynchronize();
-  if (!HANDLE_CUDA_PyErr()) return NULL;
+  if (CUDA_PyErr()) return NULL;
 #endif
   Py_INCREF(Py_None);
   return Py_None;
@@ -23,7 +23,7 @@ static PyObject *dev_set(PyObject *self, PyObject *args) {
   int DEVID = 0;
   if (!PyArg_ParseTuple(args, "i", &DEVID)) return NULL;
   cudaSetDevice(DEVID);
-  if (!HANDLE_CUDA_PyErr()) return NULL;
+  if (CUDA_PyErr()) return NULL;
 #endif
   Py_INCREF(Py_None);
   return Py_None;

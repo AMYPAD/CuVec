@@ -54,26 +54,26 @@ _PYCUVEC_TPCHR(_CUVEC_HALF, "e", "e");
 _PYCUVEC_TPCHR(float, "f", "f");
 _PYCUVEC_TPCHR(double, "d", "d");
 #ifndef CUVEC_DISABLE_CUDA
-/// returns `true` iff last CUDA operation was a success; otherwise sets exception
-static bool PyHandleError(cudaError_t err, const char *file, int line) {
+/// returns `0` iff last CUDA operation was a success; `-1` and sets exception otherwise
+static int PyHandleError(cudaError_t err, const char *file, int line) {
   if (err != cudaSuccess) {
     std::stringstream ss;
     ss << file << ':' << line << ": " << cudaGetErrorString(err);
     std::string s = ss.str();
     PyErr_SetString(PyExc_ValueError, s.c_str());
-    return false;
+    return -1;
   }
-  return true;
+  return 0;
 }
 #endif // CUVEC_DISABLE_CUDA
 } // namespace cuvec
-#ifndef HANDLE_CUDA_PyErr
+#ifndef CUDA_PyErr
 #ifdef CUVEC_DISABLE_CUDA
-#define HANDLE_CUDA_PyErr() (true)
+#define CUDA_PyErr() (0)
 #else // CUVEC_DISABLE_CUDA
-#define HANDLE_CUDA_PyErr() (cuvec::PyHandleError(cudaGetLastError(), __FILE__, __LINE__))
+#define CUDA_PyErr() (cuvec::PyHandleError(cudaGetLastError(), __FILE__, __LINE__))
 #endif // CUVEC_DISABLE_CUDA
-#endif // HANDLE_CUDA_PyErr
+#endif // CUDA_PyErr
 
 /** classes */
 /// class PyCuVec<T>
@@ -106,7 +106,7 @@ template <class T> int PyCuVec_init(PyCuVec<T> *self, PyObject *args, PyObject *
   self->strides[ndim - 1] = (Py_ssize_t)sizeof(T);
   for (int i = ndim - 2; i >= 0; i--) self->strides[i] = self->shape[i + 1] * self->strides[i + 1];
   self->vec.resize(self->shape[0] * (self->strides[0] / sizeof(T)));
-  return HANDLE_CUDA_PyErr() ? 0 : -1;
+  return CUDA_PyErr();
 }
 /// __del__
 template <class T> void PyCuVec_dealloc(PyCuVec<T> *self) {
@@ -233,14 +233,13 @@ template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
   self->strides[ndim - 1] = (Py_ssize_t)sizeof(T);
   for (int i = ndim - 2; i >= 0; i--) self->strides[i] = self->shape[i + 1] * self->strides[i + 1];
   self->vec.resize(self->shape[0] * (self->strides[0] / sizeof(T)));
-  if (!HANDLE_CUDA_PyErr()) return NULL;
-  return self;
+  return CUDA_PyErr() ? NULL : self;
 }
 template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
   if (!self) return NULL;
   self->vec.resize(other->vec.size());
-  if (!HANDLE_CUDA_PyErr()) return NULL;
+  if (CUDA_PyErr()) return NULL;
   self->shape = other->shape;
   self->strides = other->strides;
   return self;
@@ -249,7 +248,7 @@ template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
   if (!self) return NULL;
   self->vec = other->vec;
-  if (!HANDLE_CUDA_PyErr()) return NULL;
+  if (CUDA_PyErr()) return NULL;
   self->shape = other->shape;
   self->strides = other->strides;
   return self;
