@@ -29,7 +29,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
 
-if(SKBUILD)
+if(SKBUILD AND SWIG_FOUND)
   python_extension_module(${PROJECT_NAME})
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES
