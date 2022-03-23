@@ -30,7 +30,7 @@ __all__ = [
 try:          # py<3.9
     import importlib_resources as resources
 except ImportError:
-    from importlib import resources
+    from importlib import resources  # type: ignore # yapf: disable
 
 try:
     from .cuvec import dev_set, dev_sync
