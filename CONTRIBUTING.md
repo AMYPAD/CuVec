@@ -4,6 +4,7 @@ Install in "development/editable" mode including dev/test dependencies:
 
 ```sh
 git clone https://github.com/AMYPAD/CuVec && cd CuVec
+export SETUPTOOLS_ENABLE_FEATURES=legacy-editable
 pip install -e .[dev]
 ```
 
