@@ -70,7 +70,7 @@ Licence
 
 |Licence| |DOI|
 
-Copyright 2021
+Copyright 2021-22
 
 - `Casper O. da Costa-Luis <https://github.com/casperdcl>`__ @ University College London/King's College London
 - `Contributors <https://github.com/AMYPAD/cuvec/graphs/contributors>`__

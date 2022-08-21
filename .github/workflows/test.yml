@@ -53,6 +53,8 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - run: pip install -U -e .[dev]
+      env:
+        SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
     - uses: codecov/codecov-action@v1
     - name: compile -Wall
@@ -77,6 +79,8 @@ jobs:
     - name: Run setup-python
       run: setup-python -p${{ matrix.python }} cupy
     - run: pip install -U -e .[dev]
+      env:
+        SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
     - uses: codecov/codecov-action@v1
     - name: compile -Wall
