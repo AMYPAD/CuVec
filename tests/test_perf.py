@@ -86,6 +86,8 @@ def test_perf(cu, ex, shape=(1337, 42), quiet=False):
 
 
 if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.ERROR)
     try:
         from tqdm import trange
     except ImportError:

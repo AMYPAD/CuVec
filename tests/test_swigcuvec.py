@@ -158,5 +158,5 @@ def test_increment():
     a[:] = 0
     assert (a == 0).all()
 
-    res = cu.asarray(increment2d_f(a.cuvec))
+    res = cu.asarray(increment2d_f(a.cuvec), ownership='debug')
     assert (res == 1).all()
