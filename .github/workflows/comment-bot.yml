@@ -14,12 +14,12 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const perm = await github.repos.getCollaboratorPermissionLevel({
+          const perm = await github.rest.repos.getCollaboratorPermissionLevel({
             owner: context.repo.owner, repo: context.repo.repo,
             username: context.payload.comment.user.login})
           post = (context.eventName == "issue_comment"
-            ? github.reactions.createForIssueComment
-            : github.reactions.createForPullRequestReviewComment)
+            ? github.rest.reactions.createForIssueComment
+            : github.rest.reactions.createForPullRequestReviewComment)
           if (!["admin", "write"].includes(perm.data.permission)){
             post({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -44,8 +44,8 @@ jobs:
       with:
         script: |
           post = (context.eventName == "issue_comment"
-            ? github.reactions.createForIssueComment
-            : github.reactions.createForPullRequestReviewComment)
+            ? github.rest.reactions.createForIssueComment
+            : github.rest.reactions.createForPullRequestReviewComment)
           post({
             owner: context.repo.owner, repo: context.repo.repo,
             comment_id: context.payload.comment.id, content: "rocket"})
