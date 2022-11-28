@@ -55,7 +55,7 @@ jobs:
       env:
         SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
@@ -81,7 +81,7 @@ jobs:
       env:
         SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
