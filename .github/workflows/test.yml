@@ -2,8 +2,7 @@ name: Test
 on:
   push:
   pull_request:
-  schedule:
-  - cron: '30 23 * * 6'  # M H d m w (Sat at 23:30)
+  schedule: [{cron: '30 23 * * 6'}]  # M H d m w (Sat at 23:30)
   workflow_dispatch:
 jobs:
   check:
@@ -44,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6, '3.10']
+        python: [3.7, '3.10']
     steps:
     - uses: actions/checkout@v3
       with:
@@ -56,7 +55,7 @@ jobs:
       env:
         SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
@@ -71,7 +70,7 @@ jobs:
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
-        python: [3.6, '3.10']
+        python: [3.7, '3.10']
     steps:
     - uses: actions/checkout@v3
       with:
@@ -82,7 +81,7 @@ jobs:
       env:
         SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
@@ -102,7 +101,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.GH_TOKEN || github.token }}
     - uses: actions/setup-python@v4
     - id: dist
       uses: casperdcl/deploy-pypi@v2
@@ -111,21 +110,14 @@ jobs:
         build: sdist
         password: ${{ secrets.PYPI_TOKEN }}
         upload: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
-    - id: meta
-      name: Changelog
-      run: |
-        echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
-        git log --pretty='format:%d%n- %s%n%b---' $(git tag --sort=v:refname | tail -n2 | head -n1)..HEAD > _CHANGES.md
     - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-      uses: softprops/action-gh-release@v1
+      name: Release
+      run: |
+        changelog=$(git log --pretty='format:%d%n- %s%n%b---' $(git tag --sort=v:refname | tail -n2 | head -n1)..HEAD)
+        tag="${GITHUB_REF#refs/tags/}"
+        gh release create --title "CuVec $tag stable" --draft --notes "$changelog" "$tag" dist/${{ steps.dist.outputs.targz }}
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      with:
-        name: CuVec ${{ steps.meta.outputs.tag }} stable
-        body_path: _CHANGES.md
-        draft: true
-        files: |
-          dist/${{ steps.dist.outputs.targz }}
     - name: Docs
       run: |
         pushd docs

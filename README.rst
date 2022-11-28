@@ -40,7 +40,7 @@ Install
 
 Requirements:
 
-- Python 3.6 or greater (e.g. via `Anaconda or Miniconda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda>`_ or via `python3-dev`)
+- Python 3.7 or greater (e.g. via `Anaconda or Miniconda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda>`_ or via `python3-dev`)
 - (optional) `CUDA SDK/Toolkit <https://developer.nvidia.com/cuda-downloads>`_ (including drivers for an NVIDIA GPU)
 
   * note that if the CUDA SDK/Toolkit is installed *after* CuVec, then CuVec must be re-installed to enable CUDA support
@@ -58,12 +58,12 @@ External Projects
 ~~~~~~~~~~~~~~~~~
 
 For integration into Python, C++, CUDA, CMake, and general SWIG projects, see `the external project documentation <https://amypad.github.io/CuVec/#external-projects>`_.
-Full and explicit example modules using the `CPython API <https://github.com/AMYPAD/CuVec/tree/master/cuvec/src/example_mod>`_ and `SWIG <https://github.com/AMYPAD/CuVec/tree/master/cuvec/src/example_swig>`_ are also provided.
+Full and explicit example modules using the `CPython API <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_mod>`_ and `SWIG <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_swig>`_ are also provided.
 
 Contributing
 ~~~~~~~~~~~~
 
-See `CONTRIBUTING.md <https://github.com/AMYPAD/CuVec/blob/master/CONTRIBUTING.md>`_.
+See `CONTRIBUTING.md <https://github.com/AMYPAD/CuVec/blob/main/CONTRIBUTING.md>`_.
 
 Licence
 ~~~~~~~
@@ -78,12 +78,12 @@ Copyright 2021-22
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg
    :target: https://doi.org/10.5281/zenodo.4446211
 .. |Licence| image:: https://img.shields.io/pypi/l/cuvec.svg?label=licence
-   :target: https://github.com/AMYPAD/CuVec/blob/master/LICENCE
+   :target: https://github.com/AMYPAD/CuVec/blob/main/LICENCE
 .. |Tests| image:: https://img.shields.io/github/workflow/status/AMYPAD/CuVec/Test?logo=GitHub
    :target: https://github.com/AMYPAD/CuVec/actions
 .. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads
    :target: https://pypi.org/project/cuvec
-.. |Coverage| image:: https://codecov.io/gh/AMYPAD/CuVec/branch/master/graph/badge.svg
+.. |Coverage| image:: https://codecov.io/gh/AMYPAD/CuVec/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/AMYPAD/CuVec
 .. |Version| image:: https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white
    :target: https://github.com/AMYPAD/CuVec/releases

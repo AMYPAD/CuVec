@@ -54,7 +54,7 @@ def retry_on_except(n=3):
 
 @mark.parametrize("cu,ex", [(cu, example_mod), (sw, example_swig)])
 @retry_on_except()
-def test_perf(cu, ex, shape=(1337, 42), quiet=False):
+def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
     if cu is None:
         skip("SWIG not available")
     overhead = np.mean([_time_overhead() for _ in range(100)])
@@ -82,7 +82,8 @@ def test_perf(cu, ex, shape=(1337, 42), quiet=False):
     assert t['- kernel'] / (t['call ext'] - t['- create dst']) > 0.5
     # API call should be <0.1 ms... but set a higher threshold of 2 ms
     assert t['call ext'] - t['- create dst'] - t['- kernel'] < 2
-    return t
+    if return_time:
+        return t
 
 
 if __name__ == "__main__":
@@ -99,7 +100,9 @@ if __name__ == "__main__":
         test_perf(*args, shape=(1000, 1000))
 
         print(f"# Average over {nruns} runs:")
-        res_runs = [test_perf(*args, shape=(1000, 1000), quiet=True) for _ in trange(nruns)]
+        res_runs = [
+            test_perf(*args, shape=(1000, 1000), quiet=True, return_time=True)
+            for _ in trange(nruns)]
         pretty = {
             'create src': 'Create input', 'assign': 'Assign', 'call ext': 'Call extension',
             '- create dst': '-- Create output', '- kernel': '-- Launch kernel', 'view': 'View'}

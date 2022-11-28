@@ -6,9 +6,9 @@ Unifying Python/C++/CUDA memory: Python buffered array â†” C++11 `std::vector` â
 [![Downloads](https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads)](https://pypi.org/project/cuvec)
 [![Py-Versions](https://img.shields.io/pypi/pyversions/cuvec.svg?logo=python&logoColor=white)](https://pypi.org/project/cuvec)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg)](https://doi.org/10.5281/zenodo.4446211)
-[![Licence](https://img.shields.io/pypi/l/cuvec.svg?label=licence)](https://github.com/AMYPAD/CuVec/blob/master/LICENCE)
+[![Licence](https://img.shields.io/pypi/l/cuvec.svg?label=licence)](https://github.com/AMYPAD/CuVec/blob/main/LICENCE)
 [![Tests](https://img.shields.io/github/workflow/status/AMYPAD/CuVec/Test?logo=GitHub)](https://github.com/AMYPAD/CuVec/actions)
-[![Coverage](https://codecov.io/gh/AMYPAD/CuVec/branch/master/graph/badge.svg)](https://codecov.io/gh/AMYPAD/CuVec)
+[![Coverage](https://codecov.io/gh/AMYPAD/CuVec/branch/main/graph/badge.svg)](https://codecov.io/gh/AMYPAD/CuVec)
 
 ## Why
 
@@ -42,7 +42,7 @@ pip install cuvec
 
 Requirements:
 
-- Python 3.6 or greater (e.g. via [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda) or via `python3-dev`)
+- Python 3.7 or greater (e.g. via [Anaconda or Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda) or via `python3-dev`)
 - (optional) [CUDA SDK/Toolkit](https://developer.nvidia.com/cuda-downloads) (including drivers for an NVIDIA GPU)
   + note that if the CUDA SDK/Toolkit is installed *after* CuVec, then CuVec must be re-installed to enable CUDA support
 
@@ -384,7 +384,7 @@ CUDA:
     }
     ```
 
-For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu) or the alternative `cuvec.example_swig` sources [example_swig.i](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu).
+For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu) or the alternative `cuvec.example_swig` sources [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
 
 ## External Projects
 
@@ -400,7 +400,7 @@ For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](ht
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_mod/example_mod.cu).
+    For reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu).
 
 === "SWIG"
     `cuvec` is a header-only library so simply `%include "cuvec.i"` in a SWIG interface file. You can find the location of the headers using:
@@ -409,7 +409,7 @@ For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](ht
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_swig`'s source code: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/master/cuvec/src/example_swig/example_swig.cu).
+    For reference, see `cuvec.example_swig`'s source code: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
 
 === "CMake"
     This is likely unnecessary (see the "C++ & CUDA" tab above for simpler `#include` instructions).
