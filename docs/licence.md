@@ -1,4 +1,4 @@
-Copyright &copy; [Casper da Costa-Luis](https://github.com/casperdcl) 2021-22
+Copyright &copy; [Casper da Costa-Luis](https://github.com/casperdcl)
 
 Citation: [DOI:10.5281/zenodo.4446211](https://doi.org/10.5281/zenodo.4446211)
 

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: 'CuVec: Unifying Python/C++/CUDA memory'
+abstract: Python buffered array -> C++11 `std::vector` -> CUDA managed memory
+license: MPL-2.0
+url: https://amypad.github.io/CuVec
+authors:
+- family-names: da Costa-Luis
+  given-names: Casper O.
+  orcid: https://orcid.org/0000-0002-7211-1557
+  affiliation: "University College London, King's College London"
+identifiers:
+- type: doi
+  value: 10.5281/zenodo.4446211
+keywords: [Python, C, C++, buffer, vector, array, CUDA, CPython, SWIG, extensions, API]
