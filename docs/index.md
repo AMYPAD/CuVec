@@ -7,7 +7,7 @@ Unifying Python/C++/CUDA memory: Python buffered array â†” C++11 `std::vector` â
 [![Py-Versions](https://img.shields.io/pypi/pyversions/cuvec.svg?logo=python&logoColor=white)](https://pypi.org/project/cuvec)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg)](https://doi.org/10.5281/zenodo.4446211)
 [![Licence](https://img.shields.io/pypi/l/cuvec.svg?label=licence)](https://github.com/AMYPAD/CuVec/blob/main/LICENCE)
-[![Tests](https://img.shields.io/github/workflow/status/AMYPAD/CuVec/Test?logo=GitHub)](https://github.com/AMYPAD/CuVec/actions)
+[![Tests](https://img.shields.io/github/actions/workflow/status/AMYPAD/CuVec/test.yml?branch=main&logo=GitHub)](https://github.com/AMYPAD/CuVec/actions)
 [![Coverage](https://codecov.io/gh/AMYPAD/CuVec/branch/main/graph/badge.svg)](https://codecov.io/gh/AMYPAD/CuVec)
 
 ## Why

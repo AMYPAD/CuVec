@@ -79,7 +79,7 @@ Copyright 2021-22
    :target: https://doi.org/10.5281/zenodo.4446211
 .. |Licence| image:: https://img.shields.io/pypi/l/cuvec.svg?label=licence
    :target: https://github.com/AMYPAD/CuVec/blob/main/LICENCE
-.. |Tests| image:: https://img.shields.io/github/workflow/status/AMYPAD/CuVec/Test?logo=GitHub
+.. |Tests| image:: https://img.shields.io/github/actions/workflow/status/AMYPAD/CuVec/test.yml?branch=main&logo=GitHub
    :target: https://github.com/AMYPAD/CuVec/actions
 .. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads
    :target: https://pypi.org/project/cuvec
