@@ -47,7 +47,7 @@ renderer:
     repo_name: AMYPAD/CuVec
     repo_url: https://github.com/AMYPAD/CuVec
     copyright: |
-      &copy; Casper da Costa-Luis <a href="https://github.com/casperdcl">@casperdcl</a> 2021
+      &copy; Casper da Costa-Luis <a href="https://github.com/casperdcl">@casperdcl</a>
     extra_javascript: [js/extra.js]
     extra_css: [css/extra.css]
 

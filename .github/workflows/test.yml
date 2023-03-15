@@ -11,6 +11,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
     - name: set PYSHA
       run: echo "PYSHA=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
     - uses: actions/cache@v3
@@ -43,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.7, '3.10']
+        python: [3.7, 3.11]
     steps:
     - uses: actions/checkout@v3
       with:
@@ -53,6 +55,7 @@ jobs:
         python-version: ${{ matrix.python }}
     - run: pip install -U -e .[dev]
       env:
+        # https://github.com/scikit-build/scikit-build/issues/740
         SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
     - uses: codecov/codecov-action@v3
@@ -70,7 +73,7 @@ jobs:
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
-        python: [3.7, '3.10']
+        python: [3.7, 3.11]
     steps:
     - uses: actions/checkout@v3
       with:
@@ -79,6 +82,7 @@ jobs:
       run: setup-python -p${{ matrix.python }} cupy
     - run: pip install -U -e .[dev]
       env:
+        # https://github.com/scikit-build/scikit-build/issues/740
         SETUPTOOLS_ENABLE_FEATURES: legacy-editable
     - run: pytest
     - uses: codecov/codecov-action@v3
@@ -103,6 +107,8 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GH_TOKEN || github.token }}
     - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
     - id: dist
       uses: casperdcl/deploy-pypi@v2
       with:
@@ -117,7 +123,7 @@ jobs:
         tag="${GITHUB_REF#refs/tags/}"
         gh release create --title "CuVec $tag stable" --draft --notes "$changelog" "$tag" dist/${{ steps.dist.outputs.targz }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ github.token }}
     - name: Docs
       run: |
         pushd docs
