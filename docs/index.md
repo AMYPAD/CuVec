@@ -386,6 +386,8 @@ CUDA:
 
 For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu) or the alternative `cuvec.example_swig` sources [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
 
+See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python package built using CuVec.
+
 ## External Projects
 
 === "Python"

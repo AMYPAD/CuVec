@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: If you use this software, please cite it using the metadata from this file.
+message: If you use this software, please cite it using this metadata.
 type: software
 title: 'CuVec: Unifying Python/C++/CUDA memory'
 abstract: Python buffered array -> C++11 `std::vector` -> CUDA managed memory

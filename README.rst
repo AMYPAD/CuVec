@@ -54,6 +54,8 @@ Usage
 
 See `the usage documentation <https://amypad.github.io/CuVec/#usage>`_ and `quick examples <https://amypad.github.io/CuVec/#examples>`_ of how to upgrade a Python ↔ C++ ↔ CUDA interface.
 
+See also `NumCu <https://github.com/AMYPAD/NumCu>`_, a minimal stand-alone Python package built using CuVec.
+
 External Projects
 ~~~~~~~~~~~~~~~~~
 
