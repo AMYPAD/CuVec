@@ -24,7 +24,7 @@ Other libraries which expose functionality to convert/pass data formats between 
 
 ### Non objectives
 
-Anything to do with mathematical functionality. The aim is to expose functionality, not create it.
+Anything to do with mathematical functionality. The aim is to expose functionality, not (re)create it.
 
 Even something as simple as setting element values is left to the user and/or pre-existing features - for example:
 

@@ -25,7 +25,7 @@ Other libraries which expose functionality to convert/pass data formats between 
 Non objectives
 --------------
 
-Anything to do with mathematical functionality. The aim is to expose functionality, not create it.
+Anything to do with mathematical functionality. The aim is to expose functionality, not (re)create it.
 
 Even something as simple as setting element values is left to the user and/or pre-existing features - for example:
 
@@ -40,7 +40,7 @@ Install
 
 Requirements:
 
-- Python 3.7 or greater (e.g. via `Anaconda or Miniconda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda>`_ or via `python3-dev`)
+- Python 3.7 or greater (e.g. via `Anaconda or Miniconda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda>`_, or via ``python3-dev``)
 - (optional) `CUDA SDK/Toolkit <https://developer.nvidia.com/cuda-downloads>`_ (including drivers for an NVIDIA GPU)
 
   * note that if the CUDA SDK/Toolkit is installed *after* CuVec, then CuVec must be re-installed to enable CUDA support
@@ -74,8 +74,8 @@ Licence
 
 Copyright:
 
-- `Casper O. da Costa-Luis <https://github.com/casperdcl>`__ @ University College London/King's College London
-- `Contributors <https://github.com/AMYPAD/cuvec/graphs/contributors>`__
+- `Casper O. da Costa-Luis <https://github.com/casperdcl>`_
+- `Contributors <https://github.com/AMYPAD/cuvec/graphs/contributors>`_
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg
    :target: https://doi.org/10.5281/zenodo.4446211
