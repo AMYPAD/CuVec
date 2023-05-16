@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 if("${CUVEC_BUILD_VERSION}" STREQUAL "")
   set(CUVEC_BUILD_VERSION 2 CACHE STRING "version" FORCE)
+endif()
+if("${CMAKE_CUDA_ARCHITECTURES}" STREQUAL "")
+  set(CMAKE_CUDA_ARCHITECTURES native CACHE STRING "CUDA architectures" FORCE)
 endif()
 project(cuvec LANGUAGES C CXX VERSION "${CUVEC_BUILD_VERSION}")
 
