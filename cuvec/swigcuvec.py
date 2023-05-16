@@ -184,8 +184,8 @@ def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
         Instead, use the `retarray` helper:
         >>> raw = some_swig_api_func(..., output=getattr(out, 'cuvec', None))
         >>> res = retarray(raw, out)
-        NB: `asarray()` is safe if the raw cuvec was created in C++/SWIG, e.g.:
-        >>> res = asarray(some_swig_api_func(..., output=None), ownership='debug')
+        NB: `asarray()`/`retarray()` are safe if the raw cuvec was created in C++/SWIG, e.g.:
+        >>> res = retarray(some_swig_api_func(..., output=None))
     """
     if is_raw_cuvec(arr):
         ownership = ownership.lower()
