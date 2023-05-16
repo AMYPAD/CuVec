@@ -9,7 +9,7 @@ option(CUVEC_CUDA_OPTIONAL "Make CUDA optional rather than forced" ON)
 cmake_policy(PUSH)
 cmake_policy(SET CMP0074 NEW)  # <PackageName>_ROOT hints for find_package
 cmake_policy(SET CMP0104 NEW)  # CMAKE_CUDA_ARCHITECTURES
-find_package(Python3 COMPONENTS Interpreter Development REQUIRED) # NumPy
+find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED) # NumPy
 if(NOT CUVEC_CUDA_OPTIONAL)
   find_package(CUDAToolkit REQUIRED)
   enable_language(CUDA)
