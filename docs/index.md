@@ -153,7 +153,7 @@ The following involve no memory copies.
 === "**SWIG API** to **Python**"
     ```py
     import cuvec, my_custom_lib
-    arr = cuvec.swigcuvec.asarray(my_custom_lib.some_swig_api_func())
+    arr = cuvec.swigcuvec.retarray(my_custom_lib.some_swig_api_func())
     ```
 
 === "**SWIG API** to **C++**"
@@ -191,7 +191,7 @@ Python:
     import cuvec.swigcuvec as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
     assert all(numpy.mean(arr, axis=(0, 1)) == 0)
-    print(cuvec.asarray(mymod.myfunc(arr.cuvec)).sum())
+    print(cuvec.retarray(mymod.myfunc(arr.cuvec)).sum())
     ```
 
 C++:
@@ -391,7 +391,7 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
 ## External Projects
 
 === "Python"
-    Python objects (`arr`, returned by `cuvec.zeros()`, `cuvec.asarray()`, or `cuvec.copy()`) contain all the attributes of a `numpy.ndarray`. Additionally, `arr.cuvec` implements the [buffer protocol](https://docs.python.org/3/c-api/buffer.html), while `arr.__cuda_array_interface__` provides [compatibility with other libraries](https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html) such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
+    Python objects (`arr`, returned by `cuvec.zeros()`, `cuvec.asarray()`, or `cuvec.copy()`) contain all the attributes of a `numpy.ndarray`. Additionally, `arr.cuvec` implements the [buffer protocol](https://docs.python.org/3/c-api/buffer.html), while `arr.__cuda_array_interface__` (and `arr.__array_interface__`) provide [compatibility with other libraries](https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html) such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
 
     When using the SWIG alternative module, `arr.cuvec` is a wrapper around `SwigCuVec<type> *`.
 
