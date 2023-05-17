@@ -11,7 +11,7 @@ from cuvec import pycuvec as cu
 try:
     # alternative to `cu`
     # `example_swig` is defined in ../cuvec/src/example_swig/
-    from cuvec import example_swig
+    from cuvec import example_swig  # type: ignore # yapf: disable
     from cuvec import swigcuvec as sw
 except ImportError:
     sw, example_swig = None, None  # type: ignore # yapf: disable
@@ -57,6 +57,7 @@ def retry_on_except(n=3):
 def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
     if cu is None:
         skip("SWIG not available")
+    retarray = getattr(cu, 'retarray', cu.asarray)
     overhead = np.mean([_time_overhead() for _ in range(100)])
     t = {}
     t['create src'], src = timer(cu.zeros)(shape, "float32")
@@ -68,10 +69,10 @@ def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
 
     if not quiet:
         t['warmup'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
-        t['> create dst'], t['> kernel'] = cu.asarray(res)[0, :2]
+        t['> create dst'], t['> kernel'] = retarray(res)[0, :2]
     t['call ext'], res = timer(ex.increment2d_f)(src.cuvec, None, True)
     t['- create dst'], t['- kernel'] = None, None
-    t['view'], dst = timer(cu.asarray)(res)
+    t['view'], dst = timer(retarray)(res)
     t['- create dst'], t['- kernel'] = dst[0, :2]
 
     if not quiet:
