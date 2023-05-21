@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("cuvec.setup")
 
 build_ver = ".".join(__version__.split('.')[:3]).split(".dev")[0]
-cmake_args = [f"-DCUVEC_BUILD_VERSION={build_ver}", f"-DPython3_ROOT_DIR={sys.prefix}"]
+cmake_args = [f"-DCUVEC_BUILD_VERSION={build_ver}"]
 try:
     from miutil import cuinfo
     nvcc_arch_raw = map(cuinfo.compute_capability, range(cuinfo.num_devices()))
