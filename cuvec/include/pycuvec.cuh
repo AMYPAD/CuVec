@@ -116,7 +116,7 @@ template <class T> void PyCuVec_dealloc(PyCuVec<T> *self) {
   self->shape.shrink_to_fit();
   self->strides.clear();
   self->strides.shrink_to_fit();
-  Py_TYPE(self)->tp_free((PyObject *)self);
+  Py_TYPE(self)->tp_free(self);
 }
 /// __name__
 template <class T> const char *PyCuVec_t_str() {
@@ -300,7 +300,7 @@ template <class T> PyCuVec<T> *asPyCuVec(PyCuVec<T> *o) {
     // return cuvec
     o = (PyCuVec<T> *)PyObject_GetAttrString((PyObject *)o, "cuvec");
     if (!o) return NULL;
-    Py_DECREF((PyObject *)o);
+    Py_DECREF(o);
   }
   return o;
 }

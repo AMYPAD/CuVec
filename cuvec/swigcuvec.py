@@ -181,11 +181,11 @@ def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
         >>> res = asarray(some_swig_api_func(..., output=getattr(out, 'cuvec', None)))
         `res.cuvec` and `out.cuvec` are now the same
         yet garbage collected separately (dangling ptr).
-        Instead, use:
-        >>> res = some_swig_api_func(..., output=getattr(out, 'cuvec', None))
-        >>> res = out if hasattr(out, 'cuvec') else asarray(res)
-        NB: `asarray()` is safe if the raw cuvec was created in C++/SWIG, e.g.:
-        >>> res = asarray(some_swig_api_func(..., output=None), ownership='debug')
+        Instead, use the `retarray` helper:
+        >>> raw = some_swig_api_func(..., output=getattr(out, 'cuvec', None))
+        >>> res = retarray(raw, out)
+        NB: `asarray()`/`retarray()` are safe if the raw cuvec was created in C++/SWIG, e.g.:
+        >>> res = retarray(some_swig_api_func(..., output=None))
     """
     if is_raw_cuvec(arr):
         ownership = ownership.lower()
@@ -198,3 +198,14 @@ def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
         if dtype is None or res.dtype == np.dtype(dtype):
             return CuVec(np.asanyarray(res, order=order))
     return CuVec(np.asanyarray(arr, dtype=dtype, order=order))
+
+
+def retarray(raw, out: Optional[CuVec] = None):
+    """
+    Returns `out if hasattr(out, 'cuvec') else asarray(raw, ownership='debug')`.
+    See `asarray` for explanation.
+    Args:
+      raw: a raw CuVec (returned by C++/SWIG function).
+      out: preallocated output array.
+    """
+    return out if hasattr(out, 'cuvec') else asarray(raw, ownership='debug')
