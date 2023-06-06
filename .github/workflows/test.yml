@@ -79,7 +79,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run setup-python
-      run: setup-python -p${{ matrix.python }} cupy
+      run: setup-python -p${{ matrix.python }} 'cuda-version<12' cupy
     - run: pip install -U -e .[dev]
       env:
         # https://github.com/scikit-build/scikit-build/issues/740
