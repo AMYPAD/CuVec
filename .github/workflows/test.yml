@@ -9,8 +9,8 @@ jobs:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
     - name: set PYSHA
@@ -47,10 +47,10 @@ jobs:
       matrix:
         python: [3.7, 3.11]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
     - run: pip install -U -e .[dev]
@@ -75,7 +75,7 @@ jobs:
       matrix:
         python: [3.7, 3.11]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Run setup-python
@@ -102,11 +102,11 @@ jobs:
     name: PyPI Deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_TOKEN || github.token }}
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
     - id: dist
