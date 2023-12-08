@@ -3,16 +3,12 @@ __pycache__/
 
 # build
 *.so
-CMakeFiles/
-cmake_install.cmake
-/cuvec/*.ninja*
-/cuvec/AMYPADcuvecConfig*.cmake
-/cuvec/CMakeCache.txt
-/cuvec/CMakeInit.txt
 /cuvec/_dist_ver.py
+/cuvec/cmake/
+/cuvec-*.dist-info/
+/cuvec/*PYTHON_wrap.cxx
 /cuvec/example_swig.py
 /cuvec/swvec.py
-/build/
 /dist/
 /docs/build/
 
