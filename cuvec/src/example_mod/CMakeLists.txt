@@ -2,22 +2,21 @@ project(example_mod)
 file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 
 include_directories(${Python3_INCLUDE_DIRS})
-#include_directories(${Python3_NumPy_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME} MODULE ${SRC})
+if(SKBUILD)
+  python_add_library(${PROJECT_NAME} MODULE WITH_SOABI ${SRC})
+else()
+  add_library(${PROJECT_NAME} MODULE ${SRC})
+endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
 if(CUDAToolkit_FOUND)
-  target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES} CUDA::cudart_static)
+  target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart_static)
 else()
   set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
-  target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES})
 endif()
 
-if(SKBUILD)
-  python_extension_module(${PROJECT_NAME})
-endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
   VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR}

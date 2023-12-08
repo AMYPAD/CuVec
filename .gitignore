@@ -2,18 +2,18 @@
 __pycache__/
 
 # build
-/MANIFEST.in
-/*.egg*/
 *.so
-/cuvec/cmake/
 /cuvec/_dist_ver.py
-/build/
+/cuvec/cmake/
+/cuvec-*.dist-info/
+/cuvec/*PYTHON_wrap.cxx
+/cuvec/example_swig.py
+/cuvec/swvec.py
 /dist/
-/_skbuild/
-/_cmake_test_compile/
 /docs/build/
 
 # Unit test / coverage reports
 /.coverage*
 /coverage.xml
 /.pytest_cache/
+/.mypy_cache/
