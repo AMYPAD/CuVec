@@ -2,7 +2,6 @@ project(example_mod)
 file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 
 include_directories(${Python3_INCLUDE_DIRS})
-#include_directories(${Python3_NumPy_INCLUDE_DIRS})
 
 if(SKBUILD)
   python_add_library(${PROJECT_NAME} MODULE WITH_SOABI ${SRC})
