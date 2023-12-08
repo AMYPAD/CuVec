@@ -1,7 +1,7 @@
 [build-system]
 requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4",
             "miutil[cuda]>=0.4.0",
-            "scikit-build-core>=0.5", "swig>=4"]
+            "scikit-build-core[pyproject]>=0.5", "swig>=4"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
