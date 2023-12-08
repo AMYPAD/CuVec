@@ -85,3 +85,6 @@ log_level = "INFO"
 python_files = ["tests/test_*.py"]
 testpaths = ["tests"]
 addopts = "-v --tb=short -rxs -W=error -n=2 --durations=0 --durations-min=1 --cov=cuvec --cov-report=term-missing --cov-report=xml"
+
+[tool.coverage.run]
+omit = ["cuvec/swvec.py", "cuvec/example_swig.py"]
