@@ -4,28 +4,23 @@ file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 include_directories(${Python3_INCLUDE_DIRS})
 #include_directories(${Python3_NumPy_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME} MODULE ${SRC})
 if(SKBUILD)
-  if(WIN32)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY SUFFIX ".${Python_SOABI}.pyd")
-  else()
-    set_property(TARGET ${PROJECT_NAME} PROPERTY SUFFIX ".${Python_SOABI}${CMAKE_SHARED_MODULE_SUFFIX}")
-  endif()
+  python_add_library(${PROJECT_NAME} MODULE WITH_SOABI ${SRC})
+else()
+  add_library(${PROJECT_NAME} MODULE ${SRC})
 endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
 if(CUDAToolkit_FOUND)
-  target_link_libraries(${PROJECT_NAME} PRIVATE Python::Module CUDA::cudart_static)
+  target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart_static)
 else()
   set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
-  target_link_libraries(${PROJECT_NAME} PRIVATE Python::Module)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
   VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR}
-  PREFIX ""  # remove shared lib prefix to make importable
   INTERFACE_${PROJECT_NAME}_MAJOR_VERSION ${CMAKE_PROJECT_VERSION_MAJOR})
 set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${PROJECT_NAME}_MAJOR_VERSION)
 install(TARGETS ${PROJECT_NAME}
