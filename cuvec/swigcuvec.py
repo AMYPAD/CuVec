@@ -16,7 +16,8 @@ from . import swvec as sw  # type: ignore # yapf: disable
 from ._common import Shape, _generate_helpers, typecodes
 
 log = logging.getLogger(__name__)
-RE_SWIG_TYPE = r"<Swig Object of type 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>"
+RE_SWIG_TYPE = ("<.*SwigCuVec_(.); proxy of <Swig Object of type"
+                r" 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>")
 SWIG_TYPES = {
     "signed char": 'b',
     "unsigned char": 'B',
@@ -46,8 +47,7 @@ class SWIGVector:
         """
         if cuvec is not None:
             assert is_raw_cuvec(cuvec)
-            tp = re.match(RE_SWIG_TYPE, str(cuvec)).group(1) # type: ignore
-            self.typechar = SWIG_TYPES[tp]
+            self.typechar = re.match(RE_SWIG_TYPE, str(cuvec)).group(1) # type: ignore
             self.cuvec = cuvec
             return
 
@@ -103,7 +103,7 @@ def cu_copy(arr):
 
 
 def is_raw_cuvec(arr):
-    return type(arr).__name__ == "SwigPyObject" and re.match(RE_SWIG_TYPE, str(arr))
+    return re.match(RE_SWIG_TYPE, str(arr))
 
 
 def is_raw_swvec(arr):
