@@ -57,20 +57,20 @@ jobs:
       # in-place for pytest (-e . doesn't work yet for scikit-build-core)
       run: |
         pip install toml
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
-          | xargs -0 pip install
+        python -c 'import toml; c=toml.load("pyproject.toml")
+        print("\0".join(c["build-system"]["requires"] + ["cmake>=" + c["tool"]["scikit-build"]["cmake"]["minimum-version"]]), end="")' \
+        | xargs -0 pip install ninja
         pip install --no-build-isolation --no-deps -t . -U -v . -Ccmake.define.CUVEC_DEBUG=1
         git restore cuvec/src
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project"]["dependencies"]), end="")' \
-          | xargs -0 pip install
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project"]["optional-dependencies"]["dev"]), end="")' \
-          | xargs -0 pip install
+        python -c 'import toml; c=toml.load("pyproject.toml")
+        print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
+        | xargs -0 pip install
     - run: pytest
     - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
-        pip install build ninja
+        pip install build
         python -m build -n -w \
           -Ccmake.define.CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
   cuda:
@@ -90,20 +90,20 @@ jobs:
       # in-place for pytest (-e . doesn't work yet for scikit-build-core)
       run: |
         pip install toml
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
-          | xargs -0 pip install
+        python -c 'import toml; c=toml.load("pyproject.toml")
+        print("\0".join(c["build-system"]["requires"] + ["cmake>=" + c["tool"]["scikit-build"]["cmake"]["minimum-version"]]), end="")' \
+        | xargs -0 pip install ninja
         pip install --no-build-isolation --no-deps -t . -U -v . -Ccmake.define.CUVEC_DEBUG=1
         git restore cuvec/src
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project"]["dependencies"]), end="")' \
-          | xargs -0 pip install
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project"]["optional-dependencies"]["dev"]), end="")' \
-          | xargs -0 pip install
+        python -c 'import toml; c=toml.load("pyproject.toml")
+        print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
+        | xargs -0 pip install
     - run: pytest
     - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
-        pip install build ninja
+        pip install build
         python -m build -n -w \
           -Ccmake.define.CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type" \
           -Ccmake.define.CMAKE_CUDA_ARCHITECTURES=all
