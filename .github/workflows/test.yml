@@ -53,20 +53,23 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
-    - run: pip install -U -e .[dev]
-      env:
-        # https://github.com/scikit-build/scikit-build/issues/740
-        SETUPTOOLS_ENABLE_FEATURES: legacy-editable
+    - name: pip install -U -e .[dev]
+      # in-place for pytest (-e . doesn't work yet for scikit-build-core)
+      run: |
+        pip install toml
+        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
+          | xargs -0 pip install
+        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project.optional-dependencies"]["dev"]), end="")' \
+          | xargs -0 pip install
+        pip install --no-build-isolation --no-deps -t . -U -v . -Ccmake.define.CUVEC_DEBUG=1
+        git restore cuvec/src
     - run: pytest
     - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
-        pip install toml
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
-          | xargs -0 pip install
-        python setup.py build -- -DCUVEC_DEBUG=1 \
-          -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
+        python -m build -n -w \
+          -Ccmake.define.CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
   cuda:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     name: CUDA py${{ matrix.python }}
@@ -80,20 +83,24 @@ jobs:
         fetch-depth: 0
     - name: Run setup-python
       run: setup-python -p${{ matrix.python }} 'cuda-version<12' cupy
-    - run: pip install -U -e .[dev]
-      env:
-        # https://github.com/scikit-build/scikit-build/issues/740
-        SETUPTOOLS_ENABLE_FEATURES: legacy-editable
+    - name: pip install -U -e .[dev]
+      # in-place for pytest (-e . doesn't work yet for scikit-build-core)
+      run: |
+        pip install toml
+        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
+          | xargs -0 pip install
+        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project.optional-dependencies"]["dev"]), end="")' \
+          | xargs -0 pip install
+        pip install --no-build-isolation --no-deps -t . -U -v . -Ccmake.define.CUVEC_DEBUG=1
+        git restore cuvec/src
     - run: pytest
     - uses: codecov/codecov-action@v3
     - name: compile -Wall
       run: |
         git clean -Xdf
-        pip install toml
-        python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["build-system"]["requires"]), end="")' \
-          | xargs -0 pip install
-        python setup.py build -- -DCUVEC_DEBUG=1 \
-          -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
+        python -m build -n -w \
+          -Ccmake.define.CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type" \
+          -Ccmake.define.CMAKE_CUDA_ARCHITECTURES=all
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}

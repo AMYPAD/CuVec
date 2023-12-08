@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-if("${SKBUILD_PROJECT_VERSION}" STREQUAL "")
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+if(NOT DEFINED SKBUILD_PROJECT_VERSION)
   set(SKBUILD_PROJECT_VERSION 2 CACHE STRING "version" FORCE)
 endif()
 string(REGEX REPLACE [[([0-9]+)\.([0-9]+)\.([0-9]+).*]] [[\1.\2.\3]] SKBUILD_PROJECT_VERSION "${SKBUILD_PROJECT_VERSION}")
@@ -9,6 +9,9 @@ option(CUVEC_CUDA_OPTIONAL "Make CUDA optional rather than forced" ON)
 
 cmake_policy(PUSH)
 cmake_policy(SET CMP0074 NEW)  # <PackageName>_ROOT hints for find_package
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  set(CMAKE_CUDA_ARCHITECTURES native CACHE STRING "CUDA arch" FORCE)
+endif()
 cmake_policy(SET CMP0104 NEW)  # CMAKE_CUDA_ARCHITECTURES
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED) # NumPy
 if(NOT CUVEC_CUDA_OPTIONAL)
@@ -38,7 +41,7 @@ endif()
 cmake_policy(POP)
 
 message(STATUS "CUDA architectures: ${CMAKE_CUDA_ARCHITECTURES}")
-if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
