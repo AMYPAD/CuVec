@@ -12,6 +12,7 @@ pip install toml
 python -c 'import toml; c=toml.load("pyproject.toml")
 print("\0".join(c["build-system"]["requires"] + c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
 | xargs -0 pip install -U ninja cmake
+
 # 2. delete build artefacts, (re)build & install in-place with debug info
 git clean -Xdf
 pip install --no-build-isolation --no-deps -t . -U -v . \

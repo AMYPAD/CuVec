@@ -59,7 +59,7 @@ install(DIRECTORY "${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}" DESTINATION ${CMAKE_PR
 
 file(GLOB SRC LIST_DIRECTORIES false "src/*.cu")
 include_directories(src)
-include_directories(${Python3_INCLUDE_DIRS})
+include_directories(${Python_INCLUDE_DIRS})
 
 if(SKBUILD)
   python_add_library(${PROJECT_NAME} MODULE WITH_SOABI ${SRC})
