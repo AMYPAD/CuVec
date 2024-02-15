@@ -15,7 +15,7 @@ jobs:
         python-version: '3.x'
     - name: set PYSHA
       run: echo "PYSHA=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: ~/.cache/pre-commit
         key: pre-commit|${{ env.PYSHA }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -66,7 +66,7 @@ jobs:
         print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
         | xargs -0 pip install
     - run: pytest
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
     - name: compile -Wall
       run: |
         git clean -Xdf
@@ -99,7 +99,7 @@ jobs:
         print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
         | xargs -0 pip install
     - run: pytest
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
     - name: compile -Wall
       run: |
         git clean -Xdf
@@ -130,9 +130,7 @@ jobs:
       uses: casperdcl/deploy-pypi@v2
       with:
         build: -s
-        upload: false
-    - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@release/v1
+        upload: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') }}
     - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
       name: Release
       run: |
