@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 if(NOT DEFINED SKBUILD_PROJECT_VERSION)
-  set(SKBUILD_PROJECT_VERSION 2 CACHE STRING "version" FORCE)
+  set(SKBUILD_PROJECT_VERSION 3 CACHE STRING "version" FORCE)
 endif()
 string(REGEX REPLACE [[([0-9]+)\.([0-9]+)\.([0-9]+).*]] [[\1.\2.\3]] SKBUILD_PROJECT_VERSION "${SKBUILD_PROJECT_VERSION}")
 project(cuvec LANGUAGES C CXX VERSION "${SKBUILD_PROJECT_VERSION}")
@@ -13,7 +13,7 @@ if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   set(CMAKE_CUDA_ARCHITECTURES native CACHE STRING "CUDA arch" FORCE)
 endif()
 cmake_policy(SET CMP0104 NEW)  # CMAKE_CUDA_ARCHITECTURES
-find_package(Python COMPONENTS Interpreter Development.Module REQUIRED) # NumPy
+find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 if(NOT CUVEC_CUDA_OPTIONAL)
   find_package(CUDAToolkit REQUIRED)
   enable_language(CUDA)
@@ -31,6 +31,7 @@ else()
   endif()
 endif()
 if(SKBUILD)
+  find_package(pybind11 CONFIG REQUIRED)
   find_package(SWIG 4.0)
   if(SWIG_FOUND)
     include(${SWIG_USE_FILE})
@@ -57,7 +58,7 @@ install(DIRECTORY "${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}" DESTINATION ${CMAKE_PR
 
 # main project
 
-file(GLOB SRC LIST_DIRECTORIES false "src/*.cu")
+file(GLOB SRC LIST_DIRECTORIES false "src/cuvec*.cu")
 include_directories(src)
 include_directories(${Python_INCLUDE_DIRS})
 
@@ -74,6 +75,7 @@ if(CUDAToolkit_FOUND)
   target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart_static)
 else()
   set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
+  target_link_libraries(${PROJECT_NAME} PRIVATE)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -86,6 +88,35 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
   LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
 install(EXPORT ${PROJECT_NAME}Targets FILE AMYPAD${PROJECT_NAME}Targets.cmake
   NAMESPACE AMYPAD:: DESTINATION ${CMAKE_PROJECT_NAME}/cmake)
+
+# alternative pybind11 module
+file(GLOB SRC LIST_DIRECTORIES false "src/pybind11*.cu")
+include_directories(src)
+include_directories(${Python_INCLUDE_DIRS})
+if(SKBUILD)
+  python_add_library(pybind11 MODULE WITH_SOABI ${SRC})
+else()
+  add_library(pybind11 SHARED ${SRC})
+endif()
+add_library(AMYPAD::pybind11 ALIAS pybind11)
+target_include_directories(pybind11 PUBLIC
+  "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
+  "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
+if(CUDAToolkit_FOUND)
+  target_link_libraries(pybind11 PRIVATE pybind11::headers CUDA::cudart_static)
+else()
+  set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
+  target_link_libraries(pybind11 PRIVATE pybind11::headers)
+endif()
+
+set_target_properties(pybind11 PROPERTIES
+  CXX_STANDARD 11
+  VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR}
+  INTERFACE_pybind11_MAJOR_VERSION ${CMAKE_PROJECT_VERSION_MAJOR})
+set_property(TARGET pybind11 APPEND PROPERTY COMPATIBLE_INTERFACE_STRING pybind11_MAJOR_VERSION)
+install(TARGETS pybind11
+  INCLUDES DESTINATION ${CMAKE_PROJECT_NAME}/include
+  LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
 
 # alternative swvec module
 if(SWIG_FOUND AND SKBUILD)
@@ -121,7 +152,9 @@ if(SWIG_FOUND AND SKBUILD)
     LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
 endif()
 
+# example projects
 add_subdirectory(src/example_mod)
+#add_subdirectory(src/example_pybind11)
 add_subdirectory(src/example_swig)
 
 # install project

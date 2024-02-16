@@ -26,7 +26,7 @@ repos:
     types: [text]
     exclude: ^(.pre-commit-config.yaml|.github/workflows/test.yml)$
 - repo: https://github.com/PyCQA/flake8
-  rev: 6.1.0
+  rev: 7.0.0
   hooks:
   - id: flake8
     args: [-j8]
@@ -50,7 +50,7 @@ repos:
     args: [-i]
     additional_dependencies: [toml]
 - repo: https://github.com/PyCQA/isort
-  rev: 5.12.0
+  rev: 5.13.2
   hooks:
   - id: isort
 - repo: https://github.com/doublify/pre-commit-clang-format

@@ -5,8 +5,9 @@
  *
  * Copyright (2021) Casper da Costa-Luis
  */
-#include "Python.h"
 #include "pycuvec.cuh" // PyCuVec, PyCuVec_tp
+#include <Python.h>
+
 /** functions */
 /// required before accessing on host
 static PyObject *dev_sync(PyObject *self, PyObject *args) {

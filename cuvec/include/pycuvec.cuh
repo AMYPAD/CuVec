@@ -9,7 +9,7 @@
 #ifndef _PYCUVEC_H_
 #define _PYCUVEC_H_
 
-#include "Python.h"
+#include <Python.h>
 #ifndef _CUVEC_HALF
 #ifndef CUVEC_DISABLE_CUDA
 #include "cuda_fp16.h" // __half
@@ -235,7 +235,7 @@ template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
   self->vec.resize(self->shape[0] * (self->strides[0] / sizeof(T)));
   return CUDA_PyErr() ? NULL : self;
 }
-template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
+template <class T> PyCuVec<T> *PyCuVec_zeros_like(const PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
   if (!self) return NULL;
   self->vec.resize(other->vec.size());
@@ -244,7 +244,7 @@ template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
   self->strides = other->strides;
   return self;
 }
-template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
+template <class T> PyCuVec<T> *PyCuVec_deepcopy(const PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
   if (!self) return NULL;
   self->vec = other->vec;
