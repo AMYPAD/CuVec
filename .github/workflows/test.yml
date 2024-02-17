@@ -53,25 +53,11 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - name: pip install -U -e .[dev]
-      # in-place for pytest (-e . doesn't work yet for scikit-build-core)
-      run: |
-        pip install toml
-        python -c 'import toml; c=toml.load("pyproject.toml")
-        print("\0".join(c["build-system"]["requires"] + ["cmake>=" + c["tool"]["scikit-build"]["cmake"]["minimum-version"]]), end="")' \
-        | xargs -0 pip install ninja
-        pip install --no-build-isolation --no-deps -t . -U -v . -Ccmake.define.CUVEC_DEBUG=1
-        git restore cuvec/src
-        python -c 'import toml; c=toml.load("pyproject.toml")
-        print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
-        | xargs -0 pip install
+      run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: pytest
     - uses: codecov/codecov-action@v4
     - name: compile -Wall
-      run: |
-        git clean -Xdf
-        pip install build
-        python -m build -n -w \
-          -Ccmake.define.CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type"
+      run: make build-wheel
   cuda:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     name: CUDA py${{ matrix.python }}
@@ -86,26 +72,11 @@ jobs:
     - name: Run setup-python
       run: setup-python -p${{ matrix.python }} 'cuda-version<12' cupy
     - name: pip install -U -e .[dev]
-      # in-place for pytest (-e . doesn't work yet for scikit-build-core)
-      run: |
-        pip install toml
-        python -c 'import toml; c=toml.load("pyproject.toml")
-        print("\0".join(c["build-system"]["requires"] + ["cmake>=" + c["tool"]["scikit-build"]["cmake"]["minimum-version"]]), end="")' \
-        | xargs -0 pip install ninja
-        pip install --no-build-isolation --no-deps -t . -U -v . -Ccmake.define.CUVEC_DEBUG=1
-        git restore cuvec/src
-        python -c 'import toml; c=toml.load("pyproject.toml")
-        print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' \
-        | xargs -0 pip install
+      run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: pytest
     - uses: codecov/codecov-action@v4
     - name: compile -Wall
-      run: |
-        git clean -Xdf
-        pip install build
-        python -m build -n -w \
-          -Ccmake.define.CMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror -Wno-missing-field-initializers -Wno-unused-parameter -Wno-cast-function-type" \
-          -Ccmake.define.CMAKE_CUDA_ARCHITECTURES=all
+      run: make CUDA_ARCHITECTURES=all build-wheel
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
