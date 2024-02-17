@@ -16,11 +16,12 @@
 #ifndef CUVEC_DISABLE_CUDA
 #include "cuda_runtime.h"
 #endif
-#include <cstdio>  // fprintf
-#include <cstdlib> // std::size_t, std::malloc, std::free
-#include <limits>  // std::numeric_limits
-#include <new>     // std::bad_alloc
-#include <vector>  // std::vector
+#include <cstdio>    // fprintf
+#include <cstdlib>   // std::size_t, std::malloc, std::free
+#include <limits>    // std::numeric_limits
+#include <new>       // std::bad_alloc
+#include <stdexcept> // std::length_error
+#include <vector>    // std::vector
 
 #ifndef CUVEC_DISABLE_CUDA
 namespace cuvec {
@@ -88,23 +89,36 @@ template <class T, class U> bool operator!=(const CuAlloc<T> &, const CuAlloc<U>
 
 template <class T> using CuVec = std::vector<T, CuAlloc<T>>;
 
-template <class T> struct SwigCuVec {
+template <class T> struct NDCuVec {
   CuVec<T> vec;
   std::vector<size_t> shape;
+  NDCuVec() = default;
+  NDCuVec(const std::vector<size_t> &shape) : shape(shape) {
+    size_t size = 1;
+    for (auto &i : shape) size *= i;
+    vec.resize(size);
+  }
+  void reshape(const std::vector<size_t> &shape) {
+    size_t size = 1;
+    for (auto &i : shape) size *= i;
+    if (size != vec.size()) throw std::length_error("reshape: size mismatch");
+    this->shape = shape;
+  }
+  ~NDCuVec() {
+    vec.clear();
+    vec.shrink_to_fit();
+    shape.clear();
+    shape.shrink_to_fit();
+  }
 };
+
+template <class T> using SwigCuVec = NDCuVec<T>;
 template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape) {
-  SwigCuVec<T> *self = new SwigCuVec<T>;
-  self->shape = shape;
-  size_t size = 1;
-  for (auto &i : shape) size *= i;
-  self->vec.resize(size);
+  SwigCuVec<T> *self = new SwigCuVec<T>(shape);
   return self;
 }
 template <class T> void SwigCuVec_del(SwigCuVec<T> *self) {
-  self->vec.clear();
-  self->vec.shrink_to_fit();
-  self->shape.clear();
-  self->shape.shrink_to_fit();
+  self->~NDCuVec();
   delete self;
 }
 template <class T> T *SwigCuVec_data(SwigCuVec<T> *self) { return self->vec.data(); }
