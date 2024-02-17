@@ -4,15 +4,16 @@ from time import time
 import numpy as np
 from pytest import mark, skip
 
+import cuvec.cpython as cu
+
 # `example_mod` is defined in ../cuvec/src/example_mod/
 from cuvec import example_mod  # type: ignore # yapf: disable
-from cuvec import pycuvec as cu
 
 try:
-    # alternative to `cu`
+    # `cuvec.swig` alternative to `cuvec.cpython`
     # `example_swig` is defined in ../cuvec/src/example_swig/
     from cuvec import example_swig  # type: ignore # yapf: disable
-    from cuvec import swigcuvec as sw
+    from cuvec import swig as sw
 except ImportError:
     sw, example_swig = None, None  # type: ignore # yapf: disable
 

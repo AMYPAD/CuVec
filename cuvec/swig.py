@@ -1,7 +1,7 @@
 """
 Thin wrappers around `swvec` C++/CUDA module
 
-A SWIG-driven equivalent of the CPython Extension API-driven `pycuvec.py`
+A SWIG-driven equivalent of the CPython Extension API-driven `cpython.py`
 """
 import logging
 import re
@@ -116,7 +116,7 @@ class CuVec(np.ndarray):
     underlying `SWIGVector` object (for use in CPython API function calls).
     """
     def __new__(cls, arr):
-        """arr: `swigcuvec.CuVec`, raw `SWIGVector`, or `numpy.ndarray`"""
+        """arr: `cuvec.swig.CuVec`, raw `SWIGVector`, or `numpy.ndarray`"""
         if is_raw_swvec(arr):
             log.debug("wrap swraw %s", type(arr))
             obj = np.asarray(arr).view(cls)
@@ -135,8 +135,8 @@ class CuVec(np.ndarray):
         raise NotImplementedError(
             dedent("""\
             Not intended for explicit construction
-            (do not do `swigcuvec.CuVec((42, 1337))`;
-            instead use `swigcuvec.zeros((42, 137))`"""))
+            (do not do `cuvec.swig.CuVec((42, 1337))`;
+            instead use `cuvec.swig.zeros((42, 137))`"""))
 
     @property
     def __cuda_array_interface__(self) -> Dict[str, Any]:
@@ -152,7 +152,7 @@ class CuVec(np.ndarray):
 
 def zeros(shape: Shape, dtype="float32") -> CuVec:
     """
-    Returns a `swigcuvec.CuVec` view of a new `numpy.ndarray`
+    Returns a `cuvec.swig.CuVec` view of a new `numpy.ndarray`
     of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
     """
     return CuVec(cu_zeros(shape, dtype))
@@ -163,7 +163,7 @@ ones, zeros_like, ones_like = _generate_helpers(zeros, CuVec)
 
 def copy(arr) -> CuVec:
     """
-    Returns a `swigcuvec.CuVec` view of a new `numpy.ndarray`
+    Returns a `cuvec.swig.CuVec` view of a new `numpy.ndarray`
     with data copied from the specified `arr`
     (`cuvec` equivalent of `numpy.copy`).
     """
@@ -172,7 +172,7 @@ def copy(arr) -> CuVec:
 
 def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
     """
-    Returns a `swigcuvec.CuVec` view of `arr`, avoiding memory copies if possible.
+    Returns a `cuvec.swig.CuVec` view of `arr`, avoiding memory copies if possible.
     (`cuvec` equivalent of `numpy.asarray`).
 
     Args:

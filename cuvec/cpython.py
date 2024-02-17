@@ -1,4 +1,4 @@
-"""Thin wrappers around `cuvec` C++/CUDA module"""
+"""Thin wrappers around `cuvec_cpython` C++/CUDA module"""
 import logging
 from collections.abc import Sequence
 from textwrap import dedent
@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 import numpy as np
 
-from . import cuvec as cu
+from . import cuvec_cpython as cu
 from ._common import Shape, _generate_helpers, typecodes
 
 log = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def is_raw_cuvec(cuvec):
 
     This is needed since conversely `isinstance(cuvec, CuVec)` may be `False`
     due to external libraries
-    `#include "pycuvec.cuh"` making a distinct type object.
+    `#include "cuvec_cpython.cuh"` making a distinct type object.
     """
     return isinstance(cuvec, _PyCuVec_types) or str(type(cuvec)) in _PyCuVec_types_s
 

@@ -6,8 +6,8 @@
  *     PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
  *     PyTypeObject PyCuVec_tp<T>.tp_obj;
  */
-#ifndef _PYCUVEC_H_
-#define _PYCUVEC_H_
+#ifndef _CUVEC_CPYTHON_H_
+#define _CUVEC_CPYTHON_H_
 
 #include <Python.h>
 #ifndef _CUVEC_HALF
@@ -330,4 +330,4 @@ ASCUVEC(_CUVEC_HALF, e)
 ASCUVEC(float, f)
 ASCUVEC(double, d)
 
-#endif // _PYCUVEC_H_
+#endif // _CUVEC_CPYTHON_H_

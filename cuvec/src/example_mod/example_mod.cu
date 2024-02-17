@@ -4,7 +4,7 @@
  * Copyright (2021) Casper da Costa-Luis
  */
 #include "Python.h"
-#include "pycuvec.cuh" // PyCuVec
+#include "cuvec_cpython.cuh" // PyCuVec
 #ifdef CUVEC_DISABLE_CUDA
 #include <chrono> // std::chrono
 #else

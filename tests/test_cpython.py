@@ -3,14 +3,15 @@ import logging
 import numpy as np
 from pytest import importorskip, mark, raises
 
-import cuvec as cu
+import cuvec.cpython as cu
+from cuvec import cuvec_cpython
 
 shape = 127, 344, 344
 
 
 @mark.parametrize("tp", list(cu.typecodes))
 def test_PyCuVec_asarray(tp):
-    v = getattr(cu.cuvec, f"PyCuVec_{tp}")((1, 2, 3))
+    v = getattr(cuvec_cpython, f"PyCuVec_{tp}")((1, 2, 3))
     assert str(v) == f"PyCuVec_{tp}((1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
@@ -23,7 +24,7 @@ def test_PyCuVec_asarray(tp):
 
 
 def test_PyCuVec_strides():
-    v = cu.cuvec.PyCuVec_f(shape)
+    v = cuvec_cpython.PyCuVec_f(shape)
     a = np.asarray(v)
     assert a.shape == shape
     assert a.strides == (473344, 1376, 4)

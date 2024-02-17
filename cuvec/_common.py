@@ -1,4 +1,4 @@
-"""Common helpers for pycuvec & swigcuvec modules."""
+"""Common helpers for cuvec.{cpython,pybind11,swig} modules."""
 import array
 from typing import Sequence as Seq
 from typing import Union

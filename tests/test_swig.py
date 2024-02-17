@@ -5,7 +5,7 @@ from pytest import importorskip, mark, raises
 
 from cuvec import dev_sync
 
-cu = importorskip("cuvec.swigcuvec")
+cu = importorskip("cuvec.swig")
 shape = 127, 344, 344
 
 
@@ -62,7 +62,7 @@ def test_CuVec_creation(caplog):
     caplog.clear()
     v = cu.CuVec(np.ones(shape, dtype='h'))
     assert [i[1:] for i in caplog.record_tuples] == [
-        (10, 'copy'), (10, "wrap swraw <class 'cuvec.swigcuvec.SWIGVector'>")]
+        (10, 'copy'), (10, "wrap swraw <class 'cuvec.swig.SWIGVector'>")]
     assert v.shape == shape
     assert v.dtype.char == 'h'
     assert (v == 1).all()
@@ -70,7 +70,7 @@ def test_CuVec_creation(caplog):
     caplog.clear()
     v = cu.zeros(shape, 'd')
     assert [i[1:] for i in caplog.record_tuples] == [
-        (10, "wrap swraw <class 'cuvec.swigcuvec.SWIGVector'>")]
+        (10, "wrap swraw <class 'cuvec.swig.SWIGVector'>")]
 
     caplog.clear()
     v[0, 0, 0] = 1
