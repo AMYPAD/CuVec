@@ -21,6 +21,6 @@ pytest -k "not perf"
 To run performance tests, build with debugging disabled (`CUVEC_DEBUG=0`), then run:
 
 ```sh
-pytest -k "perf"
+pytest -k "perf" -n=0
 python tests/test_perf.py
 ```

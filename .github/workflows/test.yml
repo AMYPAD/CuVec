@@ -54,7 +54,7 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: pip install -U -e .[dev]
       run: make CXX_FLAGS='' deps-build build-editable deps-run
-    - run: pytest
+    - run: make test
     - uses: codecov/codecov-action@v4
     - name: compile -Wall
       run: make build-wheel
@@ -73,7 +73,7 @@ jobs:
       run: setup-python -p${{ matrix.python }} 'cuda-version<12' cupy
     - name: pip install -U -e .[dev]
       run: make CXX_FLAGS='' deps-build build-editable deps-run
-    - run: pytest
+    - run: make test
     - uses: codecov/codecov-action@v4
     - name: compile -Wall
       run: make CUDA_ARCHITECTURES=all build-wheel

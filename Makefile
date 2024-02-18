@@ -15,6 +15,9 @@ build-editable:
 	@$(MAKE) clean
 	pip install --no-build-isolation --check-build-dependencies --no-deps -t . -U -v . $(BUILD_CMAKE_FLAGS)
 	git restore '*/src/**'
+test:
+	pytest -k "not perf" -n=3
+	pytest -k "perf" -n=0 --cov-append
 clean:
 	git clean -Xdf
 deps-build:
