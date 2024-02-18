@@ -157,7 +157,9 @@ endif()
 # example projects
 
 add_subdirectory(src/example_mod)
-add_subdirectory(src/example_pybind11)
+if(pybind11_FOUND AND SKBUILD)
+  add_subdirectory(src/example_pybind11)
+endif()
 add_subdirectory(src/example_swig)
 
 # install project

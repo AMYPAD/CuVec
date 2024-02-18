@@ -58,8 +58,8 @@ renderer:
       generator: false
     theme:
       name: material
-      favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
-      logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
+      favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/templates/.icons/fontawesome/solid/memory.svg
+      logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/templates/.icons/fontawesome/solid/memory.svg
       custom_dir: ../../custom_theme/
       features: [content.tabs.link]
       palette:

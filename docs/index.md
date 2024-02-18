@@ -469,8 +469,8 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
     python -c "import cuvec; print(cuvec.cmake_prefix)"
 
     # ... or build & install directly with cmake
-    mkdir build && cd build
-    cmake ../cuvec && cmake --build . && cmake --install . --prefix /my/install/dir
+    cmake -S cuvec -B build && cmake --build build
+    cmake --install build --prefix /my/install/dir
     ```
 
     At this point any external project may include `cuvec` as follows (Once setting `-DCMAKE_PREFIX_DIR=<installation prefix from above>`):
