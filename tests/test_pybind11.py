@@ -3,8 +3,6 @@ import logging
 import numpy as np
 from pytest import importorskip, mark, raises
 
-from cuvec import dev_sync
-
 cu = importorskip("cuvec.pybind11")
 shape = 127, 344, 344
 
@@ -118,7 +116,7 @@ def test_asarray():
         cu.asarray(s.pyvec.cuvec, ownership='error')
 
 
-def test_cuda_array_interface():
+def test_cuda_array_interface(dev_sync):
     cupy = importorskip("cupy")
     v = cu.asarray(np.random.random(shape))
     assert hasattr(v, '__cuda_array_interface__')

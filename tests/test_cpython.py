@@ -110,7 +110,7 @@ def test_asarray():
     assert np.asarray(s.cuvec).data != np.asarray(v.cuvec).data
 
 
-def test_cuda_array_interface():
+def test_cuda_array_interface(dev_sync):
     cupy = importorskip("cupy")
     v = cu.asarray(np.random.random(shape))
     assert hasattr(v, '__cuda_array_interface__')
@@ -118,10 +118,10 @@ def test_cuda_array_interface():
     c = cupy.asarray(v)
     assert (c == v).all()
     c[0, 0, 0] = 1
-    cu.dev_sync()
+    dev_sync()
     assert c[0, 0, 0] == v[0, 0, 0]
     c[0, 0, 0] = 0
-    cu.dev_sync()
+    dev_sync()
     assert c[0, 0, 0] == v[0, 0, 0]
 
     ndarr = v + 1
