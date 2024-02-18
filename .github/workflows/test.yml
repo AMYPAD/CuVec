@@ -81,11 +81,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
     - name: Docs
-      run: |
-        pushd docs
-        pip install -U -r requirements.txt
-        PYTHONPATH=. pydoc-markdown --build --site-dir=../../../dist/site
-        popd
+      run: make deps-docs docs
     - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags') || github.event_name == 'workflow_dispatch' }}
       uses: casperdcl/push-dir@v1
       with:

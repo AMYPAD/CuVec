@@ -9,7 +9,7 @@ CCACHE=
 ifneq ($(CCACHE),)
 	BUILD_CMAKE_FLAGS+= -Ccmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache
 endif
-.PHONY: build-editable clean deps-build deps-run build-wheel
+.PHONY: build-editable clean deps-build deps-run build-wheel deps-docs docs docs-serve
 build-editable:
 	git diff --exit-code --quiet '*/src/**' || (echo "Uncommitted changes in */src"; exit 1)
 	pip install --no-build-isolation --check-build-dependencies -Cbuild-dir=build --no-deps -t . -U -v . $(BUILD_CMAKE_FLAGS)
@@ -28,3 +28,9 @@ deps-run:
 build-wheel:
 	pip install build
 	python -m build -n -w $(BUILD_CMAKE_FLAGS)
+deps-docs:
+	cd docs && pip install -r requirements.txt
+docs:
+	cd docs && PYTHONPATH=. pydoc-markdown --build --site-dir=../../../dist/site
+docs-serve: docs
+	python -m http.server -d dist/site
