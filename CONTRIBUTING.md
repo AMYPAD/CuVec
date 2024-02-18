@@ -6,7 +6,7 @@ Install in "development/editable" mode including dev/test dependencies:
 # clone & install dependencies (one-off)
 git clone https://github.com/AMYPAD/CuVec
 cd CuVec
-make deps-build
+make deps-build deps-run
 
 # delete build artefacts, (re)build & install in-place with debug info
 make CUVEC_DEBUG=1 build-editable

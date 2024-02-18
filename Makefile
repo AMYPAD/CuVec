@@ -12,8 +12,7 @@ endif
 .PHONY: build-editable clean deps-build deps-run build-wheel
 build-editable:
 	git diff --exit-code --quiet '*/src/**' || (echo "Uncommitted changes in */src"; exit 1)
-	@$(MAKE) clean
-	pip install --no-build-isolation --check-build-dependencies --no-deps -t . -U -v . $(BUILD_CMAKE_FLAGS)
+	pip install --no-build-isolation --check-build-dependencies -Cbuild-dir=build --no-deps -t . -U -v . $(BUILD_CMAKE_FLAGS)
 	git restore '*/src/**'
 test:
 	pytest -k "not perf" -n=3
@@ -27,6 +26,5 @@ deps-run:
 	pip install toml
 	python -c 'import toml; c=toml.load("pyproject.toml"); print("\0".join(c["project"]["dependencies"] + c["project"]["optional-dependencies"]["dev"]), end="")' | xargs -0 pip install
 build-wheel:
-	@$(MAKE) clean
 	pip install build
 	python -m build -n -w $(BUILD_CMAKE_FLAGS)
