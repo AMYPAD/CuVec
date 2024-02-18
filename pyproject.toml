@@ -56,6 +56,14 @@ dependencies = ['importlib_resources; python_version < "3.9"', "numpy"]
 [project.optional-dependencies]
 dev = ["pytest>=6", "pytest-cov", "pytest-timeout", "pytest-xdist"]
 
+[tool.mypy]
+[[tool.mypy.overrides]]
+module = "cuvec.swvec"
+ignore_errors = true
+[[tool.mypy.overrides]]
+module = "cuvec.example_swig.*"
+ignore_errors = true
+
 [tool.flake8]
 max_line_length = 99
 extend_ignore = ["E261"]

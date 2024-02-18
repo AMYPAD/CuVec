@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
-from . import swvec as sw  # type: ignore # yapf: disable
+from . import swvec as sw  # type: ignore [attr-defined] # yapf: disable
 from ._common import Shape, _generate_helpers, typecodes
 
 log = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ if hasattr(sw, 'SwigCuVec_e_new'):
 
 
 class SWIGVector:
-    def __init__(self, typechar: Optional[str], shape: Optional[Shape], cuvec=None):
+    def __init__(self, typechar: str, shape: Shape, cuvec=None):
         """
         Thin wrapper around `SwigPyObject<CuVec<Type>>`. Always takes ownership.
         Args:
@@ -192,7 +192,7 @@ def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
         if ownership in {'critical', 'fatal', 'error'}:
             raise IOError("Can't take ownership of existing cuvec (would create dangling ptr)")
         getattr(log, ownership)("taking ownership")
-        arr = SWIGVector(None, None, arr)
+        arr = SWIGVector('', (), arr)
     if not isinstance(arr, np.ndarray) and is_raw_swvec(arr):
         res = CuVec(arr)
         if dtype is None or res.dtype == np.dtype(dtype):
