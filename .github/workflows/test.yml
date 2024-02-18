@@ -70,7 +70,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Run setup-python
-      run: setup-python -p${{ matrix.python }} 'cuda-version<12' cupy
+      run: setup-python -p${{ matrix.python }} 'cuda-version<12' 'cupy<13'
     - name: pip install -U -e .[dev]
       run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: make test
