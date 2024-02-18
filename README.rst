@@ -83,7 +83,7 @@ Copyright:
    :target: https://github.com/AMYPAD/CuVec/blob/main/LICENCE
 .. |Tests| image:: https://img.shields.io/github/actions/workflow/status/AMYPAD/CuVec/test.yml?branch=main&logo=GitHub
    :target: https://github.com/AMYPAD/CuVec/actions
-.. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads
+.. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec?logo=pypi&logoColor=white
    :target: https://pypi.org/project/cuvec
 .. |Coverage| image:: https://codecov.io/gh/AMYPAD/CuVec/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/AMYPAD/CuVec

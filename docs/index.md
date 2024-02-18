@@ -3,7 +3,7 @@
 Unifying Python/C++/CUDA memory: Python buffered array ↔ C++11 `std::vector` ↔ CUDA managed memory.
 
 [![Version](https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white)](https://github.com/AMYPAD/CuVec/releases)
-[![Downloads](https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads)](https://pypi.org/project/cuvec)
+[![Downloads](https://img.shields.io/pypi/dm/cuvec?logo=pypi&logoColor=white)](https://pypi.org/project/cuvec)
 [![Py-Versions](https://img.shields.io/pypi/pyversions/cuvec.svg?logo=python&logoColor=white)](https://pypi.org/project/cuvec)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg)](https://doi.org/10.5281/zenodo.4446211)
 [![Licence](https://img.shields.io/pypi/l/cuvec.svg?label=licence)](https://github.com/AMYPAD/CuVec/blob/main/LICENCE)
