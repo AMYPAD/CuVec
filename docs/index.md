@@ -94,10 +94,16 @@ Requirements:
     // int asPyCuVec_d(PyObject *o, PyCuVec<double> **self);
     ```
 
-=== "C++/pybind11/CUDA"
+=== "C++/CUDA"
     ```cpp
     #include "cuvec.cuh"
     CuVec<float> vec(1337 * 42); // like std::vector<float>
+    ```
+
+=== "C++/pybind11 API"
+    ```cpp
+    #include "cuvec.cuh"
+    NDCuVec<float> ndv({1337, 42});
     ```
 
 === "C++/SWIG API"
@@ -160,7 +166,10 @@ The following involve no memory copies.
 
 === "**pybind11 API** to **C++**"
     ```cpp
-    #include "cuvec_pybind11.cuh" // use `CuVec<type> *vec` or `CuVec<type> &vec` directly
+    /// input: `NDCuVec<type> *ndv`
+    /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
+    CuVec<float> &vec = ndv->vec; // like std::vector<float>
+    std::vector<size_t> &shape = ndv->shape;
     ```
 
 === "**Python** to **SWIG API**"
@@ -290,9 +299,9 @@ C++:
       // hardcode upsampling factor 2
 
       std::vector<Py_ssize_t> dst_shape = src->shape();
-      dst_shape[2] *= 2;
-      dst_shape[1] *= 2;
-      dst_shape[0] *= 2;
+      for (auto &i : dst_shape) i *= 2;
+
+
 
 
       if (!dst)
@@ -318,7 +327,48 @@ C++:
 
 === "Alternative: with CuVec & pybind11"
     ```{.cpp linenums="1"}
-    /// TODO
+    #include "cuvec_pybind11.cuh"
+    #include "mycudafunction.h"
+
+    NDCuVec<float> *myfunc(NDCuVec<float> &src, NDCuVec<float> *output = nullptr) {
+
+
+
+
+
+
+
+
+
+
+
+      // hardcode upsampling factor 2
+
+      std::vector<size_t> dst_shape = src.shape;
+      for (auto &i : dst_shape) i *= 2;
+
+
+
+
+      if (!dst)
+        dst = new NDCuVec<float>(dst_shape);
+
+
+
+      if (!dst) throw pybind11::value_error("could not allocate output");
+
+
+      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape.data());
+
+
+      return dst;
+    }
+    using namespace pybind11::literals;
+    PYBIND11_MODULE(mymod, m){
+      ...
+      m.def("myfunc", &myfunc, "src"_a, "output"_a = nullptr);
+      ...
+    }
     ```
 
 === "Alternative: with CuVec & SWIG"
@@ -403,7 +453,18 @@ CUDA:
 
 === "Alternative: with CuVec & pybind11"
     ```{.cpp linenums="1"}
-    /// TODO
+    void mycudafunction(float *dst, float *src, size_t *shape) {
+
+
+
+
+
+
+      mykernel<<<...>>>(dst, src, shape[0], shape[1], shape[2]);
+      cudaDeviceSynchronize();
+
+
+    }
     ```
 
 === "Alternative: with CuVec & SWIG"
