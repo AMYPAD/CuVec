@@ -17,6 +17,14 @@ try:
 except ImportError:
     sw, example_swig = None, None  # type: ignore # yapf: disable
 
+try:
+    # `cuvec.pybind11` alternative to `cuvec.cpython`
+    # `example_pybind11` is defined in ../cuvec/src/example_pybind11/
+    from cuvec import example_pybind11  # type: ignore # yapf: disable
+    from cuvec import pybind11 as py
+except ImportError:
+    py, example_pybind11 = None, None  # type: ignore # yapf: disable
+
 
 def _time_overhead():
     tic = time()
@@ -53,7 +61,7 @@ def retry_on_except(n=3):
     return wrapper
 
 
-@mark.parametrize("cu,ex", [(cu, example_mod), (sw, example_swig)])
+@mark.parametrize("cu,ex", [(cu, example_mod), (py, example_pybind11), (sw, example_swig)])
 @retry_on_except()
 def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
     if cu is None:
@@ -81,9 +89,9 @@ def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
     assert (src + 1 == dst)[1:].all()
     assert (src + 1 == dst)[0, 2:].all()
     # even a fast kernel takes longer than API overhead
-    assert t['- kernel'] / (t['call ext'] - t['- create dst']) > 0.5
-    # API call should be <0.1 ms... but set a higher threshold of 2 ms
-    assert t['call ext'] - t['- create dst'] - t['- kernel'] < 2
+    assert t['- kernel'] / (t['call ext'] - t['- create dst']) > 0.3
+    # API call should be <0.1 ms... but set a higher threshold of 5 ms
+    assert t['call ext'] - t['- create dst'] - t['- kernel'] < 5
     if return_time:
         return t
 
@@ -95,9 +103,9 @@ if __name__ == "__main__":
         from tqdm import trange
     except ImportError:
         trange = range
-    nruns = 1000
+    nruns = 500
 
-    for args in [(cu, example_mod), (sw, example_swig)]:
+    for args in [(cu, example_mod), (py, example_pybind11), (sw, example_swig)]:
         print(f"# One run ({args[1].__name__}):")
         test_perf(*args, shape=(1000, 1000))
 

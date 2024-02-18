@@ -145,3 +145,25 @@ def test_cuda_array_interface():
     assert ndarr.dtype == v.dtype
     with raises(AttributeError):
         ndarr.__cuda_array_interface__
+
+
+def test_increment():
+    # `example_pybind11` is defined in ../cuvec/src/example_pybind11/
+    from cuvec.example_pybind11 import increment2d_f
+    a = cu.zeros((1337, 42), 'f')
+    assert (a == 0).all()
+    increment2d_f(a.cuvec, a.cuvec)
+    assert (a == 1).all()
+
+    a[:] = 0
+    assert (a == 0).all()
+
+    b = cu.retarray(increment2d_f(a.cuvec))
+    assert (b == 1).all()
+
+    c = cu.retarray(increment2d_f(b.cuvec, a.cuvec), a)
+    assert (a == 2).all()
+    assert c.cuvec == a.cuvec
+    assert (c == a).all()
+    assert str(c.pyvec) == str(a.pyvec)
+    assert np.asarray(c.pyvec).data == np.asarray(a.pyvec).data
