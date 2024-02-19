@@ -11,18 +11,6 @@ import numpy as np
 Shape = Union[Seq[int], int]
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
 typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
-C_TYPES = {
-    "signed char": 'b',
-    "unsigned char": 'B',
-    "char": 'c',
-    "short": 'h',
-    "unsigned short": 'H',
-    "int": 'i',
-    "unsigned int": 'I',
-    "long long": 'q',
-    "unsigned long long": 'Q',
-    "float": 'f',
-    "double": 'd'} # yapf: disable
 
 
 class CVector(ABC):

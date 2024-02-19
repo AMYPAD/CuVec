@@ -13,13 +13,15 @@ from typing import Any, Dict, Optional
 import numpy as np
 
 from . import swvec as sw  # type: ignore [attr-defined] # yapf: disable
-from ._common import C_TYPES, CVector, Shape, _generate_helpers, typecodes
+from ._common import CVector, Shape, _generate_helpers, typecodes
+
+__all__ = [
+    'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'retarray', 'Shape',
+    'typecodes']
 
 log = logging.getLogger(__name__)
-SWIG_TYPES = dict(C_TYPES)
 if hasattr(sw, 'SwigCuVec_e_new'):
     typecodes += 'e'
-    SWIG_TYPES["__half"] = 'e'
 
 
 class SWIGVector(CVector):

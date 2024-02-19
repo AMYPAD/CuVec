@@ -9,6 +9,9 @@ import numpy as np
 from . import cuvec_cpython as cu
 from ._common import Shape, _generate_helpers, typecodes
 
+__all__ = [
+    'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'Shape', 'typecodes']
+
 log = logging.getLogger(__name__)
 vec_types = {
     np.dtype('int8'): cu.PyCuVec_b,
