@@ -126,5 +126,8 @@ template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self) {
   return (size_t)SwigCuVec_data(self);
 }
 template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self) { return self->shape; }
+template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<size_t> &shape) {
+  self->reshape(shape);
+}
 
 #endif // _CUVEC_H_

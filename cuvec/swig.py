@@ -50,6 +50,11 @@ class SWIGVector(CVector):
     def shape(self) -> tuple:
         return getattr(sw, f'SwigCuVec_{self.typechar}_shape')(self.cuvec)
 
+    @shape.setter
+    def shape(self, shape: Shape):
+        shape = shape if isinstance(shape, Sequence) else (shape,)
+        getattr(sw, f'SwigCuVec_{self.typechar}_reshape')(self.cuvec, shape)
+
     @property
     def address(self) -> int:
         return getattr(sw, f'SwigCuVec_{self.typechar}_address')(self.cuvec)
@@ -96,6 +101,11 @@ class CuVec(np.ndarray):
         res = self.__array_interface__
         return {
             'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
+
+    def resize(self, new_shape: Shape):
+        """Change shape (but not size) of array in-place."""
+        self.swvec.shape = new_shape
+        super().resize(new_shape, refcheck=False)
 
 
 def zeros(shape: Shape, dtype="float32") -> CuVec:
