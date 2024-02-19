@@ -89,6 +89,19 @@ template <class T, class U> bool operator!=(const CuAlloc<T> &, const CuAlloc<U>
 
 template <class T> using CuVec = std::vector<T, CuAlloc<T>>;
 
+/// extension helpers
+#ifndef _CUVEC_HALF
+#ifndef CUVEC_DISABLE_CUDA
+#include "cuda_fp16.h" // __half
+#define _CUVEC_HALF __half
+#else // CUVEC_DISABLE_CUDA
+#ifdef __fp16
+#define _CUVEC_HALF __fp16
+#endif // __fp16
+#endif // CUVEC_DISABLE_CUDA
+#endif // _CUVEC_HALF
+
+/// pybind11 helpers
 template <class T> struct NDCuVec {
   CuVec<T> vec;
   std::vector<size_t> shape;
@@ -112,6 +125,7 @@ template <class T> struct NDCuVec {
   }
 };
 
+/// SWIG helpers
 template <class T> using SwigCuVec = NDCuVec<T>;
 template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape) {
   SwigCuVec<T> *self = new SwigCuVec<T>(shape);

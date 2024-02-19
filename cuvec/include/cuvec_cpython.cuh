@@ -9,22 +9,12 @@
 #ifndef _CUVEC_CPYTHON_H_
 #define _CUVEC_CPYTHON_H_
 
+#include "cuvec.cuh" // CuVec, _CUVEC_HALF
 #include <Python.h>
-#ifndef _CUVEC_HALF
-#ifndef CUVEC_DISABLE_CUDA
-#include "cuda_fp16.h" // __half
-#define _CUVEC_HALF __half
-#else // CUVEC_DISABLE_CUDA
-#ifdef __fp16
-#define _CUVEC_HALF __fp16
-#endif               // __fp16
-#endif               // CUVEC_DISABLE_CUDA
-#endif               // _CUVEC_HALF
-#include "cuvec.cuh" // CuVec
-#include <cstdlib>   // malloc, free
-#include <sstream>   // std::stringstream
-#include <typeinfo>  // typeid
-#include <vector>    // std::vector
+#include <cstdlib>  // malloc, free
+#include <sstream>  // std::stringstream
+#include <typeinfo> // typeid
+#include <vector>   // std::vector
 
 namespace cuvec {
 template <typename T> struct PyType {
