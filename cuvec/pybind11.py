@@ -44,6 +44,11 @@ class Pybind11Vector(CVector):
     def shape(self) -> tuple:
         return tuple(self.cuvec.shape())
 
+    @shape.setter
+    def shape(self, shape: Shape):
+        shape = cu.Shape(shape if isinstance(shape, Sequence) else (shape,))
+        self.cuvec.reshape(shape)
+
     @property
     def address(self) -> int:
         return self.cuvec.address()
@@ -90,6 +95,11 @@ class CuVec(np.ndarray):
         res = self.__array_interface__
         return {
             'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
+
+    def resize(self, new_shape: Shape):
+        """Change shape (but not size) of array in-place."""
+        self.pyvec.shape = new_shape
+        super().resize(new_shape, refcheck=False)
 
 
 def zeros(shape: Shape, dtype="float32") -> CuVec:
