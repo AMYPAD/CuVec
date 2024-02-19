@@ -13,7 +13,7 @@ from typing import Any, Dict, Optional
 import numpy as np
 
 from . import swvec as sw  # type: ignore [attr-defined] # yapf: disable
-from ._common import CVector, Shape, _generate_helpers, typecodes
+from ._utils import CVector, Shape, _generate_helpers, typecodes
 
 __all__ = [
     'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'retarray', 'Shape',
@@ -75,14 +75,14 @@ class CuVec(np.ndarray):
         if SWIGVector.is_instance(arr):
             log.debug("wrap swraw %s", type(arr))
             obj = np.asarray(arr).view(cls)
-            obj.swvec = arr
+            obj._vec = arr
             obj.cuvec = arr.cuvec
             return obj
-        if isinstance(arr, CuVec) and hasattr(arr, 'swvec'):
+        if isinstance(arr, CuVec) and hasattr(arr, '_vec'):
             log.debug("new view")
             obj = np.asarray(arr).view(cls)
-            obj.swvec = arr.swvec
-            obj.cuvec = arr.swvec.cuvec
+            obj._vec = arr._vec
+            obj.cuvec = arr._vec.cuvec
             return obj
         if isinstance(arr, np.ndarray):
             log.debug("copy")
@@ -100,11 +100,11 @@ class CuVec(np.ndarray):
                 dedent("""\
                 `numpy.ndarray` object has no attribute `cuvec`:
                 try using `cuvec.asarray()` first."""))
-        return self.swvec.__cuda_array_interface__
+        return self._vec.__cuda_array_interface__
 
     def resize(self, new_shape: Shape):
         """Change shape (but not size) of array in-place."""
-        self.swvec.shape = new_shape
+        self._vec.shape = new_shape
         super().resize(new_shape, refcheck=False)
 
 
