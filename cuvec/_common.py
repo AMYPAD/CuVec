@@ -36,12 +36,12 @@ class CVector(ABC):
     @property
     @abstractmethod
     def shape(self) -> tuple:
-        pass
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def address(self) -> int:
-        pass
+        pass  # pragma: no cover
 
     @property
     def __array_interface__(self) -> Dict[str, Any]:
@@ -49,9 +49,7 @@ class CVector(ABC):
             'shape': self.shape, 'typestr': np.dtype(self.typechar).str,
             'data': (self.address, False), 'version': 3}
 
-    @property
-    def __cuda_array_interface__(self) -> Dict[str, Any]:
-        return self.__array_interface__
+    __cuda_array_interface__ = __array_interface__
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.typechar}', {self.shape})"

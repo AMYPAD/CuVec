@@ -92,9 +92,7 @@ class CuVec(np.ndarray):
                 dedent("""\
                 `numpy.ndarray` object has no attribute `cuvec`:
                 try using `cuvec.asarray()` first."""))
-        res = self.__array_interface__
-        return {
-            'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
+        return self.pyvec.__cuda_array_interface__
 
     def resize(self, new_shape: Shape):
         """Change shape (but not size) of array in-place."""
