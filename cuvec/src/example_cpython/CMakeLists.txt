@@ -1,4 +1,4 @@
-project(example_mod)
+project(example_cpython)
 file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 
 include_directories(${Python_INCLUDE_DIRS})

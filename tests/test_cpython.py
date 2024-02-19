@@ -53,8 +53,8 @@ def test_asarray():
 
 
 def test_increment():
-    # `example_mod` is defined in ../cuvec/src/example_mod/
-    from cuvec.example_mod import increment2d_f
+    # `example_cpython` is defined in ../cuvec/src/example_cpython/
+    from cuvec.example_cpython import increment2d_f
     a = cu.zeros((1337, 42), 'f')
     assert (a == 0).all()
     res = cu.asarray(increment2d_f(a.cuvec, a.cuvec))
@@ -70,7 +70,7 @@ def test_increment():
 
 
 def test_increment_return():
-    from cuvec.example_mod import increment2d_f
+    from cuvec.example_cpython import increment2d_f
     a = cu.zeros((1337, 42), 'f')
     assert (a == 0).all()
     res = cu.asarray(increment2d_f(a, a))
@@ -80,7 +80,7 @@ def test_increment_return():
 
 
 def test_np_types():
-    from cuvec.example_mod import increment2d_f
+    from cuvec.example_cpython import increment2d_f
     f = cu.zeros((1337, 42), 'f')
     d = cu.zeros((1337, 42), 'd')
     cu.asarray(increment2d_f(f))

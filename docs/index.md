@@ -483,7 +483,11 @@ CUDA:
     }
     ```
 
-For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu) or the alternative `cuvec.example_swig` sources [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
+For a full reference, see:
+
+- `cuvec.example_cpython` source: [example_cpython.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_cpython.cu)
+- `cuvec.example_pybind11` source: [example_pybind11.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_pybind11/example_pybind11.cu)
+- `cuvec.example_swig` sources: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu)
 
 See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python package built using CuVec.
 
@@ -509,7 +513,10 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu).
+    For reference, see:
+
+    - `cuvec.example_cpython` source: [example_cpython.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_cpython.cu)
+    - `cuvec.example_pybind11` source: [example_pybind11.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_pybind11/example_pybind11.cu)
 
 === "SWIG"
     `cuvec` is a header-only library so simply `%include "cuvec.i"` in a SWIG interface file. You can find the location of the headers using:
@@ -518,7 +525,7 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_swig`'s source code: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
+    For reference, see `cuvec.example_swig`'s sources: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
 
 === "CMake"
     This is likely unnecessary (see the "C++ & CUDA" tab above for simpler `#include` instructions).

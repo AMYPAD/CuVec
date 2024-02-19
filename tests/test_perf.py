@@ -6,8 +6,8 @@ from pytest import mark, skip
 
 import cuvec.cpython as cu
 
-# `example_mod` is defined in ../cuvec/src/example_mod/
-from cuvec import example_mod  # type: ignore # yapf: disable
+# `example_cpython` is defined in ../cuvec/src/example_cpython/
+from cuvec import example_cpython  # type: ignore # yapf: disable
 
 try:
     # `cuvec.swig` alternative to `cuvec.cpython`
@@ -61,7 +61,7 @@ def retry_on_except(n=3):
     return wrapper
 
 
-@mark.parametrize("cu,ex", [(cu, example_mod), (py, example_pybind11), (sw, example_swig)])
+@mark.parametrize("cu,ex", [(cu, example_cpython), (py, example_pybind11), (sw, example_swig)])
 @retry_on_except()
 def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
     if cu is None:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         trange = range
     nruns = 500
 
-    for args in [(cu, example_mod), (py, example_pybind11), (sw, example_swig)]:
+    for args in [(cu, example_cpython), (py, example_pybind11), (sw, example_swig)]:
         print(f"# One run ({args[1].__name__}):")
         test_perf(*args, shape=(1000, 1000))
 

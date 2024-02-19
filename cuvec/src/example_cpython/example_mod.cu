@@ -89,12 +89,12 @@ static PyMethodDef example_methods[] = {
 };
 
 /** module */
-static struct PyModuleDef example_mod = {PyModuleDef_HEAD_INIT,
-                                         "example_mod", // module
-                                         "Example external module.",
-                                         -1, // module keeps state in global variables
-                                         example_methods};
-PyMODINIT_FUNC PyInit_example_mod(void) {
+static struct PyModuleDef example_cpython = {PyModuleDef_HEAD_INIT,
+                                             "example_cpython", // module
+                                             "Example external module.",
+                                             -1, // module keeps state in global variables
+                                             example_methods};
+PyMODINIT_FUNC PyInit_example_cpython(void) {
   Py_Initialize();
-  return PyModule_Create(&example_mod);
+  return PyModule_Create(&example_cpython);
 }
