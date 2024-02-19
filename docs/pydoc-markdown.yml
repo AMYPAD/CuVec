@@ -3,6 +3,7 @@ loaders:
   search_path: [..]
 processors:
 - type: filter
+  expression: not any(name.startswith(i) for i in ('cu_', 'is_raw', '__')) and default()
 - type: crossref
 renderer:
   type: mkdocs
@@ -21,8 +22,17 @@ renderer:
     name: index
     source: index.md
   - title: Python Reference
-    name: ref-py
-    contents: [cuvec.*.CuVec, cuvec.*.zeros, cuvec.*.copy, cuvec.*.asarray]
+    name: ref
+    children:
+    - title: CPython
+      name: cpython
+      contents: [cuvec.cpython.*]
+    - title: pybind11
+      name: pybind11
+      contents: [cuvec.pybind11.*]
+    - title: SWIG
+      name: swig
+      contents: [cuvec.swig.*]
   - title: External Links
     children:
     - title: Source Code
@@ -58,8 +68,8 @@ renderer:
       generator: false
     theme:
       name: material
-      favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
-      logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/.icons/fontawesome/solid/memory.svg
+      favicon: https://github.com/squidfunk/mkdocs-material/raw/master/material/templates/.icons/fontawesome/solid/memory.svg
+      logo: https://github.com/squidfunk/mkdocs-material/raw/master/material/templates/.icons/fontawesome/solid/memory.svg
       custom_dir: ../../custom_theme/
       features: [content.tabs.link]
       palette:

@@ -15,17 +15,8 @@ except ImportError: # pragma: nocover
         __version__ = get_version(root="../..", relative_to=__file__)
     except (ImportError, LookupError):
         __version__ = "UNKNOWN"
-__all__ = [
-    # config
-    'cmake_prefix', 'include_path',
-    # classes
-    'CuVec',
-    # functions
-    'dev_set', 'dev_sync', 'cu_copy', 'cu_zeros',
-    'copy', 'asarray',
-    'zeros', 'ones', 'zeros_like', 'ones_like',
-    # data
-    'typecodes', 'vec_types'] # yapf: disable
+# config
+__all__ = ['cmake_prefix', 'include_path']
 
 try:          # py<3.9
     import importlib_resources as resources
@@ -33,24 +24,20 @@ except ImportError:
     from importlib import resources  # type: ignore # yapf: disable
 
 try:
-    from .cuvec import dev_set, dev_sync
+    from .cuvec_cpython import dev_set, dev_sync
 except ImportError as err: # pragma: no cover
     from warnings import warn
     warn(str(err), UserWarning)
-else:
-    from .pycuvec import (
-        CuVec,
-        asarray,
-        copy,
-        cu_copy,
-        cu_zeros,
-        ones,
-        ones_like,
-        typecodes,
-        vec_types,
-        zeros,
-        zeros_like,
-    )
+else:                      # backwards compatibility: import from .cpython
+    from .cpython import CuVec, asarray, copy, ones, ones_like, typecodes, zeros, zeros_like
+    __all__ += [
+        # classes
+        'CuVec',
+        # functions
+        'dev_set', 'dev_sync', 'copy', 'asarray',
+        'zeros', 'ones', 'zeros_like', 'ones_like',
+        # data
+        'typecodes'] # yapf: disable
 
 p = resources.files('cuvec').resolve()
 # for C++/CUDA/SWIG includes

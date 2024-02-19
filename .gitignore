@@ -10,6 +10,7 @@ __pycache__/
 /cuvec/example_swig.py
 /cuvec/swvec.py
 /dist/
+/build/
 /docs/build/
 
 # Unit test / coverage reports

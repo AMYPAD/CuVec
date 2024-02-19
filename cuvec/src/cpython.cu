@@ -5,8 +5,9 @@
  *
  * Copyright (2021) Casper da Costa-Luis
  */
-#include "Python.h"
-#include "pycuvec.cuh" // PyCuVec, PyCuVec_tp
+#include "cuvec_cpython.cuh" // PyCuVec, PyCuVec_tp
+#include <Python.h>
+
 /** functions */
 /// required before accessing on host
 static PyObject *dev_sync(PyObject *self, PyObject *args) {
@@ -37,11 +38,11 @@ static PyMethodDef cuvec_methods[] = {
 /** module */
 static struct PyModuleDef cuvec_module = {
     PyModuleDef_HEAD_INIT,
-    "cuvec", // module
+    "cuvec_cpython", // module
     "CUDA unified memory with python array buffer and C++ std::vector interfaces.",
     -1, // module keeps state in global variables
     cuvec_methods};
-PyMODINIT_FUNC PyInit_cuvec(void) {
+PyMODINIT_FUNC PyInit_cuvec_cpython(void) {
   Py_Initialize();
   // import_array();  // load NumPy functionality
 

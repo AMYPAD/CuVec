@@ -2,8 +2,6 @@ project(example_swig)
 file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 file(GLOB ISRC LIST_DIRECTORIES false "*.i")
 
-#include_directories(${Python3_INCLUDE_DIRS})
-
 if(SWIG_FOUND)
   if(CUDAToolkit_FOUND)
     include_directories(${CUDAToolkit_INCLUDE_DIRS})

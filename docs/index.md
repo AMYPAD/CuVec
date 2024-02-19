@@ -3,7 +3,7 @@
 Unifying Python/C++/CUDA memory: Python buffered array ↔ C++11 `std::vector` ↔ CUDA managed memory.
 
 [![Version](https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white)](https://github.com/AMYPAD/CuVec/releases)
-[![Downloads](https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads)](https://pypi.org/project/cuvec)
+[![Downloads](https://img.shields.io/pypi/dm/cuvec?logo=pypi&logoColor=white)](https://pypi.org/project/cuvec)
 [![Py-Versions](https://img.shields.io/pypi/pyversions/cuvec.svg?logo=python&logoColor=white)](https://pypi.org/project/cuvec)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4446211.svg)](https://doi.org/10.5281/zenodo.4446211)
 [![Licence](https://img.shields.io/pypi/l/cuvec.svg?label=licence)](https://github.com/AMYPAD/CuVec/blob/main/LICENCE)
@@ -52,23 +52,25 @@ Requirements:
 
 === "Python"
     ```py
-    import cuvec
-    # from cuvec import swigcuvec as cuvec   # SWIG alternative
+    import cuvec.cpython as cuvec
+    # import cuvec.pybind11 as cuvec         # pybind11 alternative
+    # import cuvec.swig as cuvec             # SWIG alternative
     arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
     # print(sum(arr))
     # some_numpy_func(arr)
     # some_cpython_api_func(arr.cuvec)
+    # some_pybind11_func(arr.cuvec)
     # import cupy; cupy_arr = cupy.asarray(arr)
     ```
 
 === "CPython API"
     ```cpp
     #include "Python.h"
-    #include "pycuvec.cuh"
+    #include "cuvec_cpython.cuh"
     PyObject *obj = (PyObject *)PyCuVec_zeros<float>({1337, 42});
     // don't forget to Py_DECREF(obj) if not returning it.
 
-    /// N.B.: convenience functions provided by "pycuvec.cuh":
+    /// N.B.: convenience functions provided by "cuvec_cpython.cuh":
     // PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape);
     // PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
     // PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
@@ -92,6 +94,18 @@ Requirements:
     // int asPyCuVec_d(PyObject *o, PyCuVec<double> **self);
     ```
 
+=== "C++/CUDA"
+    ```cpp
+    #include "cuvec.cuh"
+    CuVec<float> vec(1337 * 42); // like std::vector<float>
+    ```
+
+=== "C++/pybind11 API"
+    ```cpp
+    #include "cuvec.cuh"
+    NDCuVec<float> ndv({1337, 42});
+    ```
+
 === "C++/SWIG API"
     ```cpp
     #include "cuvec.cuh"
@@ -105,26 +119,20 @@ Requirements:
     // std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *swv);
     ```
 
-=== "C++/CUDA"
-    ```cpp
-    #include "cuvec.cuh"
-    CuVec<float> vec(1337 * 42); // like std::vector<float>
-    ```
-
 ### Converting
 
 The following involve no memory copies.
 
 === "**Python** to **CPython API**"
     ```py
-    # import cuvec, my_custom_lib
+    # import cuvec.cpython as cuvec, my_custom_lib
     # arr = cuvec.zeros((1337, 42), "float32")
     my_custom_lib.some_cpython_api_func(arr)
     ```
 
 === "**CPython API** to **Python**"
     ```py
-    import cuvec, my_custom_lib
+    import cuvec.cpython as cuvec, my_custom_lib
     arr = cuvec.asarray(my_custom_lib.some_cpython_api_func())
     ```
 
@@ -143,17 +151,38 @@ The following involve no memory copies.
     float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
     ```
 
+=== "**Python** to **pybind11 API**"
+    ```py
+    # import cuvec.pybind11 as cuvec, my_custom_lib
+    # arr = cuvec.zeros((1337, 42), "float32")
+    my_custom_lib.some_pybind11_api_func(arr.cuvec)
+    ```
+
+=== "**pybind11 API** to **Python**"
+    ```py
+    import cuvec.pybind11 as cuvec, my_custom_lib
+    arr = cuvec.retarray(my_custom_lib.some_pybind11_api_func())
+    ```
+
+=== "**pybind11 API** to **C++**"
+    ```cpp
+    /// input: `NDCuVec<type> *ndv`
+    /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
+    CuVec<float> &vec = ndv->vec; // like std::vector<float>
+    std::vector<size_t> &shape = ndv->shape;
+    ```
+
 === "**Python** to **SWIG API**"
     ```py
-    # import cuvec, my_custom_lib
-    # arr = cuvec.swigcuvec.zeros((1337, 42), "float32")
+    # import cuvec.swig as cuvec, my_custom_lib
+    # arr = cuvec.zeros((1337, 42), "float32")
     my_custom_lib.some_swig_api_func(arr.cuvec)
     ```
 
 === "**SWIG API** to **Python**"
     ```py
-    import cuvec, my_custom_lib
-    arr = cuvec.swigcuvec.retarray(my_custom_lib.some_swig_api_func())
+    import cuvec.swig as cuvec, my_custom_lib
+    arr = cuvec.retarray(my_custom_lib.some_swig_api_func())
     ```
 
 === "**SWIG API** to **C++**"
@@ -180,15 +209,23 @@ Python:
 
 === "After: with CuVec"
     ```{.py linenums="1"}
-    import cuvec, numpy, mymod
+    import cuvec.cpython as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
     assert all(numpy.mean(arr, axis=(0, 1)) == 0)
     print(cuvec.asarray(mymod.myfunc(arr)).sum())
     ```
 
+=== "Alternative: with CuVec & pybind11"
+    ```{.py linenums="1"}
+    import cuvec.pybind11 as cuvec, numpy, mymod
+    arr = cuvec.zeros((1337, 42, 7), "float32")
+    assert all(numpy.mean(arr, axis=(0, 1)) == 0)
+    print(cuvec.retarray(mymod.myfunc(arr.cuvec)).sum())
+    ```
+
 === "Alternative: with CuVec & SWIG"
     ```{.py linenums="1"}
-    import cuvec.swigcuvec as cuvec, numpy, mymod
+    import cuvec.swig as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
     assert all(numpy.mean(arr, axis=(0, 1)) == 0)
     print(cuvec.retarray(mymod.myfunc(arr.cuvec)).sum())
@@ -244,7 +281,7 @@ C++:
 
 === "After: with CuVec"
     ```{.cpp linenums="1"}
-    #include "pycuvec.cuh"
+    #include "cuvec_cpython.cuh"
     #include "mycudafunction.h"
 
     static PyObject *myfunc(PyObject *self, PyObject *args, PyObject *kwargs) {
@@ -262,9 +299,9 @@ C++:
       // hardcode upsampling factor 2
 
       std::vector<Py_ssize_t> dst_shape = src->shape();
-      dst_shape[2] *= 2;
-      dst_shape[1] *= 2;
-      dst_shape[0] *= 2;
+      for (auto &i : dst_shape) i *= 2;
+
+
 
 
       if (!dst)
@@ -284,6 +321,52 @@ C++:
     PyMODINIT_FUNC PyInit_mymod(void) {
       ...
 
+      ...
+    }
+    ```
+
+=== "Alternative: with CuVec & pybind11"
+    ```{.cpp linenums="1"}
+    #include "cuvec_pybind11.cuh"
+    #include "mycudafunction.h"
+
+    NDCuVec<float> *myfunc(NDCuVec<float> &src, NDCuVec<float> *output = nullptr) {
+
+
+
+
+
+
+
+
+
+
+
+      // hardcode upsampling factor 2
+
+      std::vector<size_t> dst_shape = src.shape;
+      for (auto &i : dst_shape) i *= 2;
+
+
+
+
+      if (!dst)
+        dst = new NDCuVec<float>(dst_shape);
+
+
+
+      if (!dst) throw pybind11::value_error("could not allocate output");
+
+
+      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape.data());
+
+
+      return dst;
+    }
+    using namespace pybind11::literals;
+    PYBIND11_MODULE(mymod, m){
+      ...
+      m.def("myfunc", &myfunc, "src"_a, "output"_a = nullptr);
       ...
     }
     ```
@@ -368,6 +451,22 @@ CUDA:
     }
     ```
 
+=== "Alternative: with CuVec & pybind11"
+    ```{.cpp linenums="1"}
+    void mycudafunction(float *dst, float *src, size_t *shape) {
+
+
+
+
+
+
+      mykernel<<<...>>>(dst, src, shape[0], shape[1], shape[2]);
+      cudaDeviceSynchronize();
+
+
+    }
+    ```
+
 === "Alternative: with CuVec & SWIG"
     ```{.cpp linenums="1"}
     #include "cuvec.cuh"
@@ -384,7 +483,11 @@ CUDA:
     }
     ```
 
-For a full reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu) or the alternative `cuvec.example_swig` sources [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
+For a full reference, see:
+
+- `cuvec.example_cpython` source: [example_cpython.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_cpython.cu)
+- `cuvec.example_pybind11` source: [example_pybind11.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_pybind11/example_pybind11.cu)
+- `cuvec.example_swig` sources: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu)
 
 See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python package built using CuVec.
 
@@ -395,14 +498,25 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
 
     When using the SWIG alternative module, `arr.cuvec` is a wrapper around `SwigCuVec<type> *`.
 
-=== "C++ & CUDA"
-    `cuvec` is a header-only library so simply `#include "pycuvec.cuh"` (or `#include "cuvec.cuh"`). You can find the location of the headers using:
+=== "C++/pybind11/CUDA"
+    `cuvec` is a header-only library so simply do one of:
+
+    ```cpp
+    #include "cuvec_cpython.cuh"  // CPython API
+    #include "cuvec_pybind11.cuh" // pybind11 API
+    #include "cuvec.cuh"          // C++/CUDA API
+    ```
+
+    You can find the location of the headers using:
 
     ```py
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_mod`'s source code: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_mod/example_mod.cu).
+    For reference, see:
+
+    - `cuvec.example_cpython` source: [example_cpython.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_cpython.cu)
+    - `cuvec.example_pybind11` source: [example_pybind11.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_pybind11/example_pybind11.cu)
 
 === "SWIG"
     `cuvec` is a header-only library so simply `%include "cuvec.i"` in a SWIG interface file. You can find the location of the headers using:
@@ -411,7 +525,7 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
     python -c "import cuvec; print(cuvec.include_path)"
     ```
 
-    For reference, see `cuvec.example_swig`'s source code: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
+    For reference, see `cuvec.example_swig`'s sources: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) and [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu).
 
 === "CMake"
     This is likely unnecessary (see the "C++ & CUDA" tab above for simpler `#include` instructions).
@@ -423,14 +537,14 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
     python -c "import cuvec; print(cuvec.cmake_prefix)"
 
     # ... or build & install directly with cmake
-    mkdir build && cd build
-    cmake ../cuvec && cmake --build . && cmake --install . --prefix /my/install/dir
+    cmake -S cuvec -B build && cmake --build build
+    cmake --install build --prefix /my/install/dir
     ```
 
     At this point any external project may include `cuvec` as follows (Once setting `-DCMAKE_PREFIX_DIR=<installation prefix from above>`):
 
     ```{.cmake linenums="1" hl_lines="3 6"}
-    cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
+    cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
     project(myproj)
     find_package(AMYPADcuvec COMPONENTS cuvec REQUIRED)
     add_executable(myexe ...)

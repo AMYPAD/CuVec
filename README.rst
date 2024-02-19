@@ -59,8 +59,8 @@ See also `NumCu <https://github.com/AMYPAD/NumCu>`_, a minimal stand-alone Pytho
 External Projects
 ~~~~~~~~~~~~~~~~~
 
-For integration into Python, C++, CUDA, CMake, and general SWIG projects, see `the external project documentation <https://amypad.github.io/CuVec/#external-projects>`_.
-Full and explicit example modules using the `CPython API <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_mod>`_ and `SWIG <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_swig>`_ are also provided.
+For integration into Python, C++, CUDA, CMake, pybind11, and general SWIG projects, see `the external project documentation <https://amypad.github.io/CuVec/#external-projects>`_.
+Full and explicit example modules using the `CPython API <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_cpython>`_, `pybind11 API <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_pybind11>`_, and `SWIG <https://github.com/AMYPAD/CuVec/tree/main/cuvec/src/example_swig>`_ are also provided.
 
 Contributing
 ~~~~~~~~~~~~
@@ -83,7 +83,7 @@ Copyright:
    :target: https://github.com/AMYPAD/CuVec/blob/main/LICENCE
 .. |Tests| image:: https://img.shields.io/github/actions/workflow/status/AMYPAD/CuVec/test.yml?branch=main&logo=GitHub
    :target: https://github.com/AMYPAD/CuVec/actions
-.. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec.svg?logo=pypi&logoColor=white&label=PyPI%20downloads
+.. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec?logo=pypi&logoColor=white
    :target: https://pypi.org/project/cuvec
 .. |Coverage| image:: https://codecov.io/gh/AMYPAD/CuVec/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/AMYPAD/CuVec

@@ -6,25 +6,15 @@
  *     PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
  *     PyTypeObject PyCuVec_tp<T>.tp_obj;
  */
-#ifndef _PYCUVEC_H_
-#define _PYCUVEC_H_
+#ifndef _CUVEC_CPYTHON_H_
+#define _CUVEC_CPYTHON_H_
 
-#include "Python.h"
-#ifndef _CUVEC_HALF
-#ifndef CUVEC_DISABLE_CUDA
-#include "cuda_fp16.h" // __half
-#define _CUVEC_HALF __half
-#else // CUVEC_DISABLE_CUDA
-#ifdef __fp16
-#define _CUVEC_HALF __fp16
-#endif               // __fp16
-#endif               // CUVEC_DISABLE_CUDA
-#endif               // _CUVEC_HALF
-#include "cuvec.cuh" // CuVec
-#include <cstdlib>   // malloc, free
-#include <sstream>   // std::stringstream
-#include <typeinfo>  // typeid
-#include <vector>    // std::vector
+#include "cuvec.cuh" // CuVec, _CUVEC_HALF
+#include <Python.h>
+#include <cstdlib>  // malloc, free
+#include <sstream>  // std::stringstream
+#include <typeinfo> // typeid
+#include <vector>   // std::vector
 
 namespace cuvec {
 template <typename T> struct PyType {
@@ -235,7 +225,7 @@ template <class T> PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape) {
   self->vec.resize(self->shape[0] * (self->strides[0] / sizeof(T)));
   return CUDA_PyErr() ? NULL : self;
 }
-template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
+template <class T> PyCuVec<T> *PyCuVec_zeros_like(const PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
   if (!self) return NULL;
   self->vec.resize(other->vec.size());
@@ -244,7 +234,7 @@ template <class T> PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other) {
   self->strides = other->strides;
   return self;
 }
-template <class T> PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other) {
+template <class T> PyCuVec<T> *PyCuVec_deepcopy(const PyCuVec<T> *other) {
   PyCuVec<T> *self = PyCuVec_new<T>();
   if (!self) return NULL;
   self->vec = other->vec;
@@ -330,4 +320,4 @@ ASCUVEC(_CUVEC_HALF, e)
 ASCUVEC(float, f)
 ASCUVEC(double, d)
 
-#endif // _PYCUVEC_H_
+#endif // _CUVEC_CPYTHON_H_

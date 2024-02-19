@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools_scm>=7", "scikit-build-core[pyproject]>=0.5", "swig>=4"]
+requires = ["setuptools_scm>=7", "scikit-build-core[pyproject]>=0.5", "swig>=4", "pybind11"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
@@ -56,6 +56,14 @@ dependencies = ['importlib_resources; python_version < "3.9"', "numpy"]
 [project.optional-dependencies]
 dev = ["pytest>=6", "pytest-cov", "pytest-timeout", "pytest-xdist"]
 
+[tool.mypy]
+[[tool.mypy.overrides]]
+module = "cuvec.swvec"
+ignore_errors = true
+[[tool.mypy.overrides]]
+module = "cuvec.example_swig.*"
+ignore_errors = true
+
 [tool.flake8]
 max_line_length = 99
 extend_ignore = ["E261"]
@@ -84,7 +92,7 @@ timeout = 30
 log_level = "INFO"
 python_files = ["tests/test_*.py"]
 testpaths = ["tests"]
-addopts = "-v --tb=short -rxs -W=error -n=2 --durations=0 --durations-min=1 --cov=cuvec --cov-report=term-missing --cov-report=xml"
+addopts = "-v --tb=short -rxs -W=error -n=3 --durations=0 --durations-min=1 --cov=cuvec --cov-report=term-missing --cov-report=xml"
 
 [tool.coverage.run]
 omit = ["cuvec/swvec.py", "cuvec/example_swig.py"]
