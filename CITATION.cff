@@ -13,4 +13,4 @@ authors:
 identifiers:
 - type: doi
   value: 10.5281/zenodo.4446211
-keywords: [Python, C, C++, buffer, vector, array, CUDA, CPython, SWIG, extensions, API]
+keywords: [Python, C, C++, buffer, vector, array, CUDA, CPython, SWIG, pybind11, extensions, API]

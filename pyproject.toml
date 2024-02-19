@@ -27,7 +27,7 @@ authors = [{name = "Casper da Costa-Luis", email = "casper.dcl@physics.org"}]
 description = "Unifying Python/C++/CUDA memory: Python buffered array -> C++11 `std::vector` -> CUDA managed memory"
 readme = "README.rst"
 requires-python = ">=3.7"
-keywords = ["Python", "C", "C++", "buffer", "vector", "array", "CUDA", "CPython", "SWIG", "extensions", "API"]
+keywords = ["Python", "C", "C++", "buffer", "vector", "array", "CUDA", "CPython", "SWIG", "pybind11", "extensions", "API"]
 license = {text = "MPL-2.0"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
