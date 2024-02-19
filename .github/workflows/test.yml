@@ -31,6 +31,8 @@ jobs:
       run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: make test
     - uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: compile -Wall
       run: make clean build-wheel
   cuda:
@@ -49,6 +51,8 @@ jobs:
       run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: make test
     - uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: compile -Wall
       run: make CUDA_ARCHITECTURES=all clean build-wheel
     - name: Post Run setup-python
