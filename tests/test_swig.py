@@ -116,6 +116,16 @@ def test_asarray():
         cu.asarray(s.swvec.cuvec, ownership='error')
 
 
+def test_resize():
+    v = cu.asarray(np.random.random(shape))
+    v.resize(shape[::-1])
+    assert v.shape == shape[::-1]
+    assert v.swvec.shape == v.shape
+    v.resize(v.size)
+    assert v.shape == (v.size,)
+    assert v.swvec.shape == v.shape
+
+
 def test_cuda_array_interface(dev_sync):
     cupy = importorskip("cupy")
     v = cu.asarray(np.random.random(shape))
