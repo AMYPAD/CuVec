@@ -29,8 +29,9 @@ PYBIND11_MAKE_OPAQUE(NDCuVec<double>);
   pybind11::class_<NDCuVec<T>>(m, PYBIND11_TOSTRING(NDCuVec_##typechar))                          \
       .def(pybind11::init<>())                                                                    \
       .def(pybind11::init<std::vector<size_t>>())                                                 \
-      .def("reshape", &NDCuVec<T>::reshape)                                                       \
-      .def("shape", [](const NDCuVec<T> &v) { return v.shape; })                                  \
-      .def("address", [](NDCuVec<T> &v) { return (size_t)v.vec.data(); })
+      .def_property(                                                                              \
+          "shape", [](const NDCuVec<T> *v) { return &(v->shape); }, &NDCuVec<T>::reshape)         \
+      .def_property_readonly("address",                                                           \
+                             [](const NDCuVec<T> *v) { return (size_t)v->vec.data(); })
 
 #endif // _CUVEC_PYBIND11_H_
