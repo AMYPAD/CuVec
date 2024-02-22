@@ -358,7 +358,7 @@ C++:
       if (!dst) throw pybind11::value_error("could not allocate output");
 
 
-      mycudafunction(dst->vec.data(), src->vec.data(), dst_shape.data());
+      mycudafunction(dst->vec.data(), src.vec.data(), dst_shape.data());
 
 
       return dst;

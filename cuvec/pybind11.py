@@ -44,16 +44,16 @@ class Pybind11Vector(CVector):
 
     @property
     def shape(self) -> tuple:
-        return tuple(self.cuvec.shape())
+        return tuple(self.cuvec.shape)
 
     @shape.setter
     def shape(self, shape: Shape):
         shape = cu.Shape(shape if isinstance(shape, Sequence) else (shape,))
-        self.cuvec.reshape(shape)
+        self.cuvec.shape = shape
 
     @property
     def address(self) -> int:
-        return self.cuvec.address()
+        return self.cuvec.address
 
 
 Pybind11Vector.vec_types = {np.dtype(c): partial(Pybind11Vector, c) for c in typecodes}
