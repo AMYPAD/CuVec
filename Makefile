@@ -9,13 +9,15 @@ CCACHE=
 ifneq ($(CCACHE),)
 	BUILD_CMAKE_FLAGS+= -Ccmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache
 endif
-.PHONY: build-editable clean deps-build deps-run build-wheel deps-docs docs docs-serve
+.PHONY: build-editable test test-cov test-perf clean deps-build deps-run build-wheel deps-docs docs docs-serve
 build-editable:
 	git diff --exit-code --quiet '*/src/**' || (echo "Uncommitted changes in */src"; exit 1)
 	pip install --no-build-isolation --check-build-dependencies -Cbuild-dir=build --no-deps -t . -U -v . $(BUILD_CMAKE_FLAGS)
 	git restore '*/src/**'
-test:
+test: test-cov test-perf
+test-cov:
 	pytest -k "not perf" -n=3
+test-perf:
 	pytest -k "perf" -n=0 --cov-append
 clean:
 	git clean -Xdf

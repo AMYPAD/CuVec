@@ -15,12 +15,12 @@ make CUVEC_DEBUG=1 build-editable
 Once installed in development/editable mode, tests may be run using:
 
 ```sh
-pytest -k "not perf"
+make test-cov
 ```
 
 To run performance tests, build with debugging disabled (`CUVEC_DEBUG=0`), then run:
 
 ```sh
-pytest -k "perf" -n=0
+make test-perf
 python tests/test_perf.py
 ```
