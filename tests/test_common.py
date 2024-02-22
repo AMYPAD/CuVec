@@ -116,6 +116,7 @@ def test_CuVec_creation(cu, classname, caplog):
 
 
 @mark.parametrize("cu", filter(None, [py, sw]))
+@mark.timeout(20)
 def test_asarray(cu):
     v = cu.asarray(np.random.random(shape))
     w = cu.CuVec(v)
@@ -158,6 +159,7 @@ def test_resize(cu):
     assert v._vec.shape == v.shape
 
 
+@mark.timeout(60)
 @mark.parametrize("cu", filter(None, [cp, py, sw]))
 def test_cuda_array_interface(cu):
     cupy = importorskip("cupy")

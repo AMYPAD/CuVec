@@ -89,7 +89,7 @@ known_first_party = ["cuvec", "tests"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-timeout = 30
+timeout = 5
 log_level = "INFO"
 python_files = ["tests/test_*.py"]
 testpaths = ["tests"]
