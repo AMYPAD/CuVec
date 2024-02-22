@@ -10,20 +10,20 @@ import cuvec.cpython as cu
 from cuvec import example_cpython  # type: ignore # yapf: disable
 
 try:
-    # `cuvec.swig` alternative to `cuvec.cpython`
-    # `example_swig` is defined in ../cuvec/src/example_swig/
-    from cuvec import example_swig  # type: ignore # yapf: disable
-    from cuvec import swig as sw
-except ImportError:
-    sw, example_swig = None, None  # type: ignore # yapf: disable
-
-try:
     # `cuvec.pybind11` alternative to `cuvec.cpython`
     # `example_pybind11` is defined in ../cuvec/src/example_pybind11/
     from cuvec import example_pybind11  # type: ignore # yapf: disable
     from cuvec import pybind11 as py
 except ImportError:
     py, example_pybind11 = None, None  # type: ignore # yapf: disable
+
+try:
+    # `cuvec.swig` alternative to `cuvec.cpython`
+    # `example_swig` is defined in ../cuvec/src/example_swig/
+    from cuvec import example_swig  # type: ignore # yapf: disable
+    from cuvec import swig as sw
+except ImportError:
+    sw, example_swig = None, None  # type: ignore # yapf: disable
 
 
 def _time_overhead():
@@ -65,7 +65,7 @@ def retry_on_except(n=3):
 @retry_on_except()
 def test_perf(cu, ex, shape=(1337, 42), quiet=False, return_time=False):
     if cu is None:
-        skip("SWIG not available")
+        skip("cuvec.pybind11 or cuvec.swig not available")
     retarray = getattr(cu, 'retarray', cu.asarray)
     overhead = np.mean([_time_overhead() for _ in range(100)])
     t = {}

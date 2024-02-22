@@ -2,18 +2,10 @@
 import logging
 
 import numpy as np
-from pytest import importorskip, mark, raises
+from pytest import importorskip, mark, raises, skip
 
 import cuvec as cu
 import cuvec.cpython as cp
-
-try:
-    # `cuvec.swig` alternative to `cuvec.cpython`
-    # `example_swig` is defined in ../cuvec/src/example_swig/
-    from cuvec import example_swig  # type: ignore # yapf: disable
-    from cuvec import swig as sw
-except ImportError:
-    sw, example_swig = None, None  # type: ignore # yapf: disable
 
 try:
     # `cuvec.pybind11` alternative to `cuvec.cpython`
@@ -23,6 +15,13 @@ try:
 except ImportError:
     py, example_pybind11 = None, None  # type: ignore # yapf: disable
 
+try:
+    # `cuvec.swig` alternative to `cuvec.cpython`
+    # `example_swig` is defined in ../cuvec/src/example_swig/
+    from cuvec import example_swig  # type: ignore # yapf: disable
+    from cuvec import swig as sw
+except ImportError:
+    sw, example_swig = None, None  # type: ignore # yapf: disable
 
 shape = 127, 344, 344
 
@@ -44,6 +43,8 @@ def test_cmake_prefix():
 
 @mark.parametrize("cu,CVector", [(py, 'Pybind11Vector'), (sw, 'SWIGVector')])
 def test_CVector_strides(cu, CVector):
+    if cu is None:
+        skip("cuvec.pybind11 or cuvec.swig not available")
     v = getattr(cu, CVector)('f', shape)
     a = np.asarray(v)
     assert a.shape == shape
@@ -52,7 +53,7 @@ def test_CVector_strides(cu, CVector):
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])
 @mark.parametrize("init", ["zeros", "ones"])
-@mark.parametrize("cu", [cp, py, sw])
+@mark.parametrize("cu", filter(None, [cp, py, sw]))
 def test_create(cu, init, spec, result):
     a = np.asarray(getattr(cu, init)(shape, spec))
     assert a.dtype == result
@@ -64,7 +65,7 @@ def test_create(cu, init, spec, result):
     assert b.dtype == a.dtype
 
 
-@mark.parametrize("cu", [cp, py, sw])
+@mark.parametrize("cu", filter(None, [cp, py, sw]))
 def test_copy(cu):
     a = np.random.random(shape)
     b = np.asarray(cu.copy(a))
@@ -77,6 +78,8 @@ def test_copy(cu):
                                    (py, "pyraw <class 'cuvec.pybind11.Pybind11Vector'>"),
                                    (sw, "swraw <class 'cuvec.swig.SWIGVector'>")])
 def test_CuVec_creation(cu, classname, caplog):
+    if cu is None:
+        skip("cuvec.pybind11 or cuvec.swig not available")
     with raises(TypeError):
         cu.CuVec()
 
@@ -112,7 +115,7 @@ def test_CuVec_creation(cu, classname, caplog):
     assert not caplog.record_tuples
 
 
-@mark.parametrize("cu", [py, sw])
+@mark.parametrize("cu", filter(None, [py, sw]))
 def test_asarray(cu):
     v = cu.asarray(np.random.random(shape))
     w = cu.CuVec(v)
@@ -144,7 +147,7 @@ def test_asarray(cu):
         cu.asarray(s._vec.cuvec, ownership='error')
 
 
-@mark.parametrize("cu", [py, sw])
+@mark.parametrize("cu", filter(None, [py, sw]))
 def test_resize(cu):
     v = cu.asarray(np.random.random(shape))
     v.resize(shape[::-1])
@@ -155,7 +158,7 @@ def test_resize(cu):
     assert v._vec.shape == v.shape
 
 
-@mark.parametrize("cu", [cp, py, sw])
+@mark.parametrize("cu", filter(None, [cp, py, sw]))
 def test_cuda_array_interface(cu):
     cupy = importorskip("cupy")
     from cuvec import dev_sync
@@ -190,6 +193,8 @@ def test_cuda_array_interface(cu):
 
 @mark.parametrize("cu,ex", [(py, example_pybind11), (sw, example_swig)])
 def test_increment(cu, ex):
+    if cu is None:
+        skip("cuvec.pybind11 or cuvec.swig not available")
     a = cu.zeros((1337, 42), 'f')
     assert (a == 0).all()
     ex.increment2d_f(a.cuvec, a.cuvec)
