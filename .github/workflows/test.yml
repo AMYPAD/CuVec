@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.7, 3.11]
+        python: [3.7, 3.12]
     steps:
     - uses: actions/checkout@v4
       with: {fetch-depth: 0}
@@ -41,12 +41,12 @@ jobs:
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
-        python: [3.7, 3.11]
+        python: [3.7, 3.12]
     steps:
     - uses: actions/checkout@v4
       with: {fetch-depth: 0}
     - name: Run setup-python
-      run: setup-python -p${{ matrix.python }} 'cuda-version<12' 'cupy<13'
+      run: setup-python -p${{ matrix.python }} cupy
     - name: pip install -U -e .[dev]
       run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: make test

@@ -28,6 +28,7 @@ def test_CVector_strides():
     assert a.strides == (473344, 1376, 4)
 
 
+@mark.timeout(20)
 def test_asarray():
     v = cu.asarray(np.random.random(shape))
     w = cu.CuVec(v)
