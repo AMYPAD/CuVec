@@ -38,7 +38,7 @@ def test_cmake_prefix():
     assert {i.name
             for i in cu.cmake_prefix.iterdir()} == {
                 f'AMYPADcuvec{i}.cmake'
-                for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-release')}
+                for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-relwithdebinfo')}
 
 
 @mark.parametrize("cu,CVector", [(py, 'Pybind11Vector'), (sw, 'SWIGVector')])

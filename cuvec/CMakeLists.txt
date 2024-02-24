@@ -43,7 +43,7 @@ cmake_policy(POP)
 
 message(STATUS "CUDA architectures: ${CMAKE_CUDA_ARCHITECTURES}")
 if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
