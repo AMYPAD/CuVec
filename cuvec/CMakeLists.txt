@@ -97,16 +97,15 @@ if(pybind11_FOUND AND SKBUILD)
   file(GLOB SRC LIST_DIRECTORIES false "src/pybind11*.cu")
   # include_directories(src)
   # include_directories(${Python_INCLUDE_DIRS})
-  python_add_library(${PROJECT_NAME}_pybind11 MODULE WITH_SOABI ${SRC})
+  pybind11_add_module(${PROJECT_NAME}_pybind11 MODULE WITH_SOABI ${SRC})
   add_library(AMYPAD::${PROJECT_NAME}_pybind11 ALIAS ${PROJECT_NAME}_pybind11)
   target_include_directories(${PROJECT_NAME}_pybind11 PUBLIC
     "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
     "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
   if(CUDAToolkit_FOUND)
-    target_link_libraries(${PROJECT_NAME}_pybind11 PRIVATE pybind11::headers CUDA::cudart_static)
+    target_link_libraries(${PROJECT_NAME}_pybind11 PRIVATE CUDA::cudart_static)
   else()
     set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
-    target_link_libraries(${PROJECT_NAME}_pybind11 PRIVATE pybind11::headers)
   endif()
 
   set_target_properties(${PROJECT_NAME}_pybind11 PROPERTIES
