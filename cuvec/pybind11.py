@@ -35,7 +35,7 @@ class Pybind11Vector(CVector):
           cuvec(NDCuVec<Type>): if given, `typechar` and `shape` are ignored
         """
         if cuvec is None:
-            shape = cu.Shape(shape if isinstance(shape, Sequence) else (shape,))
+            shape = shape if isinstance(shape, Sequence) else (shape,)
             cuvec = getattr(cu, f'NDCuVec_{typechar}')(shape)
         else:
             typechar = self.is_raw_cuvec(cuvec).group(1)
@@ -48,7 +48,7 @@ class Pybind11Vector(CVector):
 
     @shape.setter
     def shape(self, shape: Shape):
-        shape = cu.Shape(shape if isinstance(shape, Sequence) else (shape,))
+        shape = shape if isinstance(shape, Sequence) else (shape,)
         self.cuvec.shape = shape
 
     @property
