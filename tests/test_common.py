@@ -7,6 +7,8 @@ from pytest import importorskip, mark, raises, skip
 import cuvec as cu
 import cuvec.cpython as cp
 
+from . import shape
+
 try:
     # `cuvec.pybind11` alternative to `cuvec.cpython`
     # `example_pybind11` is defined in ../cuvec/src/example_pybind11/
@@ -22,8 +24,6 @@ try:
     from cuvec import swig as sw
 except ImportError:
     sw, example_swig = None, None  # type: ignore # yapf: disable
-
-shape = 127, 344, 344
 
 
 def test_includes():
@@ -48,7 +48,7 @@ def test_CVector_strides(cu, CVector):
     v = getattr(cu, CVector)('f', shape)
     a = np.asarray(v)
     assert a.shape == shape
-    assert a.strides == (473344, 1376, 4)
+    assert a.strides == (512, 32, 4)
 
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])

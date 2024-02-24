@@ -2,7 +2,6 @@ import numpy as np
 from pytest import importorskip, mark
 
 cu = importorskip("cuvec.pybind11")
-shape = 127, 344, 344
 
 
 @mark.parametrize("tp", list(cu.typecodes))

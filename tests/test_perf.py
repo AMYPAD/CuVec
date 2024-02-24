@@ -104,15 +104,15 @@ if __name__ == "__main__":
     except ImportError:
         trange = range
     nruns = 500
+    N = 1024
 
     for args in [(cu, example_cpython), (py, example_pybind11), (sw, example_swig)]:
         print(f"# One run ({args[1].__name__}):")
-        test_perf(*args, shape=(1000, 1000))
+        test_perf(*args, shape=(N, N))
 
         print(f"# Average over {nruns} runs:")
         res_runs = [
-            test_perf(*args, shape=(1000, 1000), quiet=True, return_time=True)
-            for _ in trange(nruns)]
+            test_perf(*args, shape=(N, N), quiet=True, return_time=True) for _ in trange(nruns)]
         pretty = {
             'create src': 'Create input', 'assign': 'Assign', 'call ext': 'Call extension',
             '- create dst': '-- Create output', '- kernel': '-- Launch kernel', 'view': 'View'}
