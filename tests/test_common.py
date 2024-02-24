@@ -157,6 +157,9 @@ def test_resize(cu):
     v.resize(v.size)
     assert v.shape == (v.size,)
     assert v._vec.shape == v.shape
+    v.shape = shape
+    assert v.shape == shape
+    assert v._vec.shape == v.shape
 
 
 @mark.timeout(60)

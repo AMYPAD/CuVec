@@ -8,7 +8,7 @@ import re
 from collections.abc import Sequence
 from functools import partial
 from textwrap import dedent
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 
@@ -37,9 +37,8 @@ class SWIGVector(CVector):
             `typechar` and `shape` are ignored
         """
         if cuvec is None:
-            cuvec = getattr(
-                sw,
-                f'SwigCuVec_{typechar}_new')(shape if isinstance(shape, Sequence) else (shape,))
+            shape = shape if isinstance(shape, Sequence) else (shape,)
+            cuvec = getattr(sw, f'SwigCuVec_{typechar}_new')(shape)
         else:
             typechar = self.is_raw_cuvec(cuvec).group(1)
         self.cuvec = cuvec
@@ -110,6 +109,14 @@ class CuVec(np.ndarray):
         """Change shape (but not size) of array in-place."""
         self._vec.shape = new_shape
         super().resize(new_shape, refcheck=False)
+
+    @property
+    def shape(self) -> Tuple[int, ...]:
+        return super().shape
+
+    @shape.setter
+    def shape(self, new_shape: Shape):
+        self.resize(new_shape)
 
 
 def zeros(shape: Shape, dtype="float32") -> CuVec:
