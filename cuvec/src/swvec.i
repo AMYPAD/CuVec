@@ -13,7 +13,6 @@
 
 template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
 template <class T> void SwigCuVec_del(SwigCuVec<T> *self);
-template <class T> T *SwigCuVec_data(SwigCuVec<T> *self);
 template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self);
 template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self);
 template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<size_t> &shape);
@@ -23,7 +22,6 @@ template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<
 %template(SwigCuVec_ ## typechar) SwigCuVec<T>;
 %template(SwigCuVec_ ## typechar ## _new) SwigCuVec_new<T>;
 %template(SwigCuVec_ ## typechar ## _del) SwigCuVec_del<T>;
-%template(SwigCuVec_ ## typechar ## _data) SwigCuVec_data<T>;
 %template(SwigCuVec_ ## typechar ## _address) SwigCuVec_address<T>;
 %template(SwigCuVec_ ## typechar ## _shape) SwigCuVec_shape<T>;
 %template(SwigCuVec_ ## typechar ## _reshape) SwigCuVec_reshape<T>;

@@ -114,7 +114,6 @@ Requirements:
     /// N.B.: convenience functions provided by "cuvec.cuh":
     // SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
     // void SwigCuVec_del(SwigCuVec<T> *swv);
-    // T *SwigCuVec_data(SwigCuVec<T> *swv);
     // size_t SwigCuVec_address(SwigCuVec<T> *swv);
     // std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *swv);
     ```
