@@ -3,7 +3,7 @@
  *
  * Copyright (2021) Casper da Costa-Luis
  */
-#include "cuvec.cuh" // SwigCuVec, SwigCuVec_new
+#include "cuvec.cuh" // SwigCuVec
 #include <stdexcept> // std::length_error
 #ifdef CUVEC_DISABLE_CUDA
 #include <chrono> // std::chrono
@@ -32,7 +32,7 @@ SwigCuVec<float> *increment2d_f(SwigCuVec<float> &src, SwigCuVec<float> *output,
 #endif
 
   if (!output)
-    output = SwigCuVec_new<float>(N);
+    output = new SwigCuVec<float>(N);
   else if (N != output->shape)
     throw std::length_error("`output` must be same shape as `src`");
 

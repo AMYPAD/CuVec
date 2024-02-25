@@ -11,6 +11,23 @@
 
 %include "cuvec.i" // SwigCuVec<T>
 
+%{
+template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape) {
+  SwigCuVec<T> *self = new SwigCuVec<T>(shape);
+  return self;
+}
+template <class T> void SwigCuVec_del(SwigCuVec<T> *self) {
+  self->~NDCuVec();
+  delete self;
+}
+template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self) {
+  return (size_t)self->vec.data();
+}
+template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self) { return self->shape; }
+template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<size_t> &shape) {
+  self->reshape(shape);
+}
+%}
 template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
 template <class T> void SwigCuVec_del(SwigCuVec<T> *self);
 template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self);
