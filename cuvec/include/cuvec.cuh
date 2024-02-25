@@ -112,12 +112,6 @@ template <class T> struct NDCuVec {
     if (size != vec.size()) throw std::length_error("reshape: size mismatch");
     this->shape = shape;
   }
-  ~NDCuVec() {
-    vec.clear();
-    vec.shrink_to_fit();
-    shape.clear();
-    shape.shrink_to_fit();
-  }
 };
 
 #endif // _CUVEC_H_

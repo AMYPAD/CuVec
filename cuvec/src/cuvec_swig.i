@@ -17,7 +17,6 @@ template <class T> NDCuVec<T> *NDCuVec_new(std::vector<size_t> shape) {
   return self;
 }
 template <class T> void NDCuVec_del(NDCuVec<T> *self) {
-  self->~NDCuVec();
   delete self;
 }
 template <class T> size_t NDCuVec_address(NDCuVec<T> *self) {
