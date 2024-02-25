@@ -1,4 +1,4 @@
-%module swvec
+%module cuvec_swig
 
 %include "exception.i"
 %exception {

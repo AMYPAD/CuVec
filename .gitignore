@@ -8,7 +8,7 @@ __pycache__/
 /cuvec-*.dist-info/
 /cuvec/*PYTHON_wrap.cxx
 /cuvec/example_swig.py
-/cuvec/swvec.py
+/cuvec/cuvec_swig.py
 /dist/
 /build/
 /docs/build/

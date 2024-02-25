@@ -59,7 +59,7 @@ dev = ["pytest>=6", "pytest-cov", "pytest-timeout", "pytest-xdist"]
 
 [tool.mypy]
 [[tool.mypy.overrides]]
-module = "cuvec.swvec"
+module = "cuvec.cuvec_swig"
 ignore_errors = true
 [[tool.mypy.overrides]]
 module = "cuvec.example_swig.*"
@@ -96,4 +96,4 @@ testpaths = ["tests"]
 addopts = "-v --tb=short -rxs -W=error -n=3 --durations=0 --durations-min=1 --cov=cuvec --cov-report=term-missing --cov-report=xml"
 
 [tool.coverage.run]
-omit = ["cuvec/swvec.py", "cuvec/example_swig.py"]
+omit = ["cuvec/cuvec_swig.py", "cuvec/example_swig.py"]

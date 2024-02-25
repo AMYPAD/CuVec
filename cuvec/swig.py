@@ -1,5 +1,5 @@
 """
-Thin wrappers around `swvec` C++/CUDA module
+Thin wrappers around `cuvec_swig` C++/CUDA module
 
 A SWIG-driven equivalent of the CPython Extension API-driven `cpython.py`
 """
@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 
-from . import swvec as sw  # type: ignore [attr-defined] # yapf: disable
+from . import cuvec_swig as sw  # type: ignore [attr-defined] # yapf: disable
 from ._utils import CVector, Shape, _generate_helpers, typecodes
 
 __all__ = [
