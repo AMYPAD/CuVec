@@ -2,11 +2,8 @@
  * Pure CUDA/C++11 template header. Provides:
  * - CuVec<T> // analogous to `std::vector` but using CUDA unified memory
  *
- * pybind11 helpers wrapping `CuVec<T>`. Provides:
+ * Helpers wrapping `CuVec<T>`. Provides:
  * - NDCuVec<T> // contains `CuVec<T> vec` and `std::vector<size_t> shape`
- *
- * SWIG helpers wrapping `CuVec<T>`. Provides:
- * - SwigCuVec<T> // contains `CuVec<T> vec` and `std::vector<size_t> shape`
  */
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
@@ -99,7 +96,7 @@ template <class T> using CuVec = std::vector<T, CuAlloc<T>>;
 #endif // CUVEC_DISABLE_CUDA
 #endif // _CUVEC_HALF
 
-/// pybind11 helpers
+/// external wrapper helper
 template <class T> struct NDCuVec {
   CuVec<T> vec;
   std::vector<size_t> shape;
@@ -122,8 +119,5 @@ template <class T> struct NDCuVec {
     shape.shrink_to_fit();
   }
 };
-
-/// SWIG helpers
-template <class T> using SwigCuVec = NDCuVec<T>;
 
 #endif // _CUVEC_H_

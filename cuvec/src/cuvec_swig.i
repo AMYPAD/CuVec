@@ -9,39 +9,39 @@
   }
 }
 
-%include "cuvec.i" // SwigCuVec<T>
+%include "cuvec.i" // NDCuVec<T>
 
 %{
-template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape) {
-  SwigCuVec<T> *self = new SwigCuVec<T>(shape);
+template <class T> NDCuVec<T> *NDCuVec_new(std::vector<size_t> shape) {
+  NDCuVec<T> *self = new NDCuVec<T>(shape);
   return self;
 }
-template <class T> void SwigCuVec_del(SwigCuVec<T> *self) {
+template <class T> void NDCuVec_del(NDCuVec<T> *self) {
   self->~NDCuVec();
   delete self;
 }
-template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self) {
+template <class T> size_t NDCuVec_address(NDCuVec<T> *self) {
   return (size_t)self->vec.data();
 }
-template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self) { return self->shape; }
-template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<size_t> &shape) {
+template <class T> std::vector<size_t> NDCuVec_shape(NDCuVec<T> *self) { return self->shape; }
+template <class T> void NDCuVec_reshape(NDCuVec<T> *self, const std::vector<size_t> &shape) {
   self->reshape(shape);
 }
 %}
-template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
-template <class T> void SwigCuVec_del(SwigCuVec<T> *self);
-template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self);
-template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self);
-template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<size_t> &shape);
+template <class T> NDCuVec<T> *NDCuVec_new(std::vector<size_t> shape);
+template <class T> void NDCuVec_del(NDCuVec<T> *self);
+template <class T> size_t NDCuVec_address(NDCuVec<T> *self);
+template <class T> std::vector<size_t> NDCuVec_shape(NDCuVec<T> *self);
+template <class T> void NDCuVec_reshape(NDCuVec<T> *self, const std::vector<size_t> &shape);
 
-%template(SwigCuVec_Shape) std::vector<size_t>;
+%template(NDCuVec_Shape) std::vector<size_t>;
 %define MKCUVEC(T, typechar)
-%template(SwigCuVec_ ## typechar) SwigCuVec<T>;
-%template(SwigCuVec_ ## typechar ## _new) SwigCuVec_new<T>;
-%template(SwigCuVec_ ## typechar ## _del) SwigCuVec_del<T>;
-%template(SwigCuVec_ ## typechar ## _address) SwigCuVec_address<T>;
-%template(SwigCuVec_ ## typechar ## _shape) SwigCuVec_shape<T>;
-%template(SwigCuVec_ ## typechar ## _reshape) SwigCuVec_reshape<T>;
+%template(NDCuVec_ ## typechar) NDCuVec<T>;
+%template(NDCuVec_ ## typechar ## _new) NDCuVec_new<T>;
+%template(NDCuVec_ ## typechar ## _del) NDCuVec_del<T>;
+%template(NDCuVec_ ## typechar ## _address) NDCuVec_address<T>;
+%template(NDCuVec_ ## typechar ## _shape) NDCuVec_shape<T>;
+%template(NDCuVec_ ## typechar ## _reshape) NDCuVec_reshape<T>;
 %enddef
 MKCUVEC(signed char, b)
 MKCUVEC(unsigned char, B)

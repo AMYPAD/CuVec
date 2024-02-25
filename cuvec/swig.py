@@ -20,13 +20,13 @@ __all__ = [
     'typecodes']
 
 log = logging.getLogger(__name__)
-if hasattr(sw, 'SwigCuVec_e_new'):
+if hasattr(sw, 'NDCuVec_e_new'):
     typecodes += 'e'
 
 
 class SWIGVector(CVector):
-    RE_CUVEC_TYPE = re.compile("<.*SwigCuVec_(.); proxy of <Swig Object of type"
-                               r" 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>")
+    RE_CUVEC_TYPE = re.compile("<.*(?:ND|Swig)CuVec_(.); proxy of <Swig Object of type"
+                               r" '(?:ND|Swig)CuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>")
 
     def __init__(self, typechar: str, shape: Shape, cuvec=None):
         """
@@ -38,27 +38,27 @@ class SWIGVector(CVector):
         """
         if cuvec is None:
             shape = shape if isinstance(shape, Sequence) else (shape,)
-            cuvec = getattr(sw, f'SwigCuVec_{typechar}_new')(shape)
+            cuvec = getattr(sw, f'NDCuVec_{typechar}_new')(shape)
         else:
             typechar = self.is_raw_cuvec(cuvec).group(1)
         self.cuvec = cuvec
         super().__init__(typechar)
 
     def __del__(self):
-        getattr(sw, f'SwigCuVec_{self.typechar}_del')(self.cuvec)
+        getattr(sw, f'NDCuVec_{self.typechar}_del')(self.cuvec)
 
     @property
     def shape(self) -> tuple:
-        return getattr(sw, f'SwigCuVec_{self.typechar}_shape')(self.cuvec)
+        return getattr(sw, f'NDCuVec_{self.typechar}_shape')(self.cuvec)
 
     @shape.setter
     def shape(self, shape: Shape):
         shape = shape if isinstance(shape, Sequence) else (shape,)
-        getattr(sw, f'SwigCuVec_{self.typechar}_reshape')(self.cuvec, shape)
+        getattr(sw, f'NDCuVec_{self.typechar}_reshape')(self.cuvec, shape)
 
     @property
     def address(self) -> int:
-        return getattr(sw, f'SwigCuVec_{self.typechar}_address')(self.cuvec)
+        return getattr(sw, f'NDCuVec_{self.typechar}_address')(self.cuvec)
 
 
 SWIGVector.vec_types = {np.dtype(c): partial(SWIGVector, c) for c in typecodes}

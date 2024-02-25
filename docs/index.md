@@ -127,7 +127,7 @@ Requirements:
     === "SWIG"
         ```cpp
         #include "cuvec.cuh"
-        SwigCuVec<float> *swv = new SwigCuVec<float>({1337, 42});
+        NDCuVec<float> *ndv = new NDCuVec<float>({1337, 42});
         ```
 
     === "CUDA"
@@ -203,10 +203,10 @@ The following involve no memory copies.
 
     === "to C++"
         ```cpp
-        /// input: `SwigCuVec<type> *swv`
+        /// input: `NDCuVec<type> *ndv`
         /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
-        CuVec<float> &vec = swv->vec; // like std::vector<float>
-        std::vector<size_t> &shape = swv->shape;
+        CuVec<float> &vec = ndv->vec; // like std::vector<float>
+        std::vector<size_t> &shape = ndv->shape;
         ```
 
 === "C & CUDA"
@@ -404,8 +404,8 @@ C++:
     %{
     #include "mycudafunction_swig.h"
     %}
-    SwigCuVec<float> *myfunc(
-      SwigCuVec<float> &src, SwigCuVec<float> *output = NULL);
+    NDCuVec<float> *myfunc(
+      NDCuVec<float> &src, NDCuVec<float> *output = NULL);
 
 
 
@@ -495,12 +495,12 @@ CUDA:
 === "SWIG"
     ```{.cpp linenums="1"}
     #include "cuvec.cuh"
-    SwigCuVec<float> *myfunc(
-        SwigCuVec<float> &src, SwigCuVec<float> *output = NULL) {
+    NDCuVec<float> *myfunc(
+        NDCuVec<float> &src, NDCuVec<float> *output = NULL) {
       // hardcode upsampling factor 2
       std::vector<size_t> shape = src.shape;
       for (auto &i : shape) i *= 2;
-      if (!output) output = new SwigCuVec<float>(shape);
+      if (!output) output = new NDCuVec<float>(shape);
       mykernel<<<...>>>(output->vec.data(), src.vec.data(),
                         shape[0], shape[1], shape[2]);
       cudaDeviceSynchronize();
@@ -521,7 +521,7 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
 === "Python"
     Python objects (`arr`, returned by `cuvec.zeros()`, `cuvec.asarray()`, or `cuvec.copy()`) contain all the attributes of a `numpy.ndarray`. Additionally, `arr.cuvec` implements the [buffer protocol](https://docs.python.org/3/c-api/buffer.html), while `arr.__cuda_array_interface__` (and `arr.__array_interface__`) provide [compatibility with other libraries](https://numba.readthedocs.io/en/latest/cuda/cuda_array_interface.html) such as Numba, CuPy, PyTorch, PyArrow, and RAPIDS.
 
-    When using the SWIG alternative module, `arr.cuvec` is a wrapper around `SwigCuVec<type> *`.
+    When using the SWIG alternative module, `arr.cuvec` is a wrapper around `NDCuVec<type> *`.
 
 === "C++/pybind11/CUDA"
     `cuvec` is a header-only library so simply do one of:
