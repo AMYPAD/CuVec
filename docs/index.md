@@ -51,145 +51,171 @@ Requirements:
 ### Creating
 
 === "Python"
-    ```py
-    import cuvec.cpython as cuvec
-    # import cuvec.pybind11 as cuvec         # pybind11 alternative
-    # import cuvec.swig as cuvec             # SWIG alternative
-    arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
-    # print(sum(arr))
-    # some_numpy_func(arr)
-    # some_cpython_api_func(arr.cuvec)
-    # some_pybind11_func(arr.cuvec)
-    # import cupy; cupy_arr = cupy.asarray(arr)
-    ```
 
-=== "CPython API"
-    ```cpp
-    #include "Python.h"
-    #include "cuvec_cpython.cuh"
-    PyObject *obj = (PyObject *)PyCuVec_zeros<float>({1337, 42});
-    // don't forget to Py_DECREF(obj) if not returning it.
+    === "CPython"
+        ```py
+        import cuvec.cpython as cuvec
+        arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
+        # print(sum(arr))
+        # some_numpy_func(arr)
+        # some_cpython_api_func(arr.cuvec)
+        # some_pybind11_func(arr.cuvec)
+        # import cupy; cupy_arr = cupy.asarray(arr)
+        ```
 
-    /// N.B.: convenience functions provided by "cuvec_cpython.cuh":
-    // PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape);
-    // PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
-    // PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
-    /// returns `NULL` if `self is None`, or
-    /// `getattr(self, 'cuvec', self)` otherwise:
-    // PyCuVec<T> *asPyCuVec(PyObject *self);
-    // PyCuVec<T> *asPyCuVec(PyCuVec<T> *self);
-    /// conversion functions for `PyArg_Parse*()`
-    /// e.g.: `PyArg_ParseTuple(args, "O&", &PyCuVec_f, &obj)`:
-    // int asPyCuVec_b(PyObject *o, PyCuVec<signed char> **self);
-    // int asPyCuVec_B(PyObject *o, PyCuVec<unsigned char> **self);
-    // int asPyCuVec_c(PyObject *o, PyCuVec<char> **self);
-    // int asPyCuVec_h(PyObject *o, PyCuVec<short> **self);
-    // int asPyCuVec_H(PyObject *o, PyCuVec<unsigned short> **self);
-    // int asPyCuVec_i(PyObject *o, PyCuVec<int> **self);
-    // int asPyCuVec_I(PyObject *o, PyCuVec<unsigned int> **self);
-    // int asPyCuVec_q(PyObject *o, PyCuVec<long long> **self);
-    // int asPyCuVec_Q(PyObject *o, PyCuVec<unsigned long long> **self);
-    // int asPyCuVec_e(PyObject *o, PyCuVec<__half> **self);
-    // int asPyCuVec_f(PyObject *o, PyCuVec<float> **self);
-    // int asPyCuVec_d(PyObject *o, PyCuVec<double> **self);
-    ```
+    === "pybind11"
+        ```py
+        import cuvec.pybind11 as cuvec
+        arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
+        # print(sum(arr))
+        # some_numpy_func(arr)
+        # some_cpython_api_func(arr.cuvec)
+        # some_pybind11_func(arr.cuvec)
+        # import cupy; cupy_arr = cupy.asarray(arr)
+        ```
 
-=== "C++/CUDA"
-    ```cpp
-    #include "cuvec.cuh"
-    CuVec<float> vec(1337 * 42); // like std::vector<float>
-    ```
+    === "SWIG"
+        ```py
+        import cuvec.swig as cuvec
+        arr = cuvec.zeros((1337, 42), "float32") # like `numpy.ndarray`
+        # print(sum(arr))
+        # some_numpy_func(arr)
+        # some_cpython_api_func(arr.cuvec)
+        # some_pybind11_func(arr.cuvec)
+        # import cupy; cupy_arr = cupy.asarray(arr)
+        ```
 
-=== "C++/pybind11 API"
-    ```cpp
-    #include "cuvec.cuh"
-    NDCuVec<float> ndv({1337, 42});
-    ```
+=== "C++"
 
-=== "C++/SWIG API"
-    ```cpp
-    #include "cuvec.cuh"
-    SwigCuVec<float> *swv = SwigCuVec_new<float>({1337, 42});
+    === "CPython"
+        ```cpp
+        #include "Python.h"
+        #include "cuvec_cpython.cuh"
+        PyObject *obj = (PyObject *)PyCuVec_zeros<float>({1337, 42});
+        // don't forget to Py_DECREF(obj) if not returning it.
 
-    /// N.B.: convenience functions provided by "cuvec.cuh":
-    // SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape);
-    // void SwigCuVec_del(SwigCuVec<T> *swv);
-    // size_t SwigCuVec_address(SwigCuVec<T> *swv);
-    // std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *swv);
-    ```
+        /// N.B.: convenience functions provided by "cuvec_cpython.cuh":
+        // PyCuVec<T> *PyCuVec_zeros(std::vector<Py_ssize_t> shape);
+        // PyCuVec<T> *PyCuVec_zeros_like(PyCuVec<T> *other);
+        // PyCuVec<T> *PyCuVec_deepcopy(PyCuVec<T> *other);
+        /// returns `NULL` if `self is None`, or
+        /// `getattr(self, 'cuvec', self)` otherwise:
+        // PyCuVec<T> *asPyCuVec(PyObject *self);
+        // PyCuVec<T> *asPyCuVec(PyCuVec<T> *self);
+        /// conversion functions for `PyArg_Parse*()`
+        /// e.g.: `PyArg_ParseTuple(args, "O&", &PyCuVec_f, &obj)`:
+        // int asPyCuVec_b(PyObject *o, PyCuVec<signed char> **self);
+        // int asPyCuVec_B(PyObject *o, PyCuVec<unsigned char> **self);
+        // int asPyCuVec_c(PyObject *o, PyCuVec<char> **self);
+        // int asPyCuVec_h(PyObject *o, PyCuVec<short> **self);
+        // int asPyCuVec_H(PyObject *o, PyCuVec<unsigned short> **self);
+        // int asPyCuVec_i(PyObject *o, PyCuVec<int> **self);
+        // int asPyCuVec_I(PyObject *o, PyCuVec<unsigned int> **self);
+        // int asPyCuVec_q(PyObject *o, PyCuVec<long long> **self);
+        // int asPyCuVec_Q(PyObject *o, PyCuVec<unsigned long long> **self);
+        // int asPyCuVec_e(PyObject *o, PyCuVec<__half> **self);
+        // int asPyCuVec_f(PyObject *o, PyCuVec<float> **self);
+        // int asPyCuVec_d(PyObject *o, PyCuVec<double> **self);
+        ```
+
+    === "pybind11"
+        ```cpp
+        #include "cuvec.cuh"
+        NDCuVec<float> ndv({1337, 42});
+        ```
+
+    === "SWIG"
+        ```cpp
+        #include "cuvec.cuh"
+        SwigCuVec<float> *swv = new SwigCuVec<float>({1337, 42});
+        ```
+
+    === "CUDA"
+        ```cpp
+        #include "cuvec.cuh"
+        CuVec<float> vec(1337 * 42); // like std::vector<float>
+        ```
 
 ### Converting
 
 The following involve no memory copies.
 
-=== "**Python** to **CPython API**"
-    ```py
-    # import cuvec.cpython as cuvec, my_custom_lib
-    # arr = cuvec.zeros((1337, 42), "float32")
-    my_custom_lib.some_cpython_api_func(arr)
-    ```
+=== "CPython"
 
-=== "**CPython API** to **Python**"
-    ```py
-    import cuvec.cpython as cuvec, my_custom_lib
-    arr = cuvec.asarray(my_custom_lib.some_cpython_api_func())
-    ```
+    === "from Python"
+        ```py
+        # import cuvec.cpython as cuvec, my_custom_lib
+        # arr = cuvec.zeros((1337, 42), "float32")
+        my_custom_lib.some_cpython_api_func(arr)
+        ```
 
-=== "**CPython API** to **C++**"
-    ```cpp
-    /// input: `PyObject *obj` (obtained from e.g.: `PyArg_Parse*()`, etc)
-    /// output: `CuVec<type> vec`
-    CuVec<float> &vec = ((PyCuVec<float> *)obj)->vec; // like std::vector<float>
-    std::vector<Py_ssize_t> &shape = ((PyCuVec<float> *)obj)->shape;
-    ```
+    === "to Python"
+        ```py
+        import cuvec.cpython as cuvec, my_custom_lib
+        arr = cuvec.asarray(my_custom_lib.some_cpython_api_func())
+        ```
 
-=== "**C++** to **C & CUDA**"
+    === "to C++"
+        ```cpp
+        /// input: `PyObject *obj` (obtained from e.g.: `PyArg_Parse*()`, etc)
+        /// output: `CuVec<type> vec`, `std::vector<Py_ssize_t> shape`
+        CuVec<float> &vec = ((PyCuVec<float> *)obj)->vec; // like std::vector<float>
+        std::vector<Py_ssize_t> &shape = ((PyCuVec<float> *)obj)->shape;
+        ```
+
+=== "pybind11"
+
+    === "from Python"
+        ```py
+        # import cuvec.pybind11 as cuvec, my_custom_lib
+        # arr = cuvec.zeros((1337, 42), "float32")
+        my_custom_lib.some_pybind11_api_func(arr.cuvec)
+        ```
+
+    === "to Python"
+        ```py
+        import cuvec.pybind11 as cuvec, my_custom_lib
+        arr = cuvec.retarray(my_custom_lib.some_pybind11_api_func())
+        ```
+
+    === "to C++"
+        ```cpp
+        /// input: `NDCuVec<type> *ndv`
+        /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
+        CuVec<float> &vec = ndv->vec; // like std::vector<float>
+        std::vector<size_t> &shape = ndv->shape;
+        ```
+
+=== "SWIG"
+
+    === "from Python"
+        ```py
+        # import cuvec.swig as cuvec, my_custom_lib
+        # arr = cuvec.zeros((1337, 42), "float32")
+        my_custom_lib.some_swig_api_func(arr.cuvec)
+        ```
+
+    === "to Python"
+        ```py
+        import cuvec.swig as cuvec, my_custom_lib
+        arr = cuvec.retarray(my_custom_lib.some_swig_api_func())
+        ```
+
+    === "to C++"
+        ```cpp
+        /// input: `SwigCuVec<type> *swv`
+        /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
+        CuVec<float> &vec = swv->vec; // like std::vector<float>
+        std::vector<size_t> &shape = swv->shape;
+        ```
+
+=== "C & CUDA"
+
+    === "from C++"
     ```cpp
     /// input: `CuVec<type> vec`
     /// output: `type *arr`
     float *arr = vec.data(); // pointer to `cudaMallocManaged()` data
-    ```
-
-=== "**Python** to **pybind11 API**"
-    ```py
-    # import cuvec.pybind11 as cuvec, my_custom_lib
-    # arr = cuvec.zeros((1337, 42), "float32")
-    my_custom_lib.some_pybind11_api_func(arr.cuvec)
-    ```
-
-=== "**pybind11 API** to **Python**"
-    ```py
-    import cuvec.pybind11 as cuvec, my_custom_lib
-    arr = cuvec.retarray(my_custom_lib.some_pybind11_api_func())
-    ```
-
-=== "**pybind11 API** to **C++**"
-    ```cpp
-    /// input: `NDCuVec<type> *ndv`
-    /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
-    CuVec<float> &vec = ndv->vec; // like std::vector<float>
-    std::vector<size_t> &shape = ndv->shape;
-    ```
-
-=== "**Python** to **SWIG API**"
-    ```py
-    # import cuvec.swig as cuvec, my_custom_lib
-    # arr = cuvec.zeros((1337, 42), "float32")
-    my_custom_lib.some_swig_api_func(arr.cuvec)
-    ```
-
-=== "**SWIG API** to **Python**"
-    ```py
-    import cuvec.swig as cuvec, my_custom_lib
-    arr = cuvec.retarray(my_custom_lib.some_swig_api_func())
-    ```
-
-=== "**SWIG API** to **C++**"
-    ```cpp
-    /// input: `SwigCuVec<type> *swv`
-    /// output: `CuVec<type> vec`, `std::vector<size_t> shape`
-    CuVec<float> &vec = swv->vec; // like std::vector<float>
-    std::vector<size_t> &shape = swv->shape;
     ```
 
 ### Examples
@@ -198,7 +224,7 @@ Here's a before and after comparison of a Python ↔ CUDA interface.
 
 Python:
 
-=== "Before: pure NumPy"
+=== "Without CuVec (Numpy)"
     ```{.py linenums="1"}
     import numpy, mymod
     arr = numpy.zeros((1337, 42, 7), "float32")
@@ -206,7 +232,7 @@ Python:
     print(mymod.myfunc(arr).sum())
     ```
 
-=== "After: with CuVec"
+=== "CPython"
     ```{.py linenums="1"}
     import cuvec.cpython as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
@@ -214,7 +240,7 @@ Python:
     print(cuvec.asarray(mymod.myfunc(arr)).sum())
     ```
 
-=== "Alternative: with CuVec & pybind11"
+=== "pybind11"
     ```{.py linenums="1"}
     import cuvec.pybind11 as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
@@ -222,7 +248,7 @@ Python:
     print(cuvec.retarray(mymod.myfunc(arr.cuvec)).sum())
     ```
 
-=== "Alternative: with CuVec & SWIG"
+=== "SWIG"
     ```{.py linenums="1"}
     import cuvec.swig as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
@@ -232,7 +258,7 @@ Python:
 
 C++:
 
-=== "Before: pure NumPy"
+=== "Without CuVec (Numpy)"
     ```{.cpp linenums="1"}
     #include <numpy/arrayobject.h>
     #include "mycudafunction.h"
@@ -278,7 +304,7 @@ C++:
     }
     ```
 
-=== "After: with CuVec"
+=== "CPython"
     ```{.cpp linenums="1"}
     #include "cuvec_cpython.cuh"
     #include "mycudafunction.h"
@@ -324,9 +350,9 @@ C++:
     }
     ```
 
-=== "Alternative: with CuVec & pybind11"
+=== "pybind11"
     ```{.cpp linenums="1"}
-    #include "cuvec_pybind11.cuh"
+    #include "cuvec.cuh"
     #include "mycudafunction.h"
 
     NDCuVec<float> *myfunc(NDCuVec<float> &src, NDCuVec<float> *output = nullptr) {
@@ -370,7 +396,7 @@ C++:
     }
     ```
 
-=== "Alternative: with CuVec & SWIG"
+=== "SWIG"
     ```{.cpp linenums="1"}
     /// SWIG interface file mymod.i (not mymod.cpp)
     %module mymod
@@ -418,7 +444,7 @@ C++:
 
 CUDA:
 
-=== "Before: pure NumPy"
+=== "Without CuVec (Numpy)"
     ```{.cpp linenums="1"}
     void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
       float *d_src;
@@ -434,7 +460,7 @@ CUDA:
     }
     ```
 
-=== "After: with CuVec"
+=== "CPython"
     ```{.cpp linenums="1"}
     void mycudafunction(float *dst, float *src, Py_ssize_t *shape) {
 
@@ -450,7 +476,7 @@ CUDA:
     }
     ```
 
-=== "Alternative: with CuVec & pybind11"
+=== "pybind11"
     ```{.cpp linenums="1"}
     void mycudafunction(float *dst, float *src, size_t *shape) {
 
@@ -466,7 +492,7 @@ CUDA:
     }
     ```
 
-=== "Alternative: with CuVec & SWIG"
+=== "SWIG"
     ```{.cpp linenums="1"}
     #include "cuvec.cuh"
     SwigCuVec<float> *myfunc(
@@ -474,7 +500,7 @@ CUDA:
       // hardcode upsampling factor 2
       std::vector<size_t> shape = src.shape;
       for (auto &i : shape) i *= 2;
-      if (!output) output = SwigCuVec_new<float>(shape);
+      if (!output) output = new SwigCuVec<float>(shape);
       mykernel<<<...>>>(output->vec.data(), src.vec.data(),
                         shape[0], shape[1], shape[2]);
       cudaDeviceSynchronize();
@@ -502,7 +528,6 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
 
     ```cpp
     #include "cuvec_cpython.cuh"  // CPython API
-    #include "cuvec_pybind11.cuh" // pybind11 API
     #include "cuvec.cuh"          // C++/CUDA API
     ```
 
