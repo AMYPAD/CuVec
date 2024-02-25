@@ -29,8 +29,8 @@ except ImportError:
 def test_includes():
     assert cu.include_path.is_dir()
     assert {i.name
-            for i in cu.include_path.iterdir()
-            } == {'cuvec.cuh', 'cuvec_cpython.cuh', 'cuvec_pybind11.cuh', 'cuvec.i'}
+            for i in cu.include_path.iterdir()} == {
+                'cuvec.cuh', 'cuvec_cpython.cuh', 'cuvec_pybind11.cuh', 'cuvec.i', 'pycuvec.cuh'}
 
 
 def test_cmake_prefix():
