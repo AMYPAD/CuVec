@@ -4,7 +4,7 @@ from pytest import mark, raises
 import cuvec.cpython as cu
 from cuvec import cuvec_cpython
 
-shape = 127, 344, 344
+from . import shape
 
 
 @mark.parametrize("tp", list(cu.typecodes))
@@ -25,7 +25,7 @@ def test_CVector_strides():
     v = cuvec_cpython.PyCuVec_f(shape)
     a = np.asarray(v)
     assert a.shape == shape
-    assert a.strides == (473344, 1376, 4)
+    assert a.strides == (512, 32, 4)
 
 
 @mark.timeout(20)

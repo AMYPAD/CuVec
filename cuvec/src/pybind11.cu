@@ -12,6 +12,7 @@
 PYBIND11_MODULE(cuvec_pybind11, m) {
   m.doc() = "PyBind11 external module.";
   pybind11::bind_vector<std::vector<size_t>>(m, "Shape");
+  pybind11::implicitly_convertible<pybind11::tuple, std::vector<size_t>>();
   PYBIND11_BIND_NDCUVEC(signed char, b);
   PYBIND11_BIND_NDCUVEC(unsigned char, B);
   PYBIND11_BIND_NDCUVEC(char, c);

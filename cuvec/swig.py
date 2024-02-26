@@ -1,5 +1,5 @@
 """
-Thin wrappers around `swvec` C++/CUDA module
+Thin wrappers around `cuvec_swig` C++/CUDA module
 
 A SWIG-driven equivalent of the CPython Extension API-driven `cpython.py`
 """
@@ -8,11 +8,11 @@ import re
 from collections.abc import Sequence
 from functools import partial
 from textwrap import dedent
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 
-from . import swvec as sw  # type: ignore [attr-defined] # yapf: disable
+from . import cuvec_swig as sw  # type: ignore [attr-defined] # yapf: disable
 from ._utils import CVector, Shape, _generate_helpers, typecodes
 
 __all__ = [
@@ -20,13 +20,13 @@ __all__ = [
     'typecodes']
 
 log = logging.getLogger(__name__)
-if hasattr(sw, 'SwigCuVec_e_new'):
+if hasattr(sw, 'NDCuVec_e_new'):
     typecodes += 'e'
 
 
 class SWIGVector(CVector):
-    RE_CUVEC_TYPE = re.compile("<.*SwigCuVec_(.); proxy of <Swig Object of type"
-                               r" 'SwigCuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>")
+    RE_CUVEC_TYPE = re.compile("<.*(?:ND|Swig)CuVec_(.); proxy of <Swig Object of type"
+                               r" '(?:ND|Swig)CuVec<\s*(\w+)\s*>\s*\*' at 0x\w+>")
 
     def __init__(self, typechar: str, shape: Shape, cuvec=None):
         """
@@ -37,29 +37,28 @@ class SWIGVector(CVector):
             `typechar` and `shape` are ignored
         """
         if cuvec is None:
-            cuvec = getattr(
-                sw,
-                f'SwigCuVec_{typechar}_new')(shape if isinstance(shape, Sequence) else (shape,))
+            shape = shape if isinstance(shape, Sequence) else (shape,)
+            cuvec = getattr(sw, f'NDCuVec_{typechar}_new')(shape)
         else:
             typechar = self.is_raw_cuvec(cuvec).group(1)
         self.cuvec = cuvec
         super().__init__(typechar)
 
     def __del__(self):
-        getattr(sw, f'SwigCuVec_{self.typechar}_del')(self.cuvec)
+        getattr(sw, f'NDCuVec_{self.typechar}_del')(self.cuvec)
 
     @property
     def shape(self) -> tuple:
-        return getattr(sw, f'SwigCuVec_{self.typechar}_shape')(self.cuvec)
+        return getattr(sw, f'NDCuVec_{self.typechar}_shape')(self.cuvec)
 
     @shape.setter
     def shape(self, shape: Shape):
         shape = shape if isinstance(shape, Sequence) else (shape,)
-        getattr(sw, f'SwigCuVec_{self.typechar}_reshape')(self.cuvec, shape)
+        getattr(sw, f'NDCuVec_{self.typechar}_reshape')(self.cuvec, shape)
 
     @property
     def address(self) -> int:
-        return getattr(sw, f'SwigCuVec_{self.typechar}_address')(self.cuvec)
+        return getattr(sw, f'NDCuVec_{self.typechar}_address')(self.cuvec)
 
 
 SWIGVector.vec_types = {np.dtype(c): partial(SWIGVector, c) for c in typecodes}
@@ -93,8 +92,12 @@ class CuVec(np.ndarray):
             (do not do `cuvec.swig.CuVec((42, 1337))`;
             instead use `cuvec.swig.zeros((42, 137))`"""))
 
+    __array_interface__: Dict[str,
+                              Any] # <https://numpy.org/doc/stable/reference/arrays.interface.html>
+
     @property
     def __cuda_array_interface__(self) -> Dict[str, Any]:
+        """<https://numba.readthedocs.io/en/stable/cuda/cuda_array_interface.html>"""
         if not hasattr(self, 'cuvec'):
             raise AttributeError(
                 dedent("""\
@@ -106,6 +109,14 @@ class CuVec(np.ndarray):
         """Change shape (but not size) of array in-place."""
         self._vec.shape = new_shape
         super().resize(new_shape, refcheck=False)
+
+    @property
+    def shape(self) -> Tuple[int, ...]:
+        return super().shape
+
+    @shape.setter
+    def shape(self, new_shape: Shape):
+        self.resize(new_shape)
 
 
 def zeros(shape: Shape, dtype="float32") -> CuVec:

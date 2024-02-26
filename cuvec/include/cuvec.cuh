@@ -2,13 +2,8 @@
  * Pure CUDA/C++11 template header. Provides:
  * - CuVec<T> // analogous to `std::vector` but using CUDA unified memory
  *
- * SWIG helpers wrapping `CuVec<T>`. Provides:
- * - SwigCuVec<T> // contains `CuVec<T> vec` and `std::vector<size_t> shape`
- * - SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape)
- * - void SwigCuVec_del(SwigCuVec<T> *self)
- * - T *SwigCuVec_data(SwigCuVec<T> *self)
- * - size_t SwigCuVec_address(SwigCuVec<T> *self)
- * - std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self)
+ * Helpers wrapping `CuVec<T>`. Provides:
+ * - NDCuVec<T> // contains `CuVec<T> vec` and `std::vector<size_t> shape`
  */
 #ifndef _CUVEC_H_
 #define _CUVEC_H_
@@ -101,7 +96,7 @@ template <class T> using CuVec = std::vector<T, CuAlloc<T>>;
 #endif // CUVEC_DISABLE_CUDA
 #endif // _CUVEC_HALF
 
-/// pybind11 helpers
+/// external wrapper helper
 template <class T> struct NDCuVec {
   CuVec<T> vec;
   std::vector<size_t> shape;
@@ -117,31 +112,6 @@ template <class T> struct NDCuVec {
     if (size != vec.size()) throw std::length_error("reshape: size mismatch");
     this->shape = shape;
   }
-  ~NDCuVec() {
-    vec.clear();
-    vec.shrink_to_fit();
-    shape.clear();
-    shape.shrink_to_fit();
-  }
 };
-
-/// SWIG helpers
-template <class T> using SwigCuVec = NDCuVec<T>;
-template <class T> SwigCuVec<T> *SwigCuVec_new(std::vector<size_t> shape) {
-  SwigCuVec<T> *self = new SwigCuVec<T>(shape);
-  return self;
-}
-template <class T> void SwigCuVec_del(SwigCuVec<T> *self) {
-  self->~NDCuVec();
-  delete self;
-}
-template <class T> T *SwigCuVec_data(SwigCuVec<T> *self) { return self->vec.data(); }
-template <class T> size_t SwigCuVec_address(SwigCuVec<T> *self) {
-  return (size_t)SwigCuVec_data(self);
-}
-template <class T> std::vector<size_t> SwigCuVec_shape(SwigCuVec<T> *self) { return self->shape; }
-template <class T> void SwigCuVec_reshape(SwigCuVec<T> *self, const std::vector<size_t> &shape) {
-  self->reshape(shape);
-}
 
 #endif // _CUVEC_H_

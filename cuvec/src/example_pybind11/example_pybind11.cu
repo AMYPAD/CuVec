@@ -3,7 +3,7 @@
  *
  * Copyright (2021) Casper da Costa-Luis
  */
-#include "cuvec_pybind11.cuh"  // NDCuVec
+#include "cuvec.cuh"           // NDCuVec
 #include <pybind11/pybind11.h> // pybind11, PYBIND11_MODULE
 #include <stdexcept>           // std::length_error
 #ifdef CUVEC_DISABLE_CUDA

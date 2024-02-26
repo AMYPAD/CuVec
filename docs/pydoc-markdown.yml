@@ -3,7 +3,8 @@ loaders:
   search_path: [..]
 processors:
 - type: filter
-  expression: not any(name.startswith(i) for i in ('cu_', 'is_raw', '__')) and default()
+  expression: not any(name.startswith(i) for i in ('cu_', 'is_raw', '__new')) and default()
+  exclude_special: false
 - type: crossref
 renderer:
   type: mkdocs

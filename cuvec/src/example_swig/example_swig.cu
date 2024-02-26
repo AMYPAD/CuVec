@@ -3,7 +3,7 @@
  *
  * Copyright (2021) Casper da Costa-Luis
  */
-#include "cuvec.cuh" // SwigCuVec, SwigCuVec_new
+#include "cuvec.cuh" // NDCuVec
 #include <stdexcept> // std::length_error
 #ifdef CUVEC_DISABLE_CUDA
 #include <chrono> // std::chrono
@@ -17,7 +17,7 @@ __global__ void _d_incr(float *dst, float *src, int X, int Y) {
   dst[y * X + x] = src[y * X + x] + 1;
 }
 #endif // CUVEC_DISABLE_CUDA
-SwigCuVec<float> *increment2d_f(SwigCuVec<float> &src, SwigCuVec<float> *output, bool timing) {
+NDCuVec<float> *increment2d_f(NDCuVec<float> &src, NDCuVec<float> *output, bool timing) {
   auto &N = src.shape;
   if (N.size() != 2) throw std::length_error("`src` must be 2D");
 
@@ -32,7 +32,7 @@ SwigCuVec<float> *increment2d_f(SwigCuVec<float> &src, SwigCuVec<float> *output,
 #endif
 
   if (!output)
-    output = SwigCuVec_new<float>(N);
+    output = new NDCuVec<float>(N);
   else if (N != output->shape)
     throw std::length_error("`output` must be same shape as `src`");
 

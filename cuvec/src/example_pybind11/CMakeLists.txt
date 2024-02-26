@@ -4,15 +4,14 @@ file(GLOB SRC LIST_DIRECTORIES false "*.cu")
 if(CUDAToolkit_FOUND)
   include_directories(${CUDAToolkit_INCLUDE_DIRS})
 endif()
-python_add_library(${PROJECT_NAME} MODULE WITH_SOABI ${SRC})
+pybind11_add_module(${PROJECT_NAME} MODULE WITH_SOABI ${SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
   "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
 if(CUDAToolkit_FOUND)
-  target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::headers CUDA::cudart_static)
+  target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart_static)
 else()
   set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
-  target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::headers)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -3,6 +3,7 @@ on:
   push:
   pull_request:
   schedule: [{cron: '30 23 * * 6'}]  # M H d m w (Sat at 23:30)
+  workflow_dispatch:
 jobs:
   clang-format:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)

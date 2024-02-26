@@ -7,6 +7,8 @@ from pytest import importorskip, mark, raises, skip
 import cuvec as cu
 import cuvec.cpython as cp
 
+from . import shape
+
 try:
     # `cuvec.pybind11` alternative to `cuvec.cpython`
     # `example_pybind11` is defined in ../cuvec/src/example_pybind11/
@@ -23,14 +25,12 @@ try:
 except ImportError:
     sw, example_swig = None, None  # type: ignore # yapf: disable
 
-shape = 127, 344, 344
-
 
 def test_includes():
     assert cu.include_path.is_dir()
     assert {i.name
-            for i in cu.include_path.iterdir()
-            } == {'cuvec.cuh', 'cuvec_cpython.cuh', 'cuvec_pybind11.cuh', 'cuvec.i'}
+            for i in cu.include_path.iterdir()} == {
+                'cuvec.cuh', 'cuvec_cpython.cuh', 'cuvec_pybind11.cuh', 'cuvec.i', 'pycuvec.cuh'}
 
 
 def test_cmake_prefix():
@@ -38,7 +38,7 @@ def test_cmake_prefix():
     assert {i.name
             for i in cu.cmake_prefix.iterdir()} == {
                 f'AMYPADcuvec{i}.cmake'
-                for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-release')}
+                for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-relwithdebinfo')}
 
 
 @mark.parametrize("cu,CVector", [(py, 'Pybind11Vector'), (sw, 'SWIGVector')])
@@ -48,7 +48,7 @@ def test_CVector_strides(cu, CVector):
     v = getattr(cu, CVector)('f', shape)
     a = np.asarray(v)
     assert a.shape == shape
-    assert a.strides == (473344, 1376, 4)
+    assert a.strides == (512, 32, 4)
 
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])
@@ -156,6 +156,9 @@ def test_resize(cu):
     assert v._vec.shape == v.shape
     v.resize(v.size)
     assert v.shape == (v.size,)
+    assert v._vec.shape == v.shape
+    v.shape = shape
+    assert v.shape == shape
     assert v._vec.shape == v.shape
 
 

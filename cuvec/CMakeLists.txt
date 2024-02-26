@@ -43,7 +43,7 @@ cmake_policy(POP)
 
 message(STATUS "CUDA architectures: ${CMAKE_CUDA_ARCHITECTURES}")
 if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -97,16 +97,15 @@ if(pybind11_FOUND AND SKBUILD)
   file(GLOB SRC LIST_DIRECTORIES false "src/pybind11*.cu")
   # include_directories(src)
   # include_directories(${Python_INCLUDE_DIRS})
-  python_add_library(${PROJECT_NAME}_pybind11 MODULE WITH_SOABI ${SRC})
+  pybind11_add_module(${PROJECT_NAME}_pybind11 MODULE WITH_SOABI ${SRC})
   add_library(AMYPAD::${PROJECT_NAME}_pybind11 ALIAS ${PROJECT_NAME}_pybind11)
   target_include_directories(${PROJECT_NAME}_pybind11 PUBLIC
     "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
     "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
   if(CUDAToolkit_FOUND)
-    target_link_libraries(${PROJECT_NAME}_pybind11 PRIVATE pybind11::headers CUDA::cudart_static)
+    target_link_libraries(${PROJECT_NAME}_pybind11 PRIVATE CUDA::cudart_static)
   else()
     set_source_files_properties(${SRC} PROPERTIES LANGUAGE CXX)
-    target_link_libraries(${PROJECT_NAME}_pybind11 PRIVATE pybind11::headers)
   endif()
 
   set_target_properties(${PROJECT_NAME}_pybind11 PROPERTIES
@@ -124,32 +123,32 @@ endif()
 if(SWIG_FOUND AND SKBUILD)
   if(CUDAToolkit_FOUND)
     include_directories(${CUDAToolkit_INCLUDE_DIRS})
-    set_source_files_properties(src/swvec.i PROPERTIES COMPILE_DEFINITIONS _CUVEC_HALF=__half)
+    set_source_files_properties(src/cuvec_swig.i PROPERTIES COMPILE_DEFINITIONS _CUVEC_HALF=__half)
   endif()
-  set_source_files_properties(src/swvec.i PROPERTIES CPLUSPLUS ON)
-  set_source_files_properties(src/swvec.i PROPERTIES USE_TARGET_INCLUDE_DIRECTORIES ON)
-  swig_add_library(swvec LANGUAGE python
+  set_source_files_properties(src/cuvec_swig.i PROPERTIES CPLUSPLUS ON)
+  set_source_files_properties(src/cuvec_swig.i PROPERTIES USE_TARGET_INCLUDE_DIRECTORIES ON)
+  swig_add_library(${PROJECT_NAME}_swig LANGUAGE python
     OUTPUT_DIR "${SKBUILD_PLATLIB_DIR}/${CMAKE_PROJECT_NAME}"
-    SOURCES src/swvec.i)
+    SOURCES src/cuvec_swig.i)
   if(WIN32)
-    set_property(TARGET swvec PROPERTY SUFFIX ".${Python_SOABI}.pyd")
+    set_property(TARGET ${PROJECT_NAME}_swig PROPERTY SUFFIX ".${Python_SOABI}.pyd")
   else()
-    set_property(TARGET swvec PROPERTY SUFFIX ".${Python_SOABI}${CMAKE_SHARED_MODULE_SUFFIX}")
+    set_property(TARGET ${PROJECT_NAME}_swig PROPERTY SUFFIX ".${Python_SOABI}${CMAKE_SHARED_MODULE_SUFFIX}")
   endif()
   if(CUDAToolkit_FOUND)
-    target_link_libraries(swvec PRIVATE Python::Module CUDA::cudart_static)
+    target_link_libraries(${PROJECT_NAME}_swig PRIVATE Python::Module CUDA::cudart_static)
   else()
-    target_link_libraries(swvec PRIVATE Python::Module)
+    target_link_libraries(${PROJECT_NAME}_swig PRIVATE Python::Module)
   endif()
-  target_include_directories(swvec PUBLIC
+  target_include_directories(${PROJECT_NAME}_swig PUBLIC
     "$<BUILD_INTERFACE:${${CMAKE_PROJECT_NAME}_INCLUDE_DIRS}>"
     "$<INSTALL_INTERFACE:${CMAKE_PROJECT_NAME}/include>")
-  set_target_properties(swvec PROPERTIES
+  set_target_properties(${PROJECT_NAME}_swig PROPERTIES
     CXX_STANDARD 11
     VERSION ${CMAKE_PROJECT_VERSION} SOVERSION ${CMAKE_PROJECT_VERSION_MAJOR}
-    INTERFACE_swvec_MAJOR_VERSION ${CMAKE_PROJECT_VERSION_MAJOR})
-  set_property(TARGET swvec APPEND PROPERTY COMPATIBLE_INTERFACE_STRING swvec_MAJOR_VERSION)
-  install(TARGETS swvec
+    INTERFACE_${PROJECT_NAME}_swig_MAJOR_VERSION ${CMAKE_PROJECT_VERSION_MAJOR})
+  set_property(TARGET ${PROJECT_NAME}_swig APPEND PROPERTY COMPATIBLE_INTERFACE_STRING ${PROJECT_NAME}_swig_MAJOR_VERSION)
+  install(TARGETS ${PROJECT_NAME}_swig
     INCLUDES DESTINATION ${CMAKE_PROJECT_NAME}/include
     LIBRARY DESTINATION ${CMAKE_PROJECT_NAME})
 endif()
