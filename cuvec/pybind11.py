@@ -4,79 +4,84 @@ Thin wrappers around `cuvec_pybind11` C++/CUDA module
 A pybind11-driven equivalent of the CPython Extension API-driven `cpython.py`
 """
 import logging
-import re
 from collections.abc import Sequence
-from functools import partial
 from textwrap import dedent
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 import numpy as np
 
 from . import cuvec_pybind11 as cu  # type: ignore [attr-defined] # yapf: disable
-from ._utils import CVector, Shape, _generate_helpers, typecodes
+from ._utils import Shape, _generate_helpers, typecodes
 
 __all__ = [
-    'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'retarray', 'Shape',
-    'typecodes']
+    'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'Shape', 'typecodes']
 
 log = logging.getLogger(__name__)
+vec_types = {
+    np.dtype('int8'): cu.NDCuVec_b,
+    np.dtype('uint8'): cu.NDCuVec_B,
+    np.dtype('S1'): cu.NDCuVec_c,
+    np.dtype('int16'): cu.NDCuVec_h,
+    np.dtype('uint16'): cu.NDCuVec_H,
+    np.dtype('int32'): cu.NDCuVec_i,
+    np.dtype('uint32'): cu.NDCuVec_I,
+    np.dtype('int64'): cu.NDCuVec_q,
+    np.dtype('uint64'): cu.NDCuVec_Q,
+    np.dtype('float32'): cu.NDCuVec_f,
+    np.dtype('float64'): cu.NDCuVec_d}
 if hasattr(cu, 'NDCuVec_e'):
     typecodes += 'e'
+    vec_types[np.dtype('float16')] = cu.NDCuVec_e
 
 
-class Pybind11Vector(CVector):
-    RE_CUVEC_TYPE = re.compile(r"<.*NDCuVec_(.) object at 0x\w+>")
-
-    def __init__(self, typechar: str, shape: Shape, cuvec=None):
-        """
-        Args:
-          typechar(char)
-          shape(tuple(int))
-          cuvec(NDCuVec<Type>): if given, `typechar` and `shape` are ignored
-        """
-        if cuvec is None:
-            shape = shape if isinstance(shape, Sequence) else (shape,)
-            cuvec = getattr(cu, f'NDCuVec_{typechar}')(shape)
-        else:
-            typechar = self.is_raw_cuvec(cuvec).group(1)
-        self.cuvec = cuvec
-        super().__init__(typechar)
-
-    @property
-    def shape(self) -> tuple:
-        return tuple(self.cuvec.shape)
-
-    @shape.setter
-    def shape(self, shape: Shape):
-        shape = shape if isinstance(shape, Sequence) else (shape,)
-        self.cuvec.shape = shape
-
-    @property
-    def address(self) -> int:
-        return self.cuvec.address
+def cu_zeros(shape: Shape, dtype="float32"):
+    """
+    Returns a new `<cuvec.cuvec_pybind11.NDCuVec_*>` of the specified shape and data type.
+    """
+    return vec_types[np.dtype(dtype)](shape if isinstance(shape, Sequence) else (shape,))
 
 
-Pybind11Vector.vec_types = {np.dtype(c): partial(Pybind11Vector, c) for c in typecodes}
+def cu_copy(arr):
+    """
+    Returns a new `<cuvec.cuvec_pybind11.NDCuVec_*>` with data copied from the specified `arr`.
+    """
+    res = cu_zeros(arr.shape, arr.dtype)
+    np.asarray(res).flat = arr.flat
+    return res
+
+
+_NDCuVec_types = tuple(vec_types.values())
+_NDCuVec_types_s = tuple(map(str, vec_types.values()))
+
+
+def is_raw_cuvec(cuvec):
+    """
+    Returns `True` when given the output of
+    pybind11 API functions returning `NDCuVec<T> *` PyObjects.
+
+    This is needed since conversely `isinstance(cuvec, CuVec)` may be `False`
+    due to external libraries
+    `#include "cuvec_pybind11.cuh"` making a distinct type object.
+    """
+    return isinstance(cuvec, _NDCuVec_types) or str(type(cuvec)) in _NDCuVec_types_s
 
 
 class CuVec(np.ndarray):
     """
     A `numpy.ndarray` compatible view with a `cuvec` member containing the
-    underlying `Pybind11Vector` object (for use in pybind11 API function calls).
+    underlying `cuvec.cuvec_pybind11.NDCuVec_*` object (for use in pybind11 API function calls).
     """
     def __new__(cls, arr):
-        """arr: `cuvec.pybind11.CuVec`, raw `Pybind11Vector`, or `numpy.ndarray`"""
-        if Pybind11Vector.is_instance(arr):
-            log.debug("wrap pyraw %s", type(arr))
+        """arr: `cuvec.pybind11.CuVec`, raw `cuvec.cuvec_pybind11.NDCuVec_*`, or `numpy.ndarray`"""
+        if is_raw_cuvec(arr):
+            log.debug("wrap raw %s", type(arr))
             obj = np.asarray(arr).view(cls)
-            obj._vec = arr
-            obj.cuvec = arr.cuvec
+            obj.cuvec = arr
             return obj
-        if isinstance(arr, CuVec) and hasattr(arr, '_vec'):
+        if isinstance(arr, CuVec) and hasattr(arr, 'cuvec'):
             log.debug("new view")
             obj = np.asarray(arr).view(cls)
-            obj._vec = arr._vec
-            obj.cuvec = arr._vec.cuvec
+            obj.cuvec = arr.cuvec
             return obj
         if isinstance(arr, np.ndarray):
             log.debug("copy")
@@ -97,12 +102,14 @@ class CuVec(np.ndarray):
             raise AttributeError(
                 dedent("""\
                 `numpy.ndarray` object has no attribute `cuvec`:
-                try using `cuvec.asarray()` first."""))
-        return self._vec.__cuda_array_interface__
+                try using `cuvec.pybind11.asarray()` first."""))
+        res = self.__array_interface__
+        return {
+            'shape': res['shape'], 'typestr': res['typestr'], 'data': res['data'], 'version': 3}
 
     def resize(self, new_shape: Shape):
         """Change shape (but not size) of array in-place."""
-        self._vec.shape = new_shape
+        self.cuvec.shape = new_shape
         super().resize(new_shape, refcheck=False)
 
     @property
@@ -119,7 +126,7 @@ def zeros(shape: Shape, dtype="float32") -> CuVec:
     Returns a `cuvec.pybind11.CuVec` view of a new `numpy.ndarray`
     of the specified shape and data type (`cuvec` equivalent of `numpy.zeros`).
     """
-    return CuVec(Pybind11Vector.zeros(shape, dtype))
+    return CuVec(cu_zeros(shape, dtype))
 
 
 ones, zeros_like, ones_like = _generate_helpers(zeros, CuVec)
@@ -131,45 +138,16 @@ def copy(arr) -> CuVec:
     with data copied from the specified `arr`
     (`cuvec` equivalent of `numpy.copy`).
     """
-    return CuVec(Pybind11Vector.copy(arr))
+    return CuVec(cu_copy(arr))
 
 
-def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
+def asarray(arr, dtype=None, order=None) -> CuVec:
     """
     Returns a `cuvec.pybind11.CuVec` view of `arr`, avoiding memory copies if possible.
     (`cuvec` equivalent of `numpy.asarray`).
-
-    Args:
-      ownership: logging level if `is_raw_cuvec(arr)`.
-        WARNING: `asarray()` should not be used on an existing reference, e.g.:
-        >>> res = asarray(some_pybind11_api_func(..., output=getattr(out, 'cuvec', None)))
-        `res.cuvec` and `out.cuvec` are now the same
-        yet garbage collected separately (dangling ptr).
-        Instead, use the `retarray` helper:
-        >>> raw = some_pybind11_api_func(..., output=getattr(out, 'cuvec', None))
-        >>> res = retarray(raw, out)
-        NB: `asarray()`/`retarray()` are safe if the raw cuvec was created in C++, e.g.:
-        >>> res = retarray(some_pybind11_api_func(..., output=None))
     """
-    if Pybind11Vector.is_raw_cuvec(arr):
-        ownership = ownership.lower()
-        if ownership in {'critical', 'fatal', 'error'}:
-            raise IOError("Can't take ownership of existing cuvec (would create dangling ptr)")
-        getattr(log, ownership)("taking ownership")
-        arr = Pybind11Vector('', (), arr)
-    if not isinstance(arr, np.ndarray) and Pybind11Vector.is_instance(arr):
+    if not isinstance(arr, np.ndarray) and is_raw_cuvec(arr):
         res = CuVec(arr)
         if dtype is None or res.dtype == np.dtype(dtype):
             return CuVec(np.asanyarray(res, order=order))
     return CuVec(np.asanyarray(arr, dtype=dtype, order=order))
-
-
-def retarray(raw, out: Optional[CuVec] = None):
-    """
-    Returns `out if hasattr(out, 'cuvec') else asarray(raw, ownership='debug')`.
-    See `asarray` for explanation.
-    Args:
-      raw: a raw CuVec (returned by C++/pybind11 function).
-      out: preallocated output array.
-    """
-    return out if hasattr(out, 'cuvec') else asarray(raw, ownership='debug')
