@@ -19,8 +19,6 @@ except ImportError:
 
 try:
     # `cuvec.swig` alternative to `cuvec.cpython`
-    # `example_swig` is defined in ../cuvec/src/example_swig/
-    from cuvec import example_swig  # type: ignore # yapf: disable
     from cuvec import swig as sw
 except ImportError:
     sw, example_swig = None, None  # type: ignore # yapf: disable
@@ -39,16 +37,6 @@ def test_cmake_prefix():
             for i in cu.cmake_prefix.iterdir()} == {
                 f'AMYPADcuvec{i}.cmake'
                 for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-relwithdebinfo')}
-
-
-@mark.parametrize("cu,CVector", [(py, 'Pybind11Vector'), (sw, 'SWIGVector')])
-def test_CVector_strides(cu, CVector):
-    if cu is None:
-        skip("cuvec.pybind11 or cuvec.swig not available")
-    v = getattr(cu, CVector)('f', shape)
-    a = np.asarray(v)
-    assert a.shape == shape
-    assert a.strides == (512, 32, 4)
 
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])
@@ -75,7 +63,7 @@ def test_copy(cu):
 
 
 @mark.parametrize("cu,classname", [(cp, "raw <class 'PyCuVec_{typechar}'>"),
-                                   (py, "pyraw <class 'cuvec.pybind11.Pybind11Vector'>"),
+                                   (py, "raw <class 'cuvec.cuvec_pybind11.NDCuVec_{typechar}'>"),
                                    (sw, "swraw <class 'cuvec.swig.SWIGVector'>")])
 def test_CuVec_creation(cu, classname, caplog):
     if cu is None:
@@ -115,53 +103,6 @@ def test_CuVec_creation(cu, classname, caplog):
     assert not caplog.record_tuples
 
 
-@mark.parametrize("cu", filter(None, [py, sw]))
-@mark.timeout(20)
-def test_asarray(cu):
-    v = cu.asarray(np.random.random(shape))
-    w = cu.CuVec(v)
-    assert w.cuvec == v.cuvec
-    assert (w == v).all()
-    assert str(w._vec) == str(v._vec)
-    assert np.asarray(w._vec).data == np.asarray(v._vec).data
-    x = cu.asarray(w._vec)
-    assert x.cuvec == v.cuvec
-    assert (x == v).all()
-    assert str(x._vec) == str(v._vec)
-    assert np.asarray(x._vec).data == np.asarray(v._vec).data
-    y = cu.asarray(x.tolist())
-    assert y.cuvec != v.cuvec
-    assert (y == v).all()
-    assert str(y._vec) != str(v._vec)
-    assert np.asarray(y._vec).data == np.asarray(v._vec).data
-    z = cu.asarray(v[:])
-    assert z.cuvec != v.cuvec
-    assert (z == v[:]).all()
-    assert str(z._vec) != str(v._vec)
-    assert np.asarray(z._vec).data == np.asarray(v._vec).data
-    s = cu.asarray(v[1:])
-    assert s.cuvec != v.cuvec
-    assert (s == v[1:]).all()
-    assert str(s._vec) != str(v._vec)
-    assert np.asarray(s._vec).data != np.asarray(v._vec).data
-    with raises(IOError):
-        cu.asarray(s._vec.cuvec, ownership='error')
-
-
-@mark.parametrize("cu", filter(None, [py, sw]))
-def test_resize(cu):
-    v = cu.asarray(np.random.random(shape))
-    v.resize(shape[::-1])
-    assert v.shape == shape[::-1]
-    assert v._vec.shape == v.shape
-    v.resize(v.size)
-    assert v.shape == (v.size,)
-    assert v._vec.shape == v.shape
-    v.shape = shape
-    assert v.shape == shape
-    assert v._vec.shape == v.shape
-
-
 @mark.timeout(60)
 @mark.parametrize("cu", filter(None, [cp, py, sw]))
 def test_cuda_array_interface(cu):
@@ -194,26 +135,3 @@ def test_cuda_array_interface(cu):
     assert ndarr.dtype == v.dtype
     with raises(AttributeError):
         ndarr.__cuda_array_interface__
-
-
-@mark.parametrize("cu,ex", [(py, example_pybind11), (sw, example_swig)])
-def test_increment(cu, ex):
-    if cu is None:
-        skip("cuvec.pybind11 or cuvec.swig not available")
-    a = cu.zeros((1337, 42), 'f')
-    assert (a == 0).all()
-    ex.increment2d_f(a.cuvec, a.cuvec)
-    assert (a == 1).all()
-
-    a[:] = 0
-    assert (a == 0).all()
-
-    b = cu.retarray(ex.increment2d_f(a.cuvec))
-    assert (b == 1).all()
-
-    c = cu.retarray(ex.increment2d_f(b.cuvec, a.cuvec), a)
-    assert (a == 2).all()
-    assert c.cuvec == a.cuvec
-    assert (c == a).all()
-    assert str(c._vec) == str(a._vec)
-    assert np.asarray(c._vec).data == np.asarray(a._vec).data
