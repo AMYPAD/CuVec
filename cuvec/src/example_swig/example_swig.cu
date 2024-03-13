@@ -1,7 +1,7 @@
 /**
  * Example external SWIG extension module using CuVec.
  *
- * Copyright (2021) Casper da Costa-Luis
+ * Copyright (2021-2024) Casper da Costa-Luis
  */
 #include "cuvec.cuh" // NDCuVec
 #include <stdexcept> // std::length_error

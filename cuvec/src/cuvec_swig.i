@@ -56,3 +56,12 @@ MKCUVEC(_CUVEC_HALF, e)
 #endif
 MKCUVEC(float, f)
 MKCUVEC(double, d)
+
+%{
+static const char __author__[] = "Casper da Costa-Luis (https://github.com/casperdcl)";
+static const char __date__[] = "2021-2024";
+static const char __version__[] = "4.0.0";
+%}
+static const char __author__[];
+static const char __date__[];
+static const char __version__[];

@@ -15,6 +15,7 @@ from ._utils import Shape, _generate_helpers, typecodes
 
 __all__ = [
     'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'Shape', 'typecodes']
+__author__, __date__, __version__ = cu.__author__, cu.__date__, cu.__version__
 
 log = logging.getLogger(__name__)
 vec_types = {

@@ -1,7 +1,7 @@
 /**
  * Example external extension module using CuVec.
  *
- * Copyright (2021) Casper da Costa-Luis
+ * Copyright (2021-2024) Casper da Costa-Luis
  */
 #include "Python.h"
 #include "cuvec_cpython.cuh" // PyCuVec

@@ -55,7 +55,7 @@ classifiers = [
 dependencies = ['importlib_resources; python_version < "3.9"', "numpy"]
 
 [project.optional-dependencies]
-dev = ["pytest>=6", "pytest-cov", "pytest-timeout", "pytest-xdist"]
+dev = ["pytest>=6", "pytest-cov", "pytest-timeout", "pytest-xdist", "packaging"]
 
 [tool.mypy]
 [[tool.mypy.overrides]]

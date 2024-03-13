@@ -2,6 +2,7 @@
 import logging
 
 import numpy as np
+from packaging import version
 from pytest import importorskip, mark, raises, skip
 
 import cuvec as cu
@@ -40,6 +41,13 @@ def test_cmake_prefix():
             for i in cu.cmake_prefix.iterdir()} == {
                 f'AMYPADcuvec{i}.cmake'
                 for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-relwithdebinfo')}
+
+
+@mark.parametrize("cu", filter(None, [cp, py, sw]))
+def test_metadata(cu):
+    assert isinstance(cu.__author__, str)
+    assert isinstance(cu.__date__, str)
+    assert version.parse(cu.__version__).release
 
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])

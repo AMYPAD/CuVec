@@ -2,8 +2,6 @@
  * Unifying Python/C++/CUDA memory.
  *
  * Python buffered array -> C++11 `std::vector` -> CUDA managed memory.
- *
- * Copyright (2021) Casper da Costa-Luis
  */
 #include "cuvec_cpython.cuh" // PyCuVec, PyCuVec_tp
 #include <Python.h>
@@ -84,7 +82,7 @@ PyMODINIT_FUNC PyInit_cuvec_cpython(void) {
   if (author == NULL) return NULL;
   PyModule_AddObject(m, "__author__", author);
 
-  PyObject *date = Py_BuildValue("s", "2021");
+  PyObject *date = Py_BuildValue("s", "2021-2024");
   if (date == NULL) return NULL;
   PyModule_AddObject(m, "__date__", date);
 
