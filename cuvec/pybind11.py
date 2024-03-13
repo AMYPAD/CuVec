@@ -109,7 +109,7 @@ class CuVec(np.ndarray):
 
     def resize(self, new_shape: Shape):
         """Change shape (but not size) of array in-place."""
-        self.cuvec.shape = new_shape
+        self.cuvec.shape = new_shape if isinstance(new_shape, Sequence) else (new_shape,)
         super().resize(new_shape, refcheck=False)
 
     @property

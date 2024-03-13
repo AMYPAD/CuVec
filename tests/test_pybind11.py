@@ -3,6 +3,8 @@ import re
 import numpy as np
 from pytest import importorskip, mark, raises
 
+from . import shape
+
 cu = importorskip("cuvec.pybind11")
 cuvec_pybind11 = importorskip("cuvec.cuvec_pybind11")
 ex = importorskip("cuvec.example_pybind11")
@@ -31,3 +33,16 @@ def test_np_types():
         cu.asarray(ex.increment2d_f(d.cuvec))
     with raises(TypeError):
         cu.asarray(ex.increment2d_f(f.cuvec, d.cuvec))
+
+
+def test_resize():
+    v = cu.asarray(np.random.random(shape))
+    v.resize(shape[::-1])
+    assert v.shape == shape[::-1]
+    assert v.cuvec.shape == v.shape
+    v.resize(v.size)
+    assert v.shape == (v.size,)
+    assert v.cuvec.shape == v.shape
+    v.shape = shape
+    assert v.shape == shape
+    assert v.cuvec.shape == v.shape
