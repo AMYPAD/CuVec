@@ -32,13 +32,9 @@ PYBIND11_MAKE_OPAQUE(NDCuVec<double>);
   pybind11::class_<NDCuVec<T>>(m, PYBIND11_TOSTRING(NDCuVec_##typechar),                          \
                                pybind11::buffer_protocol())                                       \
       .def_buffer([](NDCuVec<T> &v) -> pybind11::buffer_info {                                    \
-        size_t ndim = v.shape.size();                                                             \
-        std::vector<size_t> strides(ndim);                                                        \
-        strides[ndim - 1] = sizeof(T);                                                            \
-        for (int i = ndim - 2; i >= 0; i--) strides[i] = v.shape[i + 1] * strides[i + 1];         \
         return pybind11::buffer_info(v.vec.data(), sizeof(T),                                     \
                                      pybind11::format_descriptor<T>::format(), v.shape.size(),    \
-                                     v.shape, strides);                                           \
+                                     v.shape, v.strides());                                       \
       })                                                                                          \
       .def(pybind11::init<>())                                                                    \
       .def(pybind11::init<std::vector<size_t>>())                                                 \
