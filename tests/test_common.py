@@ -7,6 +7,9 @@ from pytest import importorskip, mark, raises, skip
 import cuvec as cu
 import cuvec.cpython as cp
 
+# `example_cpython` is defined in ../cuvec/src/example_cpython/
+from cuvec import example_cpython  # type: ignore # yapf: disable
+
 from . import shape
 
 try:
@@ -135,3 +138,69 @@ def test_cuda_array_interface(cu):
     assert ndarr.dtype == v.dtype
     with raises(AttributeError):
         ndarr.__cuda_array_interface__
+
+
+@mark.parametrize("cu,tp", [(cp, 'PyCuVec_f'), (py, 'NDCuVec_f')])
+def test_CVector_strides(cu, tp):
+    if cu is None:
+        skip("cuvec.pybind11 not available")
+    v = getattr(cu.cu, tp)(shape)
+    a = np.asarray(v)
+    assert a.shape == shape
+    assert a.strides == (512, 32, 4)
+
+
+@mark.parametrize("cu", filter(None, [cp, py]))
+@mark.timeout(20)
+def test_asarray(cu):
+    v = cu.asarray(np.random.random(shape))
+    w = cu.CuVec(v)
+    assert w.cuvec == v.cuvec
+    assert (w == v).all()
+    assert np.asarray(w.cuvec).data == np.asarray(v.cuvec).data
+    x = cu.asarray(w.cuvec)
+    assert x.cuvec == v.cuvec
+    assert (x == v).all()
+    assert np.asarray(x.cuvec).data == np.asarray(v.cuvec).data
+    y = cu.asarray(x.tolist())
+    assert y.cuvec != v.cuvec
+    assert (y == v).all()
+    assert np.asarray(y.cuvec).data == np.asarray(v.cuvec).data
+    z = cu.asarray(v[:])
+    assert z.cuvec != v.cuvec
+    assert (z == v[:]).all()
+    assert np.asarray(z.cuvec).data == np.asarray(v.cuvec).data
+    s = cu.asarray(v[1:])
+    assert s.cuvec != v.cuvec
+    assert (s == v[1:]).all()
+    assert np.asarray(s.cuvec).data != np.asarray(v.cuvec).data
+
+
+@mark.parametrize("cu,ex,wrap", [(cp, example_cpython, True), (py, example_pybind11, False)])
+def test_increment(cu, ex, wrap):
+    if cu is None:
+        skip("cuvec.pybind11 not available")
+    a = cu.zeros((1337, 42), 'f')
+    assert (a == 0).all()
+    res = cu.asarray(ex.increment2d_f(a.cuvec, a.cuvec))
+    assert (a == 1).all()
+    assert (res == 1).all()
+
+    a[:] = 0
+    assert (a == 0).all()
+    assert (res == 0).all()
+
+    res = cu.asarray(ex.increment2d_f(a if wrap else a.cuvec))
+    assert (res == 1).all()
+
+
+@mark.parametrize("cu,ex,wrap", [(cp, example_cpython, True), (py, example_pybind11, False)])
+def test_increment_return(cu, ex, wrap):
+    if cu is None:
+        skip("cuvec.pybind11 not available")
+    a = cu.zeros((1337, 42), 'f')
+    assert (a == 0).all()
+    res = cu.asarray(ex.increment2d_f(a if wrap else a.cuvec, a if wrap else a.cuvec))
+    assert (a == 1).all()
+    del a
+    assert (res == 1).all()
