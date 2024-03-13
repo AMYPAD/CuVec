@@ -82,7 +82,7 @@ template <class T, class U> bool operator!=(const CuAlloc<T> &, const CuAlloc<U>
   return false;
 }
 
-template <class T> using CuVec = std::vector<T, CuAlloc<T>>;
+template <class T, class Alloc = CuAlloc<T>> using CuVec = std::vector<T, Alloc>;
 
 /// extension helpers
 #ifndef _CUVEC_HALF
@@ -97,8 +97,8 @@ template <class T> using CuVec = std::vector<T, CuAlloc<T>>;
 #endif // _CUVEC_HALF
 
 /// external wrapper helper
-template <class T> struct NDCuVec {
-  CuVec<T> vec;
+template <class T, class Alloc = CuAlloc<T>> struct NDCuVec {
+  CuVec<T, Alloc> vec;
   std::vector<size_t> shape;
   NDCuVec() = default;
   NDCuVec(const std::vector<size_t> &shape) : shape(shape) {
@@ -120,5 +120,9 @@ template <class T> struct NDCuVec {
     return s;
   }
 };
+
+/// CPU-only versions
+template <class T> using CVec = std::vector<T, std::allocator<T>>;
+template <class T> using NDCVec = NDCuVec<T, std::allocator<T>>;
 
 #endif // _CUVEC_H_
