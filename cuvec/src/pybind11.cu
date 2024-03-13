@@ -2,8 +2,6 @@
  * Unifying Python/C++/CUDA memory.
  *
  * pybind11 opaque vector -> C++11 `std::vector` -> CUDA managed memory.
- *
- * Copyright (2024) Casper da Costa-Luis
  */
 #include "cuvec_pybind11.cuh"  // PYBIND11_BIND_NDCUVEC
 #include <pybind11/pybind11.h> // PYBIND11_MODULE
@@ -27,4 +25,7 @@ PYBIND11_MODULE(cuvec_pybind11, m) {
 #endif
   PYBIND11_BIND_NDCUVEC(float, f);
   PYBIND11_BIND_NDCUVEC(double, d);
+  m.attr("__author__") = "Casper da Costa-Luis (https://github.com/casperdcl)";
+  m.attr("__date__") = "2024";
+  m.attr("__version__") = "2.0.0";
 }

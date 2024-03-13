@@ -112,6 +112,13 @@ template <class T> struct NDCuVec {
     if (size != vec.size()) throw std::length_error("reshape: size mismatch");
     this->shape = shape;
   }
+  std::vector<size_t> strides() const {
+    const size_t ndim = this->shape.size();
+    std::vector<size_t> s(ndim);
+    s[ndim - 1] = sizeof(T);
+    for (int i = ndim - 2; i >= 0; i--) s[i] = this->shape[i + 1] * s[i + 1];
+    return s;
+  }
 };
 
 #endif // _CUVEC_H_

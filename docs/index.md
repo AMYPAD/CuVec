@@ -175,7 +175,7 @@ The following involve no memory copies.
     === "to Python"
         ```py
         import cuvec.pybind11 as cuvec, my_custom_lib
-        arr = cuvec.retarray(my_custom_lib.some_pybind11_api_func())
+        arr = cuvec.asarray(my_custom_lib.some_pybind11_api_func())
         ```
 
     === "to C++"
@@ -245,7 +245,7 @@ Python:
     import cuvec.pybind11 as cuvec, numpy, mymod
     arr = cuvec.zeros((1337, 42, 7), "float32")
     assert all(numpy.mean(arr, axis=(0, 1)) == 0)
-    print(cuvec.retarray(mymod.myfunc(arr.cuvec)).sum())
+    print(cuvec.asarray(mymod.myfunc(arr.cuvec)).sum())
     ```
 
 === "SWIG"

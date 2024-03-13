@@ -1,7 +1,7 @@
 /**
  * Example external pybind11 extension module using CuVec.
  *
- * Copyright (2021) Casper da Costa-Luis
+ * Copyright (2024) Casper da Costa-Luis
  */
 #include "cuvec.cuh"           // NDCuVec
 #include <pybind11/pybind11.h> // pybind11, PYBIND11_MODULE

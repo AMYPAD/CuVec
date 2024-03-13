@@ -21,12 +21,21 @@ PYBIND11_MAKE_OPAQUE(NDCuVec<long long>);
 PYBIND11_MAKE_OPAQUE(NDCuVec<unsigned long long>);
 #ifdef _CUVEC_HALF
 PYBIND11_MAKE_OPAQUE(NDCuVec<_CUVEC_HALF>);
+template <> struct pybind11::format_descriptor<_CUVEC_HALF> : pybind11::format_descriptor<float> {
+  static std::string format() { return "e"; }
+};
 #endif
 PYBIND11_MAKE_OPAQUE(NDCuVec<float>);
 PYBIND11_MAKE_OPAQUE(NDCuVec<double>);
 
 #define PYBIND11_BIND_NDCUVEC(T, typechar)                                                        \
-  pybind11::class_<NDCuVec<T>>(m, PYBIND11_TOSTRING(NDCuVec_##typechar))                          \
+  pybind11::class_<NDCuVec<T>>(m, PYBIND11_TOSTRING(NDCuVec_##typechar),                          \
+                               pybind11::buffer_protocol())                                       \
+      .def_buffer([](NDCuVec<T> &v) -> pybind11::buffer_info {                                    \
+        return pybind11::buffer_info(v.vec.data(), sizeof(T),                                     \
+                                     pybind11::format_descriptor<T>::format(), v.shape.size(),    \
+                                     v.shape, v.strides());                                       \
+      })                                                                                          \
       .def(pybind11::init<>())                                                                    \
       .def(pybind11::init<std::vector<size_t>>())                                                 \
       .def_property(                                                                              \

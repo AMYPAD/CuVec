@@ -18,6 +18,7 @@ from ._utils import CVector, Shape, _generate_helpers, typecodes
 __all__ = [
     'CuVec', 'zeros', 'ones', 'zeros_like', 'ones_like', 'copy', 'asarray', 'retarray', 'Shape',
     'typecodes']
+__author__, __date__, __version__ = sw.__author__, sw.__date__, sw.__version__
 
 log = logging.getLogger(__name__)
 if hasattr(sw, 'NDCuVec_e_new'):
