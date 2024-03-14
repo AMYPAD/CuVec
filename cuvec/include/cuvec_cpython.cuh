@@ -117,7 +117,7 @@ template <class T> const char *PyCuVec_t_str() {
 /// __str__
 template <class T> PyObject *PyCuVec_str(PyCuVec<T> *self) {
   std::stringstream s;
-  s << PyCuVec_t_str<T>() << "((";
+  s << "cuvec.cuvec_cpython." << PyCuVec_t_str<T>() << "((";
   if (self->shape.size() > 0) s << self->shape[0];
   for (size_t i = 1; i < self->shape.size(); i++) s << ", " << self->shape[i];
   s << "))";

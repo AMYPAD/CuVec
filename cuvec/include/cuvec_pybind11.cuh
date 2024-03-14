@@ -40,6 +40,15 @@ PYBIND11_MAKE_OPAQUE(NDCuVec<double>);
       .def(pybind11::init<std::vector<size_t>>())                                                 \
       .def_property(                                                                              \
           "shape", [](const NDCuVec<T> &v) { return &v.shape; }, &NDCuVec<T>::reshape)            \
-      .def_property_readonly("address", [](const NDCuVec<T> &v) { return (size_t)v.vec.data(); })
+      .def_property_readonly("address", [](const NDCuVec<T> &v) { return (size_t)v.vec.data(); }) \
+      .def("__str__", [](const NDCuVec<T> &v) {                                                   \
+        std::stringstream s;                                                                      \
+        s << "cuvec.cuvec_pybind11." << PYBIND11_TOSTRING(NDCuVec_##typechar) << "((";            \
+        if (v.shape.size() > 0) s << v.shape[0];                                                  \
+        for (size_t i = 1; i < v.shape.size(); i++) s << ", " << v.shape[i];                      \
+        s << "))";                                                                                \
+        std::string c = s.str();                                                                  \
+        return c;                                                                                 \
+      })
 
 #endif // _CUVEC_PYBIND11_H_

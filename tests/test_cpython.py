@@ -9,7 +9,7 @@ from cuvec import example_cpython as ex  # type: ignore # yapf: disable
 @mark.parametrize("tp", list(cu.typecodes))
 def test_PyCuVec_asarray(tp):
     v = getattr(cuvec_cpython, f"PyCuVec_{tp}")((1, 2, 3))
-    assert str(v) == f"PyCuVec_{tp}((1, 2, 3))"
+    assert str(v) == f"cuvec.cuvec_cpython.PyCuVec_{tp}((1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
     a[0, 0] = 42

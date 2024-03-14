@@ -1,5 +1,3 @@
-import re
-
 import numpy as np
 from pytest import importorskip, mark, raises
 
@@ -13,7 +11,7 @@ ex = importorskip("cuvec.example_pybind11")
 @mark.parametrize("tp", list(cu.typecodes))
 def test_NDCuVec_asarray(tp):
     v = getattr(cuvec_pybind11, f"NDCuVec_{tp}")((1, 2, 3))
-    assert re.match(f"<cuvec.cuvec_pybind11.NDCuVec_{tp} object at 0x[0-9a-f]+>", str(v))
+    assert str(v) == f"cuvec.cuvec_pybind11.NDCuVec_{tp}((1, 2, 3))"
     a = np.asarray(v)
     assert not a.any()
     a[0, 0] = 42
