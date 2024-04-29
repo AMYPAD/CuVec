@@ -93,7 +93,11 @@ timeout = 2
 log_level = "INFO"
 python_files = ["tests/test_*.py"]
 testpaths = ["tests"]
-addopts = "-v --tb=short -rxs -W=error -n=3 --durations=0 --durations-min=1 --cov=cuvec --cov-report=term-missing --cov-report=xml"
+addopts = "-v --tb=short -rxs -n=3 --durations=0 --durations-min=1 --cov=cuvec --cov-report=term-missing --cov-report=xml"
+filterwarnings = [
+    "error",
+    "ignore:.*one-time only warm-up.*:"
+]
 
 [tool.coverage.run]
 omit = ["cuvec/cuvec_swig.py", "cuvec/example_swig.py"]
