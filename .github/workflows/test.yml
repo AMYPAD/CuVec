@@ -18,7 +18,7 @@ jobs:
   test:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     name: py${{ matrix.python }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{ matrix.python == 3.7 && '22.04' || 'latest' }}
     strategy:
       matrix:
         python: [3.7, 3.12]
