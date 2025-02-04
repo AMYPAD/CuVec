@@ -1,0 +1,27 @@
+/** Tab overflow
+ * https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/#alternate-style
+ */
+.tabbed-labels.tabbed-scroll-left::before {
+  display: inline-block;
+  font-size: 0.9em;
+  position: absolute;
+  top: 0.64em;
+  left: 0;
+  padding-right: 0.64em;
+  color: gray;
+  background: linear-gradient(to right, var(--md-default-bg-color) 75%, rgba(0, 0, 0, 0));
+  content: "\25C0";
+  cursor: pointer;
+}
+.tabbed-labels.tabbed-scroll-right::after {
+  display: inline-block;
+  font-size: 0.9em;
+  position: absolute;
+  top: 0.64em;
+  right: 0;
+  padding-left: 0.64em;
+  color: gray;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), var(--md-default-bg-color) 25%);
+  content: "\25B6";
+  cursor: pointer;
+}
