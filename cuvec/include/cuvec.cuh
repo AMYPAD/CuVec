@@ -38,9 +38,7 @@ template <class T> struct CuAlloc {
 #if __cplusplus > 201703L
   [[nodiscard]]
 #endif
-  T
-      *
-      allocate(std::size_t n) {
+  T *allocate(std::size_t n) {
     if (n > std::numeric_limits<std::size_t>::max() / sizeof(T)) throw std::bad_alloc();
 
     T *p;
