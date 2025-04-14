@@ -510,7 +510,7 @@ CUDA:
 
 For a full reference, see:
 
-- `cuvec.example_cpython` source: [example_cpython.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_cpython.cu)
+- `cuvec.example_cpython` source: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_mod.cu)
 - `cuvec.example_pybind11` source: [example_pybind11.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_pybind11/example_pybind11.cu)
 - `cuvec.example_swig` sources: [example_swig.i](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.i) & [example_swig.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_swig/example_swig.cu)
 
@@ -539,7 +539,7 @@ See also [NumCu](https://github.com/AMYPAD/NumCu), a minimal stand-alone Python 
 
     For reference, see:
 
-    - `cuvec.example_cpython` source: [example_cpython.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_cpython.cu)
+    - `cuvec.example_cpython` source: [example_mod.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_cpython/example_mod.cu)
     - `cuvec.example_pybind11` source: [example_pybind11.cu](https://github.com/AMYPAD/CuVec/blob/main/cuvec/src/example_pybind11/example_pybind11.cu)
 
 === "SWIG"
