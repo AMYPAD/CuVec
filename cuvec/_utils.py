@@ -10,7 +10,7 @@ import numpy as np
 
 Shape = Union[Seq[int], int]
 # u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
-typecodes = ''.join(i for i in array.typecodes if i not in "ulL")
+typecodes = ''.join(i for i in array.typecodes if i not in "uwlL")
 
 
 class CVector(ABC):

@@ -18,10 +18,10 @@ jobs:
   test:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     name: py${{ matrix.python }}
-    runs-on: ubuntu-${{ matrix.python == 3.7 && '22.04' || 'latest' }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.7, 3.12]
+        python: [3.8, 3.13]
     steps:
     - uses: actions/checkout@v4
       with: {fetch-depth: 0}
@@ -42,7 +42,7 @@ jobs:
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
-        python: [3.7, 3.12]
+        python: [3.8, 3.13]
     steps:
     - uses: actions/checkout@v4
       with: {fetch-depth: 0}
