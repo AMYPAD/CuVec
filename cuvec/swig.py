@@ -160,7 +160,7 @@ def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
     if SWIGVector.is_raw_cuvec(arr):
         ownership = ownership.lower()
         if ownership in {'critical', 'fatal', 'error'}:
-            raise IOError("Can't take ownership of existing cuvec (would create dangling ptr)")
+            raise OSError("Can't take ownership of existing cuvec (would create dangling ptr)")
         getattr(log, ownership)("taking ownership")
         arr = SWIGVector('', (), arr)
     if not isinstance(arr, np.ndarray) and SWIGVector.is_instance(arr):
