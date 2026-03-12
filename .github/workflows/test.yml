@@ -9,7 +9,7 @@ jobs:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - uses: actions/setup-python@v6
       with: {python-version: '3.x'}
     - run: sudo apt-get install -yqq clang-format
@@ -23,7 +23,7 @@ jobs:
       matrix:
         python: [3.8, 3.13]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with: {fetch-depth: 0}
     - uses: actions/setup-python@v6
       with:
@@ -44,7 +44,7 @@ jobs:
       matrix:
         python: [3.8, 3.13]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with: {fetch-depth: 0}
     - name: Run setup-python
       run: setup-python -p${{ matrix.python }} cupy"!=14.0.*" # https://github.com/cupy/cupy/issues/9777
@@ -66,7 +66,7 @@ jobs:
     permissions: {contents: write, id-token: write}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_TOKEN || github.token }}
