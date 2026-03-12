@@ -47,7 +47,7 @@ jobs:
     - uses: actions/checkout@v5
       with: {fetch-depth: 0}
     - name: Run setup-python
-      run: setup-python -p${{ matrix.python }} cupy
+      run: setup-python -p${{ matrix.python }} cupy"!=14.0.*" # https://github.com/cupy/cupy/issues/9777
     - name: pip install -U -e .[dev]
       run: make CXX_FLAGS='' deps-build build-editable deps-run
     - run: make test
