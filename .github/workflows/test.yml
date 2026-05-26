@@ -20,9 +20,9 @@ jobs:
       run: |
         echo $PATH
         echo $LD_LIBRARY_PATH
-        #eval "$CONDA_CI_ACTIVATE"
-        #echo $PATH
-        #echo $LD_LIBRARY_PATH
+        eval "$CONDA_CI_ACTIVATE"
+        echo $PATH
+        echo $LD_LIBRARY_PATH
         which python
         which pip
         python -c "import cupy; cupy.show_config(_full=True)"
@@ -30,7 +30,10 @@ jobs:
       run: |
         eval "$CONDA_CI_ACTIVATE"
         make CXX_FLAGS='' deps-build build-editable deps-run
-    - run: make test
+    - name: make test
+      run: |
+        eval "$CONDA_CI_ACTIVATE"
+        make test
     - uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
