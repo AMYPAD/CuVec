@@ -40,6 +40,7 @@ jobs:
     if: github.event_name != 'pull_request' || !contains('OWNER,MEMBER,COLLABORATOR', github.event.pull_request.author_association)
     name: CUDA py${{ matrix.python }}
     runs-on: [self-hosted, cuda, python]
+    defaults: {run: {shell: 'bash -el {0}'}}
     strategy:
       matrix:
         python: [3.8, 3.13]
@@ -52,17 +53,25 @@ jobs:
       run: setup-python -p${{ matrix.python }} cupy"!=14.0.*" cuda-cudart-dev
     - name: debug info
       run: |
+        eval "$CONDA_CI_ACTIVATE"
         which python
         which pip
         python -c "import cupy; cupy.show_config(_full=True)"
     - name: pip install -U -e .[dev]
-      run: make CXX_FLAGS='' deps-build build-editable deps-run
-    - run: make test
+      run: |
+        eval "$CONDA_CI_ACTIVATE"
+        make CXX_FLAGS='' deps-build build-editable deps-run
+    - name: make test
+      run: |
+        eval "$CONDA_CI_ACTIVATE"
+        make test
     - uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
     - name: compile -Wall
-      run: make CUDA_ARCHITECTURES=all clean build-wheel
+      run: |
+        eval "$CONDA_CI_ACTIVATE"
+        make CUDA_ARCHITECTURES=all clean build-wheel
     - name: Post Run setup-python
       run: setup-python -p${{ matrix.python }} -Dr
       if: ${{ always() }}
