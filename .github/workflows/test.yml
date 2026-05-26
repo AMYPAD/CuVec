@@ -28,11 +28,11 @@ jobs:
         python -c "import cupy; cupy.show_config(_full=True)"
     - name: pip install -U -e .[dev]
       run: |
-        eval "$CONDA_CI_ACTIVATE"
+        #eval "$CONDA_CI_ACTIVATE"
         make CXX_FLAGS='' deps-build build-editable deps-run
     - name: make test
       run: |
-        eval "$CONDA_CI_ACTIVATE"
+        #eval "$CONDA_CI_ACTIVATE"
         make test
     - uses: codecov/codecov-action@v5
       with:
