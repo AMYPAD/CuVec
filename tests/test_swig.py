@@ -57,7 +57,7 @@ def test_asarray():
     assert (s == v[1:]).all()
     assert str(s._vec) != str(v._vec)
     assert np.asarray(s._vec).data != np.asarray(v._vec).data
-    with raises(IOError):
+    with raises(OSError):
         cu.asarray(s._vec.cuvec, ownership='error')
 
 
