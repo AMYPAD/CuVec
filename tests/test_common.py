@@ -43,7 +43,7 @@ def test_cmake_prefix():
                 for i in ('Config', 'ConfigVersion', 'Targets', 'Targets-relwithdebinfo')}
 
 
-@mark.parametrize("cu", filter(None, [cp, py, sw]))
+@mark.parametrize("cu", list(filter(None, [cp, py, sw])))
 def test_metadata(cu):
     assert isinstance(cu.__author__, str)
     assert isinstance(cu.__date__, str)
@@ -52,7 +52,7 @@ def test_metadata(cu):
 
 @mark.parametrize("spec,result", [("i", np.int32), ("d", np.float64)])
 @mark.parametrize("init", ["zeros", "ones"])
-@mark.parametrize("cu", filter(None, [cp, py, sw]))
+@mark.parametrize("cu", list(filter(None, [cp, py, sw])))
 def test_create(cu, init, spec, result):
     a = np.asarray(getattr(cu, init)(shape, spec))
     assert a.dtype == result
@@ -64,7 +64,7 @@ def test_create(cu, init, spec, result):
     assert b.dtype == a.dtype
 
 
-@mark.parametrize("cu", filter(None, [cp, py, sw]))
+@mark.parametrize("cu", list(filter(None, [cp, py, sw])))
 def test_copy(cu):
     a = np.random.random(shape)
     b = np.asarray(cu.copy(a))
@@ -115,7 +115,7 @@ def test_CuVec_creation(cu, classname, caplog):
 
 
 @mark.timeout(60)
-@mark.parametrize("cu", filter(None, [cp, py, sw]))
+@mark.parametrize("cu", list(filter(None, [cp, py, sw])))
 def test_cuda_array_interface(cu):
     cupy = importorskip("cupy")
     from cuvec import dev_sync
@@ -158,7 +158,7 @@ def test_CVector_strides(cu, tp):
     assert a.strides == (512, 32, 4)
 
 
-@mark.parametrize("cu", filter(None, [cp, py]))
+@mark.parametrize("cu", list(filter(None, [cp, py])))
 @mark.timeout(20)
 def test_asarray(cu):
     v = cu.asarray(np.random.random(shape))
