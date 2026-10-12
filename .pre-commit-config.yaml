@@ -28,7 +28,7 @@ repos:
     types: [text]
     exclude: ^(.pre-commit-config.yaml|.github/workflows/test.yml)$
 - repo: https://github.com/PyCQA/flake8
-  rev: 7.3.0
+  rev: 7.4.1
   hooks:
   - id: flake8
     args: [-j8]
@@ -40,12 +40,12 @@ repos:
     - flake8-isort
     - flake8-pyproject
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v2.1.0
+  rev: v2.4.0
   hooks:
   - id: mypy
     additional_dependencies: [types-setuptools]
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.21.2
+  rev: v3.22.0
   hooks:
   - id: pyupgrade
     args: [--py38-plus]
@@ -56,7 +56,7 @@ repos:
     args: [-i]
     additional_dependencies: [toml]
 - repo: https://github.com/PyCQA/isort
-  rev: 9.0.0a3
+  rev: 9.0.2
   hooks:
   - id: isort
 - repo: https://github.com/doublify/pre-commit-clang-format
