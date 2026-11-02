@@ -2,9 +2,8 @@
 import array
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Union
 from typing import Sequence as Seq
-from typing import Union
 
 import numpy as np
 
