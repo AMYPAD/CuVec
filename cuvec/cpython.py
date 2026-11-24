@@ -2,7 +2,7 @@
 import logging
 from collections.abc import Sequence
 from textwrap import dedent
-from typing import Any, Dict
+from typing import Any
 
 import numpy as np
 
@@ -89,11 +89,11 @@ class CuVec(np.ndarray):
             (do not do `cuvec.CuVec((42, 1337))`;
             instead use `cuvec.zeros((42, 137))`"""))
 
-    __array_interface__: Dict[str,
+    __array_interface__: dict[str,
                               Any] # <https://numpy.org/doc/stable/reference/arrays.interface.html>
 
     @property
-    def __cuda_array_interface__(self) -> Dict[str, Any]:
+    def __cuda_array_interface__(self) -> dict[str, Any]:
         """<https://numba.readthedocs.io/en/stable/cuda/cuda_array_interface.html>"""
         if not hasattr(self, 'cuvec'):
             raise AttributeError(

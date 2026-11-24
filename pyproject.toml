@@ -26,7 +26,7 @@ dynamic = ["version"]
 authors = [{name = "Casper da Costa-Luis", email = "casper.dcl@physics.org"}]
 description = "Unifying Python/C++/CUDA memory: Python buffered array -> C++11 `std::vector` -> CUDA managed memory"
 readme = "README.rst"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["Python", "C", "C++", "buffer", "vector", "array", "CUDA", "CPython", "SWIG", "pybind11", "extensions", "API"]
 license = {text = "MPL-2.0"}
 classifiers = [
@@ -42,17 +42,17 @@ classifiers = [
     "Programming Language :: C",
     "Programming Language :: C++",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities"]
-dependencies = ['importlib_resources; python_version < "3.9"', "numpy"]
+dependencies = ["numpy"]
 
 [project.optional-dependencies]
 dev = ["pytest>=6", "pytest-cov", "pytest-timeout", "pytest-xdist", "packaging"]

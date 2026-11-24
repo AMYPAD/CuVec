@@ -40,7 +40,7 @@ Install
 
 Requirements:
 
-- Python 3.8 or greater (e.g. via `Anaconda or Miniconda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda>`_, or via ``python3-dev``)
+- Python 3.10 or greater (e.g. via `Anaconda or Miniconda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html#anaconda-or-miniconda>`_, or via ``python3-dev``)
 - (optional) `CUDA SDK/Toolkit <https://developer.nvidia.com/cuda-downloads>`_ (including drivers for an NVIDIA GPU)
 
   * note that if the CUDA SDK/Toolkit is installed *after* CuVec, then CuVec must be re-installed to enable CUDA support
@@ -83,8 +83,8 @@ Copyright:
    :target: https://github.com/AMYPAD/CuVec/blob/main/LICENCE
 .. |Tests| image:: https://img.shields.io/github/actions/workflow/status/AMYPAD/CuVec/test.yml?branch=main&logo=GitHub
    :target: https://github.com/AMYPAD/CuVec/actions
-.. |Downloads| image:: https://img.shields.io/pypi/dm/cuvec?logo=pypi&logoColor=white
-   :target: https://pypi.org/project/cuvec
+.. |Downloads| image:: https://static.pepy.tech/personalized-badge/cuvec?left_text=downloads%2Fmonth
+   :target: https://pepy.tech/project/cuvec
 .. |Coverage| image:: https://codecov.io/gh/AMYPAD/CuVec/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/AMYPAD/CuVec
 .. |Version| image:: https://img.shields.io/pypi/v/cuvec.svg?logo=python&logoColor=white
