@@ -18,10 +18,9 @@ except ImportError: # pragma: nocover
 # config
 __all__ = ['cmake_prefix', 'include_path']
 
-try:          # py<3.9
-    import importlib_resources as resources
-except ImportError:
-    from importlib import resources  # type: ignore # yapf: disable
+from importlib import resources
+from pathlib import Path
+from typing import cast
 
 try:
     from .cuvec_cpython import dev_set, dev_sync
@@ -39,7 +38,7 @@ else:                      # backwards compatibility: import from .cpython
         # data
         'typecodes'] # yapf: disable
 
-p = resources.files('cuvec').resolve()
+p = cast(Path, resources.files('cuvec')).resolve()
 # for C++/CUDA/SWIG includes
 include_path = p / 'include'
 # for use in `cmake -DCMAKE_PREFIX_PATH=...`

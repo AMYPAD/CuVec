@@ -2,20 +2,20 @@
 import array
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Dict
-from typing import Sequence as Seq
-from typing import Union
+from collections.abc import Sequence as Seq
+from typing import Any, Union
 
 import numpy as np
 
 Shape = Union[Seq[int], int]
-# u: non-standard np.dype('S2'); l/L: inconsistent between `array` and `numpy`
-typecodes = ''.join(i for i in array.typecodes if i not in "uwlL")
+# u: non-standard np.dype('S2'); l/L/Zf/Zd: inconsistent between `array` and `numpy`;
+# e: added by each backend if supported
+typecodes = ''.join(i for i in array.typecodes if i not in ("u", "w", "l", "L", "e", "Zf", "Zd"))
 
 
 class CVector(ABC):
     """Thin wrapper around `CuVec<Type>`. Always takes ownership."""
-    vec_types: Dict[np.dtype, Any]
+    vec_types: dict[np.dtype, Any]
     RE_CUVEC_TYPE: re.Pattern
 
     def __init__(self, typechar: str):
@@ -32,7 +32,7 @@ class CVector(ABC):
         pass  # pragma: no cover
 
     @property
-    def __array_interface__(self) -> Dict[str, Any]:
+    def __array_interface__(self) -> dict[str, Any]:
         return {
             'shape': self.shape, 'typestr': np.dtype(self.typechar).str,
             'data': (self.address, False), 'version': 3}

@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8, 3.13]
+        python: ['3.10', 3.15]
     steps:
     - uses: actions/checkout@v7
       with: {fetch-depth: 0}
@@ -42,7 +42,7 @@ jobs:
     runs-on: [self-hosted, cuda, python]
     strategy:
       matrix:
-        python: [3.8, 3.13]
+        python: ['3.10', 3.15]
     steps:
     - uses: actions/checkout@v7
       with: {fetch-depth: 0}

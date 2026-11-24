@@ -8,7 +8,7 @@ import re
 from collections.abc import Sequence
 from functools import partial
 from textwrap import dedent
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -93,11 +93,11 @@ class CuVec(np.ndarray):
             (do not do `cuvec.swig.CuVec((42, 1337))`;
             instead use `cuvec.swig.zeros((42, 137))`"""))
 
-    __array_interface__: Dict[str,
+    __array_interface__: dict[str,
                               Any] # <https://numpy.org/doc/stable/reference/arrays.interface.html>
 
     @property
-    def __cuda_array_interface__(self) -> Dict[str, Any]:
+    def __cuda_array_interface__(self) -> dict[str, Any]:
         """<https://numba.readthedocs.io/en/stable/cuda/cuda_array_interface.html>"""
         if not hasattr(self, 'cuvec'):
             raise AttributeError(
@@ -112,7 +112,7 @@ class CuVec(np.ndarray):
         super().resize(new_shape, refcheck=False)
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         return super().shape
 
     @shape.setter
@@ -170,7 +170,7 @@ def asarray(arr, dtype=None, order=None, ownership: str = 'warning') -> CuVec:
     return CuVec(np.asanyarray(arr, dtype=dtype, order=order))
 
 
-def retarray(raw, out: Optional[CuVec] = None):
+def retarray(raw, out: CuVec | None = None):
     """
     Returns `out if hasattr(out, 'cuvec') else asarray(raw, ownership='debug')`.
     See `asarray` for explanation.
